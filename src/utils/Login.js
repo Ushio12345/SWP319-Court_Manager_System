@@ -15,7 +15,7 @@ export default class Login extends Component {
 
     setParams = (event) => {
         this.setState({ [event.target.name]: event.target.value });
-    }
+    };
 
     login = (event) => {
         event.preventDefault();
@@ -25,14 +25,14 @@ export default class Login extends Component {
 
         const raw = JSON.stringify({
             emailOrPhoneNumber: this.state.phoneNumber,
-            password: this.state.password
+            password: this.state.password,
         });
 
         const requestOptions = {
             method: "POST",
             headers: myHeaders,
             body: raw,
-            redirect: "follow"
+            redirect: "follow",
         };
 
         fetch("http://167.99.67.127:8080/forbad/auth/signin", requestOptions)
@@ -97,7 +97,7 @@ export default class Login extends Component {
                 window.location.href = data.redirectUrl;
             })
             .catch((error) => console.error(error));
-    }
+    };
 
     render() {
         if (this.state.redirectToRoleSelection) {
@@ -105,7 +105,7 @@ export default class Login extends Component {
         }
 
         return (
-            <div>
+            <div class="form">
                 <p id="wrong-repass" className="text-danger text-bold fw-bolder"></p>
                 <div className="header-login-form">
                     <div className="container d-flex align-items-center justify-content-between">
@@ -118,7 +118,7 @@ export default class Login extends Component {
                             </div>
                         </div>
                         <div className="header-login-form-right m-0">
-                            <a href="Guest.jsx">
+                            <a href="/">
                                 Trở về trang chủ <i className="fa-solid fa-arrow-right" />
                             </a>
                         </div>
@@ -158,7 +158,10 @@ export default class Login extends Component {
                                 <p id="email-error" className="text-danger"></p>
                             </div>
                             <div className="remember-forgot">
-                                <label><input type="checkbox" />Nhớ mật khẩu</label>
+                                <label>
+                                    <input type="checkbox" />
+                                    Nhớ mật khẩu
+                                </label>
                                 <a href="#">Quên mật khẩu</a>
                             </div>
                             <p id="wrong-repass" className="text-danger text-bold fw-bolder"></p>
@@ -179,7 +182,7 @@ export default class Login extends Component {
                             </div>
                             <div className="register-link">
                                 <p>
-                                    Bạn chưa có tài khoản? <a href="Register.js">Đăng ký</a>
+                                    Bạn chưa có tài khoản? <a href="/register">Đăng ký</a>
                                 </p>
                             </div>
                         </form>

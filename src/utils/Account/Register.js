@@ -1,7 +1,7 @@
 import React, { Component, createRef } from "react";
 import Footer from "../../componets/Footer";
 import axios from "axios"; // Import axios library
-import "../../css/login.css";
+import "../../css/style.css";
 export default class Register extends Component {
     constructor(props) {
         super(props);
@@ -143,6 +143,7 @@ export default class Register extends Component {
                 const token = response.data.token;
                 localStorage.setItem("token", token);
                 alert("Đăng ký thành công!");
+                window.location.href = "http://localhost:3003/login";
             }
         } catch (error) {
             console.error("An error occurred while registering:", error);
@@ -164,7 +165,7 @@ export default class Register extends Component {
     };
     render() {
         return (
-            <div>
+            <div className="form">
                 <div className="header-login-form">
                     <div className="container d-flex align-items-center justify-content-between">
                         <div className="header-login-form-left">
@@ -220,7 +221,9 @@ export default class Register extends Component {
                             </div>
                             <p id="wrong-repass" className="text-danger text-bold fw-bolder"></p>
                             <div>
-                                <button type="submit" className="btn btn-primary p-2">Đăng kí</button>
+                                <button type="submit" className="btn btn-primary p-2">
+                                    Đăng kí
+                                </button>
                             </div>
                             <div className="divider">
                                 <span>hoặc</span>

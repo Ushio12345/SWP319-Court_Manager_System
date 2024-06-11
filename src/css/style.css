@@ -1,7 +1,20 @@
-body {
-    background-color: #eeeded;
-    font-family: "Quicksand", sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
+body {
+    background-color: #eeeded !important;
+    font-family: "Quicksand", sans-serif;
+    font-weight: 500;
+}
+a {
+    text-decoration: none !important;
+}
+p {
+    margin: 0 !important;
+}
+
 .login a i {
     padding: 10px;
     border: 2px solid white;
@@ -25,6 +38,10 @@ body {
     font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
 }
 
+.banner-intro h1,
+.yard h1 {
+    color: black !important;
+}
 .button {
     background-image: linear-gradient(to right, #8360c3, #2ebf91);
     color: white;
@@ -38,7 +55,7 @@ body {
 }
 
 h1 {
-    color: #317c69;
+    color: #317c69 !important;
     font-weight: 600;
     position: relative;
 }
@@ -58,7 +75,7 @@ h1 {
     border-bottom: 3px solid #eeeded;
 }
 .header .header-top .logo {
-    width: 500px;
+    width: 450px;
 }
 .header .header-top .logo img {
     width: 150px;
@@ -75,6 +92,7 @@ h1 {
 .header .header-top .header-top-right .login a {
     padding: 10px 15px;
     margin: 0 5px;
+    color: white;
 }
 .header .header-top .header-top-right .login .user {
     width: 90px;
@@ -113,13 +131,20 @@ h1 {
     right: 0;
     transition: 10s;
 }
+.header .header-top .header-top-right .location-item ul {
+    padding: 0;
+}
 .header .header-top .header-top-right .location-item li {
     border-bottom: 1px solid grey;
     padding: 10px 20px;
+    width: 100% !important;
 }
 .header .header-top .header-top-right .location-item li:hover {
     background-color: #1f1f6a;
-    color: #eeeded;
+}
+.header .header-top .header-top-right .location-item li:hover a {
+    color: white;
+    width: 100%;
 }
 @keyframes location {
     0% {
@@ -274,7 +299,7 @@ h1 {
     transform: translateY(-50%);
 }
 .banner .banner-intro h1 {
-    color: rgb(243, 128, 86);
+    color: rgb(243, 128, 86) !important;
     font-weight: 700;
     font-size: 40px;
 }
@@ -362,7 +387,7 @@ label.star:before {
     top: 50%;
     left: 10%;
     background-color: black;
-    width: 20%;
+    width: 15%;
     height: 3px;
 }
 .yard h1::after {
@@ -371,7 +396,7 @@ label.star:before {
     top: 50%;
     right: 10%;
     background-color: black;
-    width: 20%;
+    width: 15%;
     height: 3px;
 }
 .yard .card-yard {
@@ -411,7 +436,7 @@ label.star:before {
 }
 .yard .card-yard-content a:hover {
     background-color: #1f1f6a;
-    color: #eeeded;
+    color: #eeeded !important;
     transition: 0.5s;
 }
 
@@ -566,6 +591,8 @@ label.star:before {
     color: #317c69;
     font-weight: 25px;
     font-weight: 700;
+    font-weight: 600;
+    font-size: 23px;
 }
 
 .cmt-content i {
@@ -577,11 +604,6 @@ label.star:before {
     font-weight: 800;
     font-style: italic;
     color: #4caf50;
-}
-
-.cmt h4 {
-    font-weight: 600;
-    font-size: 23px;
 }
 
 .cus-img {
@@ -612,4 +634,569 @@ label.star:before {
 .additional-options {
     display: flex;
     gap: 10px;
+}
+
+/* -----Manager------------ */
+
+img {
+    display: block;
+    width: 100%;
+}
+
+ul li {
+    list-style: none;
+}
+
+.manager .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+
+    height: 60px;
+}
+
+.manager .topbar .logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    justify-content: center;
+}
+.manager .topbar .logo .logo-img {
+    width: 150px;
+}
+.manager .topbar .logo .nameapp p {
+    margin: 0;
+    font-weight: 700;
+}
+.manager .topbar .search {
+    position: relative;
+    width: 40%;
+    height: 30px;
+}
+.manager .topbar .search i {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10px;
+}
+.manager .topbar .search input {
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding-left: 20px;
+    height: 30px;
+}
+.manager .topbar .notification .bell-icon {
+    position: relative;
+}
+.manager .topbar .notification .bell-icon i {
+    color: rgb(246, 246, 12);
+    font-size: 20px;
+}
+.manager .topbar .notification .bell-icon .number-notification {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+}
+.manager .topbar .notification .bell-icon .number-notification p {
+    color: black;
+    font-size: 12px;
+    padding: 2px 3px;
+    border-radius: 20px;
+}
+.manager .topbar .user {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    justify-content: center;
+}
+.manager .topbar .user p {
+    margin-bottom: 0;
+    margin-left: 30px;
+}
+.manager .topbar .user img {
+    width: 50px;
+    border-radius: 50%;
+}
+.manager .body-manager {
+    display: flex;
+}
+.manager .body-manager .link {
+    font-weight: 700;
+}
+.manager .body-manager .manager-right {
+    width: 80%;
+    padding: 70px;
+}
+.manager .body-manager .manager-right .dash-num {
+    margin-top: 20px;
+}
+.manager .body-manager .manager-right .dash-num .dash-num-item-left {
+    width: 50%;
+}
+.manager .body-manager .manager-right .dash-num .dash-num-item-left h3 {
+    font-size: 50px;
+}
+.manager .body-manager .manager-right .dash-num .dash-num-item-left p {
+    font-size: 12px;
+}
+.manager .body-manager .manager-right .dash-num .dash-num-item-icon i {
+    font-size: 50px;
+}
+.manager .body-manager .manager-right .dash-num .dash-num-item {
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 150px;
+    box-shadow: rgba(0, 0, 0, 0.47) 0px 5px 15px 0px;
+}
+.manager .body-manager .manager-right .dash-num .dash-num-item:first-child {
+    background-color: rgb(231, 38, 38);
+}
+.manager .body-manager .manager-right .dash-num .dash-num-item:nth-child(2) {
+    background-color: green;
+}
+.manager .body-manager .manager-right .dash-num .dash-num-item:nth-child(3) {
+    background-color: rgb(245, 175, 23);
+}
+.manager .body-manager .manager-right .dash-num .dash-num-item:last-child {
+    background-color: #183135;
+}
+.manager .body-manager .manager-right .char {
+    margin: 40px 0;
+    background-color: #f5f5f5;
+    height: 500px;
+}
+.manager .body-manager .manager-left {
+    padding: 20px 0;
+    width: 20%;
+    background-color: black;
+}
+.manager .body-manager .manager-left .manager-left-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 70px;
+    margin-bottom: 40px;
+}
+.manager .body-manager .manager-left .list-option ul li {
+    margin-bottom: 20px;
+    background-color: black;
+    width: 100%;
+    height: 70px;
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.manager .body-manager .manager-left .list-option ul li:hover {
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background-color: white;
+    transition: 0.5s;
+}
+
+.manager .body-manager .manager-left .list-option ul li:hover span {
+    color: #1f1f6a;
+}
+
+.manager .body-manager .manager-left .list-option ul li i {
+    margin-right: 20px;
+    color: #fff;
+}
+
+.manager .body-manager .manager-left .list-option ul li:hover i {
+    color: #1f1f6a;
+}
+
+.manager .body-manager .manager-left .list-option ul li a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    justify-content: left;
+    color: white;
+    width: 100%;
+    text-align: left;
+}
+.manager .body-manager .manager-left .list-option ul li a .icon {
+    margin-right: 10px;
+}
+.manager .body-manager .manager-left .list-option ul li a span {
+    color: white;
+}
+.manager .body-manager .manager-left .list-option ul li .nav-link.active {
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background-color: #f5f5f5;
+    width: 100%;
+    padding: 20px;
+}
+.manager .body-manager .manager-left .list-option ul li .nav-link.active span i,
+.manager .body-manager .manager-left .list-option ul li .nav-link.active span {
+    color: black;
+}
+
+.manager td i {
+    font-size: 25px;
+    width: 100%;
+    margin: 0 auto;
+}
+.manager th {
+    text-align: center;
+}
+.manager .icon-detail {
+    width: 100%;
+    margin: auto;
+}
+.manager .icon-detail:hover {
+    color: orange;
+}
+
+.footer-manager p {
+    margin: 0;
+    font-weight: 600;
+}
+.login {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    margin: 0 5px;
+    justify-content: flex-end;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    width: auto;
+    border-radius: 50%;
+    margin-left: 10px;
+    margin-right: 10px;
+    order: 2;
+}
+.user img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.user-name {
+    font-weight: 700;
+    margin-right: 10px;
+    margin-bottom: 0rem;
+    display: flex;
+    align-items: center;
+    order: 2;
+}
+
+.logout {
+    display: flex;
+    align-items: center;
+    background-color: #4334aa;
+    font-size: inherit;
+    margin-left: 10px;
+    order: 2;
+
+    border-radius: 10px;
+    padding: 10px 0;
+    color: white;
+
+    justify-content: center;
+}
+
+.manager .topbar .select-branch {
+    border-radius: 10px;
+    padding: 5px 10px;
+    margin-left: 20px;
+    background-color: aliceblue;
+    color: black;
+}
+.manager .topbar .select-branch select {
+    background-color: aliceblue;
+}
+.CoSobutton {
+    padding: 10px 20px;
+    border-radius: 5px;
+    width: 140px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.select-month {
+    padding: 10px 20px;
+    border-radius: 5px;
+    width: 130px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.status {
+    display: flex;
+
+    border-radius: 4px;
+
+    padding: 10px 0;
+    margin: 10px 0 30px 0;
+    width: 60%;
+    justify-content: space-between;
+}
+.status a:hover {
+    color: #1f1f6a;
+}
+
+.status .nav-link {
+    position: relative;
+    color: rgb(52, 58, 64);
+
+    font-weight: 700;
+    padding: 10px;
+
+    border-radius: 10px;
+}
+
+.status .nav-link:hover,
+.status .nav-link.active {
+    color: blue;
+    text-decoration: none;
+}
+
+.status .nav-link::before {
+    position: absolute;
+    content: "";
+    width: 0%;
+    height: 3px;
+    background-color: #4334aa;
+    left: 0;
+    bottom: -10px;
+    transition: 0.5s;
+}
+
+.status .nav-link:hover::before {
+    width: 100%;
+}
+.btn-select select {
+    word-wrap: normal;
+    height: 40px;
+    width: 200px;
+    background-color: #f5f5f5;
+    margin-right: 10px;
+    border: 1px solid black;
+    padding-left: 5px;
+    border-radius: 10px;
+}
+
+.logout:hover {
+    background-color: green;
+    text-decoration: none;
+    color: white;
+}
+.icon {
+    margin-right: 15px;
+}
+
+#dsYard .location select,
+#dsYard .input-group {
+    width: 100%;
+    height: 40px;
+    padding-left: 20px;
+}
+.input-group {
+    position: relative;
+}
+.input-group-append {
+    height: 40px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.input-group-append span {
+    height: 100%;
+}
+#dsYard .location select {
+    background-color: rgb(241, 240, 240);
+}
+.change-yard .nav {
+    background-color: #f5f5f5;
+}
+.footer-Manager {
+    background-color: #f6f8fa;
+    display: flex;
+    align-items: center;
+    padding: 30px 10px;
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding-left: 50px;
+}
+.footer-Manager p {
+    margin: 0;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+thead {
+    background-color: #183135;
+}
+th {
+    background-color: rgb(70, 69, 69) !important;
+    color: white !important;
+}
+
+.topbar,
+.footer-Manager {
+    background-color: #f5f5f5;
+    box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+    color: black !important;
+}
+.body-manager {
+    background-color: rgb(255, 251, 251);
+}
+table {
+    table-layout: auto;
+}
+
+/* login */
+
+.form {
+    background-image: url("../../public/asserts/img/4a331c1398d3d7a67ecba739d2e8bb43.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+form h1 {
+    color: white !important;
+}
+
+.form a:hover {
+    text-decoration: none;
+    color: blue;
+}
+
+.header-login-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 auto;
+    background-color: rgba(46, 51, 48, 0.7882352941);
+    color: white;
+}
+.header-login-form .header-login-form-left {
+    display: flex;
+    align-items: center;
+}
+.header-login-form .header-login-form-left .logo-header-login {
+    width: 20%;
+}
+.header-login-form .header-login-form-left .name-page p {
+    font-size: 22px;
+}
+.header-login-form .header-login-form-right a {
+    color: white;
+    font-size: 20px;
+}
+.header-login-form .header-login-form-right a:hover {
+    color: orange;
+}
+
+.login-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    margin: 70px auto;
+    text-align: center;
+    color: aliceblue;
+    width: 50%;
+    background: transparent;
+    border: 2px solid rgba(189, 185, 185, 0.378);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    padding: 20px;
+    border-top-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    display: flex;
+    align-items: center;
+}
+.login-form .login-right {
+    width: 50%;
+}
+.login-form .login-left {
+    width: 50%;
+}
+.login-form .login-left img {
+    width: 100%;
+    height: 400px;
+}
+
+.login-form .input-box {
+    width: 100%;
+    height: 50px;
+    margin: 20px 0;
+}
+
+.input-box {
+    position: relative;
+}
+.input-box input {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid aliceblue;
+    color: white;
+}
+
+.input-box input::placeholder {
+    color: aliceblue;
+}
+.input-box i {
+    position: absolute;
+    right: 10px;
+    top: 30%;
+    transform: translateX(-50%);
+    font-size: 20px;
+}
+
+.remember-forgot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 17px;
+}
+
+.btn {
+    width: 100%;
+    padding: 20px 0 0;
+}
+.btn button {
+    width: 100%;
+    border-radius: 20px;
+    height: 40px;
+    border: none;
+    background-color: #1f1f6a;
+    color: #1f1f6a;
+    margin: 10px 0;
+    color: #f5f5f5;
+}
+.btn button:hover {
+    transition: 0.3s;
+    background-color: #227b9e;
+}
+
+.register-link {
+    margin-top: 15px;
 }

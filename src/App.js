@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import GuestPage from "./page/guest/GuestPage";
+import Login from "./utils/Login";
 import Register from "./utils/Account/Register";
 import Login from "./utils/Login";
 import GuestPage from "./page/guest/GuestPage";
@@ -10,10 +12,11 @@ function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/home" element={<GuestPage />} />
+                <Route path="/" element={<GuestPage />} />
+
+                <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/" element={<Register />} />
-                {/* <Route path="/role-selection" element={<RoleSelection />} /> */}
+                <Route path="/court_manager" element={<CourtManager />} />
             </Routes>
         </Router>
     );

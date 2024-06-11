@@ -44,7 +44,7 @@ export default class Header extends Component {
                                         <img src="asserts/img/download (user).jpg" alt />
                                     </a>
                                     <p className="user-name">Ushio</p>
-                                    <a href="Guest.html" className="logout">
+                                    <a href="/login" className="logout">
                                         Đăng xuất
                                     </a>
                                 </div>

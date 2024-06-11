@@ -6,7 +6,7 @@ export default class CardYard extends Component {
             <div>
                 <div className="card-yard">
                     <div className="card-yard-img">
-                        <img src="asserts/img/download.jpg" alt />
+                        <img src="asserts/img/download.jpg" alt="Ảnh Sân" />
                     </div>
                     <div className="card-yard-content">
                         <p>Tên sân:</p>
