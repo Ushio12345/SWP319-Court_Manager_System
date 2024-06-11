@@ -106,14 +106,14 @@ export default class Register extends Component {
         }
 
         async function checkEmailExists(email) {
-            fetch("http://localhost:8080/forbad/auth/signup")
+            fetch("http://167.99.67.127:8080/forbad/auth/signup")
                 .then((response) => response.json())
                 .then((data) => console.log(data))
                 .catch((error) => console.error("Error:", error));
 
             try {
                 const response = await axios.post(
-                    `http://localhost:8080/forbad/auth/signup?email=${email}`
+                    `http://167.99.67.127:8080/forbad/auth/signup?email=${email}`
                 );
                 return response.data.length > 0;
             } catch (error) {
@@ -128,7 +128,7 @@ export default class Register extends Component {
                 alert("Email đã tồn tại trong hệ thống. Vui lòng sử dụng một địa chỉ email khác.");
                 return;
             }
-            const response = await axios.post("http://localhost:8080/forbad/auth/signup", {
+            const response = await axios.post("http://167.99.67.127:8080/forbad/auth/signup", {
                 email,
                 phoneNumber,
                 password,
@@ -154,7 +154,7 @@ export default class Register extends Component {
         }
     };
     login_google = async (event) => {
-        fetch("http://localhost:8080/forbad/auth/google")
+        fetch("http://167.99.67.127:8080/forbad/auth/google")
             .then((response) => response.json())
             .then((data) => {
                 // Redirect to the Google login URL
@@ -242,7 +242,7 @@ export default class Register extends Component {
                             </div>
                             <div className="register-link">
                                 <p>
-                                    Bạn đã có tài khoản? <a href="login.html">Đăng nhập</a>
+                                    Bạn đã có tài khoản? <a href="/login">Đăng nhập</a>
                                 </p>
                             </div>
                         </form>

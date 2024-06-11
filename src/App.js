@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Register from "./utils/Account/Register";
 import Login from "./utils/Login";
 import GuestPage from "./page/guest/GuestPage";
+import RoleSelection from "./utils/Account/RoleSelection";
 
 
 function App() {
@@ -10,8 +11,9 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/home" element={<GuestPage />} />
-                <Route path="/" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/" element={<Register />} />
+                {/* <Route path="/role-selection" element={<RoleSelection />} /> */}
             </Routes>
         </Router>
     );
