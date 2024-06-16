@@ -1,11 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import GuestPage from "./page/guest/GuestPage";
-import Login from "./utils/Login";
-import Register from "./utils/Account/Register";
-import Login from "./utils/Login";
-import GuestPage from "./page/guest/GuestPage";
-import RoleSelection from "./utils/Account/RoleSelection";
+import GuestPage from "./pages/guest";
+import Login from "./pages/login";
+import Register from "./pages/register";
+import RoleSelector from "./pages/role-selection";
 
 
 function App() {
@@ -13,10 +11,9 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<GuestPage />} />
-
-                <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/court_manager" element={<CourtManager />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/role-selector" element={<RoleSelector />} />
             </Routes>
         </Router>
     );

@@ -87,12 +87,12 @@ h1 {
 }
 .header .header-top .header-top-right .login {
     display: flex;
-    align-items: center;
 }
 .header .header-top .header-top-right .login a {
     padding: 10px 15px;
-    margin: 0 5px;
+    margin: 0 10px;
     color: white;
+    width: 110px;
 }
 .header .header-top .header-top-right .login .user {
     width: 90px;
@@ -307,8 +307,7 @@ h1 {
     margin: 20px 0;
     line-height: 30px;
     color: white;
-    font-weight: 600;
-    font-size: 12px;
+    font-size: 25px;
 }
 .banner .banner-intro span {
     color: #3dd9e9;
@@ -911,6 +910,11 @@ ul li {
     color: white;
 
     justify-content: center;
+}
+
+.auth-buttons {
+    display: flex;
+    margin-left: 50px;
 }
 
 .manager .topbar .select-branch {

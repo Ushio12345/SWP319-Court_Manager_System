@@ -1,7 +1,7 @@
 import React, { Component, createRef } from "react";
-import Footer from "../../componets/Footer";
+import Footer from "./Footer";
 import axios from "axios"; // Import axios library
-import "../../css/style.css";
+import "./css/style.css";
 export default class Register extends Component {
     constructor(props) {
         super(props);
