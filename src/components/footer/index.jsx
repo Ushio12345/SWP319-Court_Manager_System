@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import "../css/style.css";
-import logo from "../asserts/img/logo-cau-long-dep-01.png";
+import logo from '../../assets/images/forbad_logo.png';
+import '../footer/index.css';
+import '../../App.css';
 
-export default class extends Component {
+export default class Footer extends Component {
     render() {
         return (
             <div>

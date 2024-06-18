@@ -1,7 +1,7 @@
 import React, { Component, createRef } from "react";
-import Footer from "../../componets/Footer";
+import Footer from "./Footer";
 import axios from "axios"; // Import axios library
-import "../../css/style.css";
+import "./css/style.css";
 export default class Register extends Component {
     constructor(props) {
         super(props);
@@ -106,13 +106,15 @@ export default class Register extends Component {
         }
 
         async function checkEmailExists(email) {
-            fetch("http://localhost:8080/forbad/auth/signup")
+            fetch("http://167.99.67.127:8080/forbad/auth/signup")
                 .then((response) => response.json())
                 .then((data) => console.log(data))
                 .catch((error) => console.error("Error:", error));
 
             try {
-                const response = await axios.post(`http://localhost:8080/forbad/auth/signup?email=${email}`);
+                const response = await axios.post(
+                    `http://167.99.67.127:8080/forbad/auth/signup?email=${email}`
+                );
                 return response.data.length > 0;
             } catch (error) {
                 console.error("Error while checking email existence:", error);
@@ -126,7 +128,7 @@ export default class Register extends Component {
                 alert("Email đã tồn tại trong hệ thống. Vui lòng sử dụng một địa chỉ email khác.");
                 return;
             }
-            const response = await axios.post("http://localhost:8080/forbad/auth/signup", {
+            const response = await axios.post("http://167.99.67.127:8080/forbad/auth/signup", {
                 email,
                 phoneNumber,
                 password,
@@ -153,7 +155,7 @@ export default class Register extends Component {
         }
     };
     login_google = async (event) => {
-        fetch("http://localhost:8080/forbad/auth/google")
+        fetch("http://167.99.67.127:8080/forbad/auth/google")
             .then((response) => response.json())
             .then((data) => {
                 // Redirect to the Google login URL
