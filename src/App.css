@@ -1,78 +1,40 @@
 /* Global Styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-body {
-    background-color: #eeeded !important;
-    font-family: "Roboto", Arial, sans-serif;
-    font-weight: 500;
-}
-a {
-    text-decoration: none !important;
-}
-p {
-    margin: 0 !important;
-}
-
-/* alert.css */
-.alert {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #fff;
-  border: 1px solid #ccc;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  max-width: 400px;
-  width: 100%;
-  text-align: center;
-  z-index: 1000;
-  display: none;
-}
-
-.alert.success {
-  background-color: #dff0d8;
-  border-color: #d0e9c6;
-  color: #3c763d;
-}
-
-.alert.error {
-  background-color: #f2dede;
-  border-color: #ebccd1;
-  color: #a94442;
-}
-
-.alert.show {
-  display: block;
-  animation: slideUp 0.3s ease-in-out;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translate(-50%, 50%);
-  }
-  to {
-    transform: translate(-50%, -50%);
-  }
-}
-
-.alert p {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.alert button {
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: #fff;
-  border-radius: 4px;
+body {
+  background-color: #eeeded !important;
+  font-family: "Roboto", Arial, sans-serif;
+  font-weight: 500;
 }
 
-.alert button:hover {
-  background-color: #0056b3;
+a {
+  text-decoration: none !important;
 }
 
+p {
+  margin: 0 !important;
+}
+
+/* Định nghĩa lại màu nền và màu chữ cho thông báo lỗi */
+.swal2-popup-error {
+  background-color: #c10918bd !important;
+  /* Màu nền đỏ */
+  color: #ffffff !important;
+  /* Màu chữ tối */
+  border-color: #f5c6cb !important;
+  /* Màu viền */
+}
+
+/* Định nghĩa lại màu nền và màu chữ cho thông báo thành công */
+.swal2-popup-success {
+  background-color: #0c932c !important;
+  /* Màu nền xanh nhạt */
+  color: #ffffff !important;
+  /* Màu chữ */
+  border-color: #c3e6cb !important;
+  /* Màu viền */
+}

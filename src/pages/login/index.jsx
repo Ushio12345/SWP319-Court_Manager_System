@@ -65,7 +65,10 @@ const Login = () => {
                         timerProgressBar: true, // Thanh tiến độ thời gian
                         showConfirmButton: false, // Không hiển thị nút OK
                         position: 'top-end', // Đặt vị trí thông báo ở góc trên bên phải
-                        toast: true // Thêm tính năng toast để thông báo tự đóng
+                        toast: true, // Thêm tính năng toast để thông báo tự đóng
+                        customClass: {
+                            popup: 'swal2-popup-error' // Sử dụng lớp CSS tạo thông báo màu đỏ
+                        }
                     });
                 }
             })
@@ -106,7 +109,10 @@ const Login = () => {
                         timerProgressBar: true, // Thanh tiến độ thời gian
                         showConfirmButton: false, // Không hiển thị nút OK
                         position: 'top-end', // Đặt vị trí thông báo ở góc trên bên phải
-                        toast: true // Thêm tính năng toast để thông báo tự đóng
+                        toast: true, // Thêm tính năng toast để thông báo tự đóng
+                        customClass: {
+                            popup: 'swal2-popup-error' // Sử dụng lớp CSS tạo thông báo màu đỏ
+                        }
                     });
                 }
             })
@@ -122,7 +128,10 @@ const Login = () => {
                         timerProgressBar: true, // Thanh tiến độ thời gian
                         showConfirmButton: false, // Không hiển thị nút OK
                         position: 'top-end', // Đặt vị trí thông báo ở góc trên bên phải
-                        toast: true // Thêm tính năng toast để thông báo tự đóng
+                        toast: true, // Thêm tính năng toast để thông báo tự đóng
+                        customClass: {
+                            popup: 'swal2-popup-error' // Sử dụng lớp CSS tạo thông báo màu đỏ
+                        }
                     });
                 }
             })
@@ -157,7 +166,10 @@ const Login = () => {
                         timerProgressBar: true, // Thanh tiến độ thời gian
                         showConfirmButton: false, // Không hiển thị nút OK
                         position: 'top-end', // Đặt vị trí thông báo ở góc trên bên phải
-                        toast: true // Thêm tính năng toast để thông báo tự đóng    
+                        toast: true, // Thêm tính năng toast để thông báo tự đóng    
+                        customClass: {
+                            popup: 'swal2-popup-error' // Sử dụng lớp CSS tạo thông báo màu đỏ
+                        }
                     });
                 }
 
