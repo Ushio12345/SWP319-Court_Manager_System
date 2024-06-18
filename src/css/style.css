@@ -1200,3 +1200,8 @@ form h1 {
 .register-link {
     margin-top: 15px;
 }
+.YardComponent select {
+    background-color: rgb(197, 194, 194);
+    color: black;
+    font-weight: 500;
+}

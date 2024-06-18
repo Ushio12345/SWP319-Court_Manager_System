@@ -6,6 +6,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import Court from "./Court";
 import Staff from "./Staff";
 import Order from "./Order";
+import Yard from "./Yard";
 
 export default class CourtManager extends Component {
     render() {
@@ -168,8 +169,9 @@ export default class CourtManager extends Component {
                                 </div>
 
                                 {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
-
-                                {/* yard */}
+                                <div className="tab-pane fade" id="dsYard" role="tabpanel">
+                                    <Yard />
+                                </div>
                             </div>
                         </div>
                     </div>

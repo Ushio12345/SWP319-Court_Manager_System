@@ -5,15 +5,13 @@ export default class extends Component {
     state = {
         courts: [],
         newCourt: {
-            court_id: "",
             court_name: "",
             address: "",
             open_time: "",
             close_time: "",
-            numberOfCourt: "",
+
             rate: "",
             user_id: "",
-            imgURL: "",
         },
         isDetailView: false,
         showAlert: false,
@@ -27,7 +25,7 @@ export default class extends Component {
 
     fetchCourts = () => {
         axios
-            .get("http://localhost:3000/court")
+            .get("http://localhost:3001/court")
             .then((res) => {
                 this.setState({ courts: res.data });
             })
@@ -57,18 +55,18 @@ export default class extends Component {
 
     handleAddCourt = () => {
         axios
-            .post("http://localhost:3000/court", this.state.newCourt)
+            .post("http://localhost:3001/court", this.state.newCourt)
             .then(() => {
                 this.fetchCourts();
                 this.setState({
                     newCourt: {
-                        court_id: "",
                         court_name: "",
                         address: "",
                         open_time: "",
                         close_time: "",
-                        numberOfCourt: "",
-                        imgURL: "",
+
+                        rate: "",
+                        user_id: "",
                     },
                     showAlert: true,
                     alertMessage: "Thêm cơ sở thành công!",
@@ -83,7 +81,7 @@ export default class extends Component {
     handleDeleteCourt = (id) => {
         if (window.confirm("Bạn có chắc chắn muốn xóa cơ sở này?")) {
             axios
-                .delete(`http://localhost:3000/court/${id}`)
+                .delete(`http://localhost:3001/court/${id}`)
                 .then(() => {
                     this.fetchCourts();
                     this.setState({
@@ -101,7 +99,7 @@ export default class extends Component {
     handleUpdateCourt = () => {
         const { id, ...updatedCourt } = this.state.newCourt;
         axios
-            .put(`http://localhost:3000/court/${id}`, updatedCourt)
+            .put(`http://localhost:3001/court/${id}`, updatedCourt)
             .then(() => {
                 this.fetchCourts();
                 this.setState({
@@ -145,13 +143,11 @@ export default class extends Component {
                                         <img src={this.state.newCourt.imgURL} alt="Court Image" className="img-fluid" />
                                     </div>
                                     <div className="col-md-6">
-                                        <h1>{this.state.newCourt.court_name}</h1>
+                                        <h4>{this.state.newCourt.court_name}</h4>
                                         <p>
                                             <strong>Mã cơ sở:</strong> {this.state.newCourt.id}
                                         </p>
-                                        <p>
-                                            <strong>Tên cơ sở:</strong> {this.state.newCourt.court_name}
-                                        </p>
+
                                         <p>
                                             <strong>Địa chỉ:</strong> {this.state.newCourt.address}
                                         </p>
@@ -186,15 +182,13 @@ export default class extends Component {
                             onClick={() =>
                                 this.setState({
                                     newCourt: {
-                                        court_id: "",
                                         court_name: "",
                                         address: "",
                                         open_time: "",
                                         close_time: "",
-                                        numberOfCourt: "",
+
                                         rate: "",
                                         user_id: "",
-                                        imgURL: "",
                                     },
                                     isDetailView: false,
                                 })
