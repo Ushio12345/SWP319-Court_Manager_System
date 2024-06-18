@@ -21,7 +21,7 @@ export default class Staff extends Component {
 
     fetchStaffList = () => {
         axios
-            .get("http://localhost:3000/staff")
+            .get("http://localhost:3001/staff")
             .then((res) => {
                 this.setState({ StaffList: res.data });
             })
@@ -53,7 +53,7 @@ export default class Staff extends Component {
 
     handleAddStaff = () => {
         axios
-            .post("http://localhost:3000/staff", this.state.newStaff)
+            .post("http://localhost:3001/staff", this.state.newStaff)
             .then(() => {
                 this.fetchStaffList();
                 this.setState({
@@ -77,7 +77,7 @@ export default class Staff extends Component {
     handleDeleteStaff = (id) => {
         if (window.confirm("Bạn có muốn xóa nhân viên này không?")) {
             axios
-                .delete(`http://localhost:3000/staff/${id}`)
+                .delete(`http://localhost:3001/staff/${id}`)
                 .then(() => {
                     this.fetchStaffList();
                     this.setState({
@@ -95,7 +95,7 @@ export default class Staff extends Component {
     handleUpdatetaff = () => {
         const { id, ...updateStaff } = this.state.newStaff;
         axios
-            .put(`http://localhost:3000/staff/${id}`, updateStaff)
+            .put(`http://localhost:3001/staff/${id}`, updateStaff)
             .then(() => {
                 this.fetchStaffList();
                 this.setState({
@@ -139,16 +139,14 @@ export default class Staff extends Component {
                                         <img src={this.state.newStaff.profile_picture} alt="User Image" className="img-fluid" />
                                     </div>
                                     <div className="col-md-6">
-                                        <h1>Thông tin cơ bản</h1>
+                                        <h4>{this.state.newStaff.full_name}</h4>
                                         <p>
                                             <strong>Mã nhân viên:</strong> {this.state.newStaff.id}
                                         </p>
                                         <p>
                                             <strong>Mã cơ sở:</strong> {this.state.newStaff.court_id}
                                         </p>
-                                        <p>
-                                            <strong>Họ và tên:</strong> {this.state.newStaff.full_name}
-                                        </p>
+
                                         <p>
                                             <strong>Số điện thoại:</strong> {this.state.newStaff.phone_number}
                                         </p>
@@ -321,17 +319,6 @@ export default class Staff extends Component {
                                     />
                                 </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="profile_picture">Ảnh chân dung</label>
-                                    <input
-                                        id="profile_picture"
-                                        name="profile_picture"
-                                        type="file"
-                                        className="form-control"
-                                        readOnly={this.state.isDetailView}
-                                        onChange={this.handleInputChange}
-                                    ></input>
-                                </div>
                                 <div className="modal-footer">
                                     {!this.state.isDetailView && (
                                         <div className="d-flex w-100">
@@ -410,17 +397,6 @@ export default class Staff extends Component {
                                     />
                                 </div>
 
-                                <div className="form-group">
-                                    <label htmlFor="profile_picture">Ảnh chân dung</label>
-                                    <input
-                                        id="profile_picture"
-                                        name="profile_picture"
-                                        type="file"
-                                        className="form-control"
-                                        readOnly={this.state.isDetailView}
-                                        onChange={this.handleInputChange}
-                                    ></input>
-                                </div>
                                 <div className="modal-footer">
                                     {!this.state.isDetailView && (
                                         <div className="d-flex w-100">
