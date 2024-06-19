@@ -100,5 +100,25 @@
             "yard_name": "",
             "slot": []
         }
+    ],
+    "order": [
+        {
+            "booking_id": "B001",
+            "user_id": "C001",
+            "booking_type": "Cố định",
+            "booking_date": "14-5-2003",
+            "discount": "",
+            "total_price": "790.000",
+            "status": "Delay"
+        },
+        {
+            "booking_id": "B002",
+            "user_id": "C002",
+            "booking_type": "Ngày",
+            "booking_date": "16-5-2003",
+            "discount": "",
+            "total_price": "70.000",
+            "status": "Chờ check in"
+        }
     ]
 }
