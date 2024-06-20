@@ -5,8 +5,9 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 
 import Court from "./Court";
 import Staff from "./Staff";
-import Order from "./Order";
+// import Order from "./Order";
 import Yard from "./Yard";
+import Services from "./Services";
 
 export default class CourtManager extends Component {
     render() {
@@ -95,6 +96,14 @@ export default class CourtManager extends Component {
                                             <span className="title">Quản lý Sân</span>
                                         </a>
                                     </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#dsServices" data-bs-toggle="tab">
+                                            <span className="icon">
+                                                <i class="fa-solid fa-mug-saucer"></i>
+                                            </span>
+                                            <span className="title">Quản lý tiện ích sân</span>
+                                        </a>
+                                    </li>
                                     <a className="w-75 logout m-auto " href="/login">
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
@@ -150,9 +159,9 @@ export default class CourtManager extends Component {
                                     </div>
                                 </div>
 
-                                <div className="tab-pane fade" id="dsOrder" role="tabpanel">
+                                {/* <div className="tab-pane fade" id="dsOrder" role="tabpanel">
                                     <Order />
-                                </div>
+                                </div> */}
 
                                 {/* ----------------------Coso------------------------------------- */}
 
@@ -171,6 +180,9 @@ export default class CourtManager extends Component {
                                 {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
                                 <div className="tab-pane fade" id="dsYard" role="tabpanel">
                                     <Yard />
+                                </div>
+                                <div className="tab-pane fade" id="dsServices" role="tabpanel">
+                                    <Services />
                                 </div>
                             </div>
                         </div>

@@ -115,6 +115,10 @@ export default class Slot extends Component {
         });
     };
 
+    handleSelectSlot = (slotName) => {
+        this.props.onSlotSelect(slotName);
+    };
+
     renderSlots = () => {
         return this.state.Slots.map((slot, index) => (
             <tr key={slot.id}>
@@ -124,7 +128,7 @@ export default class Slot extends Component {
                     {slot.start_time} - {slot.end_time}
                 </td>
                 <td className="text-center">{slot.price}</td>
-                <td className="d-flex " style={{ justifyContent: "space-between" }}>
+                <td className="d-flex btn-action" style={{ justifyContent: "space-between" }}>
                     <button className="btn btn-warning mr-2" data-bs-toggle="modal" data-bs-target="#updateSlot">
                         <i
                             className="fa fa-pen-to-square"

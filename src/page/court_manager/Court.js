@@ -233,7 +233,7 @@ export default class extends Component {
                         </thead>
                         <tbody>
                             {this.state.courts.map((court, index) => (
-                                <tr key={court.id}>
+                                <tr className="" key={court.id} style={{}}>
                                     <td className="text-center">{index + 1}</td>
                                     <td className="text-center">{court.id}</td>
                                     <td className="text-start">{court.court_name}</td>
@@ -241,7 +241,7 @@ export default class extends Component {
                                     <td className="text-center">{`${court.open_time} - ${court.close_time}`}</td>
                                     <td className="text-center">{court.numberOfCourt}</td>
                                     <td className="text-center">4/5</td>
-                                    <td className="d-flex">
+                                    <td className="d-flex btn-action ">
                                         <button
                                             className="btn btn-info mr-2"
                                             data-bs-toggle="modal"
