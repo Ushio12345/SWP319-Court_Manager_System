@@ -231,7 +231,7 @@ export default class Staff extends Component {
                                     <td>{staff.email}</td>
                                     <td className="d-flex">
                                         <button
-                                            className="btn btn-info mr-2"
+                                            className="btn btn-info mr-2 btn-action"
                                             data-bs-toggle="modal"
                                             data-bs-target="#detailStaff"
                                             onClick={() => this.setState({ newStaff: staff, isDetailView: true })}
