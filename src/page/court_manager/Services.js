@@ -48,28 +48,26 @@ export default class Services extends Component {
     handleCheckboxChange = (event) => {
         const serviceId = event.target.id;
         this.setState((prevState) => {
+            let selectedServices;
             if (prevState.selectedServices.includes(serviceId)) {
-                return {
-                    selectedServices: prevState.selectedServices.filter((id) => id !== serviceId),
-                };
+                selectedServices = prevState.selectedServices.filter((id) => id !== serviceId);
             } else {
-                return {
-                    selectedServices: [...prevState.selectedServices, serviceId],
-                };
+                selectedServices = [...prevState.selectedServices, serviceId];
             }
+            localStorage.setItem(`selectedServices_${prevState.selectedCourt}`, JSON.stringify(selectedServices));
+            return { selectedServices };
         });
     };
 
     handleCourtChange = (event) => {
         const selectedCourtId = event.target.value;
         const selectedCourt = this.state.courts.find((court) => court.id === selectedCourtId);
+        const selectedServices = JSON.parse(localStorage.getItem(`selectedServices_${selectedCourtId}`)) || [];
         this.setState({
             selectedCourt: selectedCourtId,
             selectedCourtName: selectedCourt ? selectedCourt.court_name : "",
+            selectedServices,
         });
-        if (selectedCourt == "") {
-            return "Bạn chưa chọn cơ sở.";
-        }
     };
 
     getValueServices = () => {
@@ -83,19 +81,14 @@ export default class Services extends Component {
 
         return (
             <ul className="">
-                <li className="">
-                    {this.state.selectedServices.map((serviceId) => {
-                        const service = this.state.Services.find((ser) => ser.id === serviceId);
-                        return (
-                            <div className="d-flex align-items-center ">
-                                <i className={service.servicesIcon}></i>{" "}
-                                <li key={serviceId} className="ms-3">
-                                    {service?.servicesName}
-                                </li>
-                            </div>
-                        );
-                    })}
-                </li>
+                {this.state.selectedServices.map((serviceId) => {
+                    const service = this.state.Services.find((ser) => ser.id === serviceId);
+                    return (
+                        <div key={serviceId} className="d-flex align-items-center">
+                            <i className={service.servicesIcon}></i> <li className="ms-3">{service?.servicesName}</li>
+                        </div>
+                    );
+                })}
             </ul>
         );
     };
@@ -120,7 +113,14 @@ export default class Services extends Component {
                     </p>
                 </div>
                 <div>
-                    <input type="checkbox" className="selectedService" id={ser.id} name={ser.id} onChange={this.handleCheckboxChange} />
+                    <input
+                        type="checkbox"
+                        className="selectedService"
+                        id={ser.id}
+                        name={ser.id}
+                        checked={this.state.selectedServices.includes(ser.id)}
+                        onChange={this.handleCheckboxChange}
+                    />
                 </div>
             </div>
         ));

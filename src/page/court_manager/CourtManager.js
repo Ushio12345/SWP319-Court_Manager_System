@@ -5,9 +5,10 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 
 import Court from "./Court";
 import Staff from "./Staff";
-// import Order from "./Order";
+
 import Yard from "./Yard";
 import Services from "./Services";
+import Order from "./Order";
 
 export default class CourtManager extends Component {
     render() {
@@ -159,14 +160,13 @@ export default class CourtManager extends Component {
                                     </div>
                                 </div>
 
-                                {/* <div className="tab-pane fade" id="dsOrder" role="tabpanel">
-                                    <Order />
-                                </div> */}
-
                                 {/* ----------------------Coso------------------------------------- */}
 
                                 <div className="tab-pane fade " id="dsCoSo" role="tabpanel">
                                     <Court />
+                                </div>
+                                <div className="tab-pane fade " id="dsOrder" role="tabpanel">
+                                    <Order />
                                 </div>
 
                                 {/* ---------------------------------------kết thúc COw so------------------------------------------------- */}
