@@ -63,8 +63,7 @@
             "id": "e438"
         }
     ],
-
-    "slot ": [
+    "slot": [
         {
             "id": "s1",
             "slot_name": "Slot 1",
@@ -78,6 +77,28 @@
             "start_time": "8:00",
             "end_time": "9:00",
             "price": 75000
+        },
+        {
+            "id": "s2",
+            "slot_name": "Slot 3",
+            "start_time": "9:00",
+            "end_time": "10:00",
+            "price": 75000
+        },
+        {
+            "id": "",
+            "slot_name": "Slot 4",
+            "start_time": "10:00",
+            "end_time": "11:00",
+            "price": "70000",
+            "court_id": ""
+        }
+    ],
+    "yard": [
+        {
+            "court_id": "",
+            "yard_name": "",
+            "slot": []
         }
     ]
 }

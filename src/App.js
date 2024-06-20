@@ -5,7 +5,6 @@ import Login from "./pages/login";
 import Register from "./pages/register";
 import RoleSelector from "./pages/role-selection";
 
-
 function App() {
     return (
         <Router>
