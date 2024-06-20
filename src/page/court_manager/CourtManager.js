@@ -9,6 +9,7 @@ import Staff from "./Staff";
 import Yard from "./Yard";
 import Services from "./Services";
 import Order from "./Order";
+import Slot from "./Slot";
 
 export default class CourtManager extends Component {
     render() {
@@ -98,6 +99,14 @@ export default class CourtManager extends Component {
                                         </a>
                                     </li>
                                     <li className="nav-item">
+                                        <a className="nav-link" href="#dsSlot" data-bs-toggle="tab">
+                                            <span className="icon">
+                                                <i class="fa-solid fa-clock"></i>
+                                            </span>
+                                            <span className="title">Quản lý Slot</span>
+                                        </a>
+                                    </li>
+                                    <li className="nav-item">
                                         <a className="nav-link" href="#dsServices" data-bs-toggle="tab">
                                             <span className="icon">
                                                 <i class="fa-solid fa-mug-saucer"></i>
@@ -183,6 +192,9 @@ export default class CourtManager extends Component {
                                 </div>
                                 <div className="tab-pane fade" id="dsServices" role="tabpanel">
                                     <Services />
+                                </div>
+                                <div className="tab-pane fade" id="dsSlot" role="tabpanel">
+                                    <Slot />
                                 </div>
                             </div>
                         </div>
