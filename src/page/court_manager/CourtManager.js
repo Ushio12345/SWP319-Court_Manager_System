@@ -5,11 +5,69 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 
 import Court from "./Court";
 import Staff from "./Staff";
-import Order from "./Order";
+
 import Yard from "./Yard";
+import Services from "./Services";
+import Order from "./Order";
+import Slot from "./Slot";
 
 export default class CourtManager extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+            },
+        };
+    }
+
+    componentDidMount() {
+        // Check localStorage or other storage to get user info
+        const userId = localStorage.getItem("userId");
+        const username = localStorage.getItem("fullName");
+        const avatar = localStorage.getItem("imageUrl");
+
+        if (userId && username && avatar) {
+            this.setState({
+                isLoggedIn: true,
+                user: {
+                    username: username,
+                    avatar: avatar,
+                },
+            });
+        }
+    }
+
+
+    handleLogout = () => {
+        // Clear user data from localStorage
+        localStorage.removeItem("userId");
+        localStorage.removeItem("fullName");
+        localStorage.removeItem("imageUrl");
+        localStorage.removeItem("jwtToken");
+        localStorage.removeItem("tokenExpiration");
+
+        // Update logout state
+        this.setState({
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+            },
+        });
+
+        // Redirect to login page
+        window.location.href = "/";
+    };
+
+
+
     render() {
+
+        const { isLoggedIn, user } = this.state;
+
         return (
             <div>
                 <section className="manager">
@@ -46,9 +104,9 @@ export default class CourtManager extends Component {
                         </div>
                         <div className="login">
                             <a href="updateProfile.html" className="user">
-                                <img src="asserts/img/download (user).jpg" alt />
+                                <img src={user.avatar} alt />
                             </a>
-                            <p className="user-name">Welcome,Ushio</p>
+                            <p className="user-name">Xin chào, {user.username}</p>
                         </div>
                     </div>
                     <div className="body-manager">
@@ -95,7 +153,23 @@ export default class CourtManager extends Component {
                                             <span className="title">Quản lý Sân</span>
                                         </a>
                                     </li>
-                                    <a className="w-75 logout m-auto " href="/login">
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#dsSlot" data-bs-toggle="tab">
+                                            <span className="icon">
+                                                <i class="fa-solid fa-clock"></i>
+                                            </span>
+                                            <span className="title">Quản lý Slot</span>
+                                        </a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#dsServices" data-bs-toggle="tab">
+                                            <span className="icon">
+                                                <i class="fa-solid fa-mug-saucer"></i>
+                                            </span>
+                                            <span className="title">Quản lý tiện ích sân</span>
+                                        </a>
+                                    </li>
+                                    <a className="w-75 logout m-auto " onClick={this.handleLogout}>
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
                                         </span>
@@ -150,14 +224,13 @@ export default class CourtManager extends Component {
                                     </div>
                                 </div>
 
-                                <div className="tab-pane fade" id="dsOrder" role="tabpanel">
-                                    <Order />
-                                </div>
-
                                 {/* ----------------------Coso------------------------------------- */}
 
                                 <div className="tab-pane fade " id="dsCoSo" role="tabpanel">
                                     <Court />
+                                </div>
+                                <div className="tab-pane fade " id="dsOrder" role="tabpanel">
+                                    <Order />
                                 </div>
 
                                 {/* ---------------------------------------kết thúc COw so------------------------------------------------- */}
@@ -171,6 +244,12 @@ export default class CourtManager extends Component {
                                 {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
                                 <div className="tab-pane fade" id="dsYard" role="tabpanel">
                                     <Yard />
+                                </div>
+                                <div className="tab-pane fade" id="dsServices" role="tabpanel">
+                                    <Services />
+                                </div>
+                                <div className="tab-pane fade" id="dsSlot" role="tabpanel">
+                                    <Slot />
                                 </div>
                             </div>
                         </div>

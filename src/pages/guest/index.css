@@ -1,4 +1,4 @@
-.filter {
+.GuestPage .filter {
     display: flex;
     align-items: center;
     justify-content: space-evenly;
@@ -8,7 +8,10 @@
     background-color: 0;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
 }
-.filter #sorted {
+.GuestPage h3 {
+    font-size: 15px;
+}
+.GuestPage .filter #sorted {
     width: 200px;
     padding: 5px;
     font-size: 16px;
@@ -16,21 +19,21 @@
     border-radius: 4px;
     color: #000000;
 }
-.filter a,
-.filter p {
+.GuestPage .filter a,
+.GuestPage .filter p {
     padding: 0 20px;
     font-size: 18px;
     font-weight: 600;
     position: relative;
     cursor: pointer;
 }
-.filter #sorted option {
+.GuestPage .filter #sorted option {
     padding: 5px;
 }
-.filter .locGio {
+.GuestPage .filter .locGio {
     position: relative;
 }
-.filter .locGio .filter-time {
+.GuestPage .filter .locGio .filter-time {
     display: none;
     position: absolute;
     background-color: rgba(31, 31, 106, 0.631372549);
@@ -39,20 +42,19 @@
     margin: 0;
     border: 1px solid #ccc;
 }
-.filter .locGio .filter-time li {
+.GuestPage .filter .locGio .filter-time li {
     margin: 5px 0;
     padding: 5px 0;
     width: 200px;
 }
-.filter .locGio .filter-time li:hover {
+.GuestPage .filter .locGio .filter-time li:hover {
     background-color: #598d93;
 }
-.filter .locGio .filter-time a {
+.GuestPage .filter .locGio .filter-time a {
     color: #fff;
     text-decoration: none;
     width: 100%;
 }
-.filter .locGio:hover .filter-time {
+.GuestPage .filter .locGio:hover .filter-time {
     display: block;
 }
-

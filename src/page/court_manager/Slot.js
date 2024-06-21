@@ -5,20 +5,30 @@ export default class Slot extends Component {
     state = {
         Slots: [],
         SlotsOb: {
-            id: "",
             slot_name: "",
             start_time: "",
             end_time: "",
             price: "",
-            court_id: "",
+            yard_id: [],
         },
+        yards: [],
         alertMessage: "",
         alertType: "",
     };
 
     componentDidMount() {
         this.fetchSlot();
+        this.fetchYard();
     }
+
+    fetchYard = () => {
+        axios
+            .get("http://localhost:3001/yard")
+            .then((res) => {
+                this.setState({ yards: res.data });
+            })
+            .catch((err) => console.error("Error fetching yards:", err));
+    };
 
     fetchSlot = () => {
         axios
@@ -43,6 +53,19 @@ export default class Slot extends Component {
                 console.log(err);
                 this.showAlert("Thêm slot thất bại!", "danger");
             });
+    };
+
+    handleCheckboxChange = (yardId, checked) => {
+        this.setState((prevState) => {
+            const selectedYards = checked ? [...prevState.SlotsOb.yard_id, yardId] : prevState.SlotsOb.yard_id.filter((id) => id !== yardId);
+
+            return {
+                SlotsOb: {
+                    ...prevState.SlotsOb,
+                    yard_id: selectedYards,
+                },
+            };
+        });
     };
 
     handleUpdateSlot = () => {
@@ -85,6 +108,20 @@ export default class Slot extends Component {
         }));
     };
 
+    renderNameYard = () => {
+        return this.state.yards.map((yard) => (
+            <div className="d-flex" key={yard.id}>
+                <input
+                    type="checkbox"
+                    value={yard.id}
+                    checked={this.state.SlotsOb.yard_id.includes(yard.id)}
+                    onChange={(e) => this.handleCheckboxChange(yard.id, e.target.checked)}
+                />
+                <strong>{yard.yard_name}</strong>
+            </div>
+        ));
+    };
+
     showAlert = (message, type) => {
         this.setState({
             alertMessage: message,
@@ -110,7 +147,7 @@ export default class Slot extends Component {
                 start_time: "",
                 end_time: "",
                 price: "",
-                court_id: "",
+                yard_id: [],
             },
         });
     };
@@ -124,23 +161,27 @@ export default class Slot extends Component {
                     {slot.start_time} - {slot.end_time}
                 </td>
                 <td className="text-center">{slot.price}</td>
-                <td className="d-flex " style={{ justifyContent: "space-between" }}>
-                    <button className="btn btn-warning mr-2" data-bs-toggle="modal" data-bs-target="#updateSlot">
-                        <i
-                            className="fa fa-pen-to-square"
+                <td className="text-center">
+                    <div className="d-flex">
+                        <button
+                            className="btn btn-warning mr-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#updateSlot"
                             onClick={() => {
-                                this.setState({ SlotsOb: slot });
+                                this.setState({ SlotsOb: { ...slot, yard_id: [...slot.yard_id] } });
                             }}
-                        ></i>
-                    </button>
-                    <button
-                        className="btn btn-danger"
-                        onClick={() => {
-                            this.handleDeleteSlot(slot.id);
-                        }}
-                    >
-                        <i className="fa fa-trash"></i>
-                    </button>
+                        >
+                            <i className="fa fa-pen-to-square"></i>
+                        </button>
+                        <button
+                            className="btn btn-danger"
+                            onClick={() => {
+                                this.handleDeleteSlot(slot.id);
+                            }}
+                        >
+                            <i className="fa fa-trash"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         ));
@@ -173,6 +214,22 @@ export default class Slot extends Component {
                     </thead>
                     <tbody>{this.renderSlots()}</tbody>
                 </table>
+
+                {/* Modal chọn sân cho slot */}
+                <div className="modal fade" id="addNameYard" tabIndex="-1" aria-labelledby="addSlotLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h4 className="text-center">Điền thông tin Slot</h4>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">{this.renderNameYard()}</div>
+                            </div>
+                            <div className="modal-footer"></div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Modal Thêm Mới Slot */}
                 <div className="modal fade" id="addNewSlot" tabIndex="-1" aria-labelledby="addSlotLabel" aria-hidden="true">
@@ -227,6 +284,7 @@ export default class Slot extends Component {
                                         onChange={this.handleInputChange}
                                     />
                                 </div>
+                                <div className="form-group">{this.renderNameYard()}</div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-primary" onClick={this.handleAddSlot}>
@@ -240,7 +298,7 @@ export default class Slot extends Component {
                     </div>
                 </div>
 
-                {/* update modal   */}
+                {/* Update modal */}
                 <div className="modal fade" id="updateSlot" tabIndex="-1" aria-labelledby="updateSlotLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
@@ -293,6 +351,7 @@ export default class Slot extends Component {
                                         onChange={this.handleInputChange}
                                     />
                                 </div>
+                                <div className="form-group">{this.renderNameYard()}</div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-primary" onClick={this.handleUpdateSlot}>
