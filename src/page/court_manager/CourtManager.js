@@ -10,7 +10,62 @@ import Yard from "./Yard";
 import Services from "./Services";
 
 export default class CourtManager extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+            },
+        };
+    }
+
+    componentDidMount() {
+        // Check localStorage or other storage to get user info
+        const userId = localStorage.getItem("userId");
+        const username = localStorage.getItem("fullName");
+        const avatar = localStorage.getItem("imageUrl");
+
+        if (userId && username && avatar) {
+            this.setState({
+                isLoggedIn: true,
+                user: {
+                    username: username,
+                    avatar: avatar,
+                },
+            });
+        }
+    }
+
+
+    handleLogout = () => {
+        // Clear user data from localStorage
+        localStorage.removeItem("userId");
+        localStorage.removeItem("fullName");
+        localStorage.removeItem("imageUrl");
+        localStorage.removeItem("jwtToken");
+        localStorage.removeItem("tokenExpiration");
+
+        // Update logout state
+        this.setState({
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+            },
+        });
+
+        // Redirect to login page
+        window.location.href = "/";
+    };
+
+
+
     render() {
+
+        const { isLoggedIn, user } = this.state;
+
         return (
             <div>
                 <section className="manager">
@@ -47,9 +102,9 @@ export default class CourtManager extends Component {
                         </div>
                         <div className="login">
                             <a href="updateProfile.html" className="user">
-                                <img src="asserts/img/download (user).jpg" alt />
+                                <img src={user.avatar} alt />
                             </a>
-                            <p className="user-name">Welcome,Ushio</p>
+                            <p className="user-name">Xin chào, {user.username}</p>
                         </div>
                     </div>
                     <div className="body-manager">
@@ -104,7 +159,7 @@ export default class CourtManager extends Component {
                                             <span className="title">Quản lý tiện ích sân</span>
                                         </a>
                                     </li>
-                                    <a className="w-75 logout m-auto " href="/login">
+                                    <a className="w-75 logout m-auto " onClick={this.handleLogout}>
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
                                         </span>
