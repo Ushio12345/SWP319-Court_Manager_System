@@ -1,7 +1,7 @@
 import React from "react";
 import '../../App.css';
 
-const HeaderLoginForm = () => (
+const HeaderLoginForm = ( {title} ) => (
     <div className="header-login-form">
         <div className="container d-flex align-items-center justify-content-between">
             <div className="header-login-form-left">
@@ -9,7 +9,7 @@ const HeaderLoginForm = () => (
                     <img src="asserts/img/logo-cau-long-dep-01.png" alt="Logo" />
                 </div>
                 <div className="name-page">
-                    <p className="m-0">Đăng nhập</p>
+                    <p className="m-0">{title}</p>
                 </div>
             </div>
             <div className="header-login-form-right m-0">

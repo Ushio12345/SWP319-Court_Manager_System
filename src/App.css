@@ -19,22 +19,13 @@ p {
   margin: 0 !important;
 }
 
-/* Định nghĩa lại màu nền và màu chữ cho thông báo lỗi */
-.swal2-popup-error {
-  background-color: #c10918bd !important;
-  /* Màu nền đỏ */
-  color: #ffffff !important;
-  /* Màu chữ tối */
-  border-color: #f5c6cb !important;
-  /* Màu viền */
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, 50%);
+  }
+  to {
+    transform: translate(-50%, -50%);
+  }
 }
 
-/* Định nghĩa lại màu nền và màu chữ cho thông báo thành công */
-.swal2-popup-success {
-  background-color: #0c932c !important;
-  /* Màu nền xanh nhạt */
-  color: #ffffff !important;
-  /* Màu chữ */
-  border-color: #c3e6cb !important;
-  /* Màu viền */
-}
+

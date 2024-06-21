@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import Banner from "../../components/banner";
-import '../guest/index.css';
+import "../guest/index.css";
 import CourtList from "../../components/court-list";
-import '../../App.css';
+import "../../App.css";
 
 class GuestPage extends Component {
     constructor(props) {
@@ -53,14 +53,14 @@ class GuestPage extends Component {
         });
 
         // Redirect to login page
-        window.location.href = '/';
+        window.location.href = "/";
     };
 
     render() {
         const { isLoggedIn, user } = this.state;
 
         return (
-            <div>
+            <div className="GuestPage">
                 <section className="header">
                     <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
                 </section>

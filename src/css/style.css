@@ -275,7 +275,7 @@ h1 {
 }
 
 .banner {
-    background-image: url("../asserts/img/4a331c1398d3d7a67ecba739d2e8bb43.jpg");
+    background-image: url("../assets/images/background-image.jpg");
     height: 700px;
     background-size: cover;
     background-attachment: fixed;
@@ -1203,4 +1203,14 @@ form h1 {
 
 .register-link {
     margin-top: 15px;
+}
+
+.manager button {
+    margin: 0 10px 0 0;
+}
+.manager .btn-action button:last-child {
+    margin: 0;
+}
+.manager .modal-footer button {
+    margin: 0 0 5px 0;
 }
