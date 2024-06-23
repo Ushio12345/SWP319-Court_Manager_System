@@ -6,31 +6,41 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 
 import Court from "./Court";
 import Staff from "./Staff";
-
 import Yard from "./Yard";
 import Services from "./Services";
 import Order from "./Order";
 import Slot from "./Slot";
 
 export default class CourtManager extends Component {
-    state = {
-        courts: [],
-        newCourt: {
-            court_name: "",
-            address: "",
-            open_time: "",
-            close_time: "",
-
-            rate: "",
-            user_id: "",
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+            },
+            courts: [],
             selectedCourtId: "",
-        },
-    };
+        };
+    }
 
     componentDidMount() {
-        this.fetchCourts();
+        const userId = localStorage.getItem("userId");
+        const username = localStorage.getItem("fullName");
+        const avatar = localStorage.getItem("imageUrl");
+        if (userId && username && avatar) {
+            this.setState({
+                isLoggedIn: true,
+                user: {
+                    username: username,
+                    avatar: avatar,
+                },
+            });
+        }
         this.fetchCourts();
     }
+
     fetchCourts = () => {
         axios
             .get("http://localhost:3001/court")
@@ -41,17 +51,36 @@ export default class CourtManager extends Component {
                 alert("Không thể lấy dữ liệu từ API");
             });
     };
+
     handleCourtChange = (event) => {
         this.setState({ selectedCourtId: event.target.value });
     };
+
+    handleLogout = () => {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("fullName");
+        localStorage.removeItem("imageUrl");
+        localStorage.removeItem("jwtToken");
+        localStorage.removeItem("tokenExpiration");
+        this.setState({
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+            },
+        });
+        window.location.href = "/";
+    };
+
     render() {
+        const { isLoggedIn, user, courts, selectedCourtId } = this.state;
         return (
             <div>
                 <section className="manager">
                     <div className="topbar">
                         <div className="logo">
                             <div className="logo-img">
-                                <img src="asserts/img/logo-cau-long-dep-01.png" alt />
+                                <img src="asserts/img/logo-cau-long-dep-01.png" alt="logo" />
                             </div>
                             <div className="nameapp">
                                 <p>ForBaD</p>
@@ -62,8 +91,8 @@ export default class CourtManager extends Component {
                                 <option value={""} className="text-center">
                                     ---Chọn cơ sở---
                                 </option>
-                                {this.state.courts.map((court) => (
-                                    <option value={court.id} key={court.id} active>
+                                {courts.map((court) => (
+                                    <option value={court.id} key={court.id}>
                                         {court.court_name}
                                     </option>
                                 ))}
@@ -85,7 +114,7 @@ export default class CourtManager extends Component {
                         </div>
                         <div className="login">
                             <a href="updateProfile.html" className="user">
-                                <img src={user.avatar} alt />
+                                <img src={user.avatar} alt="User Avatar" />
                             </a>
                             <p className="user-name">Xin chào, {user.username}</p>
                         </div>
@@ -105,7 +134,7 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsOrder" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa-solid fa-file-invoice"></i>
+                                                <i className="fa-solid fa-file-invoice"></i>
                                             </span>
                                             <span className="title">Quản lý đơn đặt hàng</span>
                                         </a>
@@ -129,7 +158,7 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsYard" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa fa-table-tennis"></i>
+                                                <i className="fa fa-table-tennis"></i>
                                             </span>
                                             <span className="title">Quản lý Sân</span>
                                         </a>
@@ -137,7 +166,7 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsSlot" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa-solid fa-clock"></i>
+                                                <i className="fa-solid fa-clock"></i>
                                             </span>
                                             <span className="title">Quản lý Slot</span>
                                         </a>
@@ -145,7 +174,7 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsServices" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa-solid fa-mug-saucer"></i>
+                                                <i className="fa-solid fa-mug-saucer"></i>
                                             </span>
                                             <span className="title">Quản lý tiện ích sân</span>
                                         </a>
@@ -214,23 +243,23 @@ export default class CourtManager extends Component {
                                     <Order />
                                 </div>
 
-                                {/* ---------------------------------------kết thúc COw so------------------------------------------------- */}
+                                {/* ---------------------------------------kết thúc Coso------------------------------------------------- */}
 
                                 {/* ----------------------Staff---------------------------------------------------------------------- */}
 
                                 <div className="tab-pane fade" id="dsStaff" role="tabpanel">
-                                    <Staff selectedCourtId={this.state.selectedCourtId} />
+                                    <Staff selectedCourtId={selectedCourtId} />
                                 </div>
 
                                 {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
                                 <div className="tab-pane fade" id="dsYard" role="tabpanel">
-                                    <Yard selectedCourtId={this.state.selectedCourtId} />
+                                    <Yard selectedCourtId={selectedCourtId} />
                                 </div>
                                 <div className="tab-pane fade" id="dsServices" role="tabpanel">
                                     <Services />
                                 </div>
                                 <div className="tab-pane fade" id="dsSlot" role="tabpanel">
-                                    <Slot selectedCourtId={this.state.selectedCourtId} />
+                                    <Slot selectedCourtId={selectedCourtId} />
                                 </div>
                             </div>
                         </div>
