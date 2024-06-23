@@ -85,9 +85,9 @@ export default class CourtManager extends Component {
                         </div>
                         <div className="login">
                             <a href="updateProfile.html" className="user">
-                                <img src="asserts/img/download (user).jpg" alt />
+                                <img src={user.avatar} alt />
                             </a>
-                            <p className="user-name">Welcome,Ushio</p>
+                            <p className="user-name">Xin chào, {user.username}</p>
                         </div>
                     </div>
                     <div className="body-manager">
@@ -150,7 +150,7 @@ export default class CourtManager extends Component {
                                             <span className="title">Quản lý tiện ích sân</span>
                                         </a>
                                     </li>
-                                    <a className="w-75 logout m-auto " href="/login">
+                                    <a className="w-75 logout m-auto " onClick={this.handleLogout}>
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
                                         </span>

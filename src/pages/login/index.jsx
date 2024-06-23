@@ -4,8 +4,7 @@ import HeaderLoginForm from "../../components/header-login-form";
 import Footer from "../../components/footer";
 import "./index.css";
 import '../../App.css';
-import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.css';
+import { showAlert } from '../../utils/alertUtils'; 
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -43,7 +42,7 @@ const Login = () => {
         }
 
         // If validations pass, proceed with login
-        fetch("http://localhost:8080/auth/signin", {
+        fetch("http://167.99.67.127:8080/auth/signin", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -57,16 +56,7 @@ const Login = () => {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Đăng nhập không thành công!',
-                        text: 'Sai email hoặc mật khẩu. Vui lòng thử lại.',
-                        timer: 3000, // Thời gian tự động đóng (ms)
-                        timerProgressBar: true, // Thanh tiến độ thời gian
-                        showConfirmButton: false, // Không hiển thị nút OK
-                        position: 'top-end', // Đặt vị trí thông báo ở góc trên bên phải
-                        toast: true // Thêm tính năng toast để thông báo tự đóng
-                    });
+                    showAlert('error', 'Đăng nhập không thành công!', 'Sai email hoặc mật khẩu. Vui lòng thử lại.', 'top-end');
                 }
             })
             .then((data) => {
@@ -81,9 +71,16 @@ const Login = () => {
                 // Check if the user's role is "temp"
                 if (data.role === "temp") {
                     window.location.href = "/role-selector";
-                } else {
+                } else if (data.role === "manager"){
+                    window.location.href = "/court_manager";
+                } else if (data.role === "customer"){
                     window.location.href = "/";
-                }
+                } 
+                // else if (data.role === "staff"){
+                //     window.location.href = "/staff";
+                // } else if (data.role === "admin"){
+                //     window.location.href = "/admin";
+                // } 
             })
             .catch((error) => {
                 console.error(error);
@@ -93,37 +90,19 @@ const Login = () => {
     const handleGoogleLogin = (event) => {
         event.preventDefault();
 
-        fetch("http://localhost:8080/auth/google")
+        fetch("http://167.99.67.127:8080/auth/google")
             .then((response) => {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi !',
-                        text: 'Có lỗi xảy ra. Vui lòng thử lại.',
-                        timer: 3000, // Thời gian tự động đóng (ms)
-                        timerProgressBar: true, // Thanh tiến độ thời gian
-                        showConfirmButton: false, // Không hiển thị nút OK
-                        position: 'top-end', // Đặt vị trí thông báo ở góc trên bên phải
-                        toast: true // Thêm tính năng toast để thông báo tự đóng
-                    });
+                    showAlert('error', 'Lỗi !', 'Có lỗi xảy ra. Vui lòng thử lại.', 'top-end');
                 }
             })
             .then((data) => {
                 if (data && data.redirectUrl) {
                     window.location.href = data.redirectUrl;
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi !',
-                        text: 'Có lỗi xảy ra. Vui lòng thử lại.',
-                        timer: 3000, // Thời gian tự động đóng (ms)
-                        timerProgressBar: true, // Thanh tiến độ thời gian
-                        showConfirmButton: false, // Không hiển thị nút OK
-                        position: 'top-end', // Đặt vị trí thông báo ở góc trên bên phải
-                        toast: true // Thêm tính năng toast để thông báo tự đóng
-                    });
+                    showAlert('error', 'Lỗi !', 'Có lỗi xảy ra. Vui lòng thử lại.', 'top-end');
                 }
             })
             .catch((error) => {
@@ -138,7 +117,7 @@ const Login = () => {
         const sendCodeToBackend = async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:8080/auth/google/callback",
+                    "http://167.99.67.127:8080/auth/google/callback",
                     {
                         method: "POST",
                         headers: {
@@ -149,16 +128,7 @@ const Login = () => {
                 );
 
                 if (!response.ok) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Lỗi !',
-                        text: 'Kết nối không ổn định. Vui lòng thử lại.',
-                        timer: 3000, // Thời gian tự động đóng (ms)
-                        timerProgressBar: true, // Thanh tiến độ thời gian
-                        showConfirmButton: false, // Không hiển thị nút OK
-                        position: 'top-end', // Đặt vị trí thông báo ở góc trên bên phải
-                        toast: true // Thêm tính năng toast để thông báo tự đóng    
-                    });
+                    showAlert('error', 'Lỗi !', 'Kết nối không ổn định. Vui lòng thử lại.', 'top-end');
                 }
 
                 const data = await response.json();
@@ -173,9 +143,16 @@ const Login = () => {
                 // Check if the user's role is "temp"
                 if (data.role === "temp") {
                     window.location.href = "/role-selector";
-                } else {
+                } else if (data.role === "manager"){
+                    window.location.href = "/court_manager";
+                } else if (data.role === "customer"){
                     window.location.href = "/";
-                }
+                } 
+                // else if (data.role === "staff"){
+                //     window.location.href = "/staff";
+                // } else if (data.role === "admin"){
+                //     window.location.href = "/admin";
+                // } 
             } catch (error) {
                 console.error("Error sending code to backend:", error);
                 // Handle error if needed
@@ -189,7 +166,7 @@ const Login = () => {
 
     return (
         <div className="form">
-            <HeaderLoginForm />
+            <HeaderLoginForm title="Đăng nhập" />
             <div className="login-form" id="Login-form">
                 <div className="login-left">
                     <img src="asserts/img/logo-cau-long-dep-01.png" alt="Logo" />
@@ -231,7 +208,7 @@ const Login = () => {
                                 <input type="checkbox" />
                                 Nhớ mật khẩu
                             </label>
-                            <a href="#">Quên mật khẩu</a>
+                            <a href="/forgot-password">Quên mật khẩu</a>
                         </div>
                         <div>
                             <button className="btn btn-primary p-2" type="submit">

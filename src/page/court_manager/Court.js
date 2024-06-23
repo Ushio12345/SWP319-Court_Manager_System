@@ -9,9 +9,6 @@ export default class extends Component {
             address: "",
             open_time: "",
             close_time: "",
-
-            rate: "",
-            user_id: "",
         },
         isDetailView: false,
         showAlert: false,
@@ -25,7 +22,7 @@ export default class extends Component {
 
     fetchCourts = () => {
         axios
-            .get("http://localhost:3001/court")
+            .get("http://167.99.67.127:8080/court/all-of-owner")
             .then((res) => {
                 this.setState({ courts: res.data });
             })
@@ -186,9 +183,6 @@ export default class extends Component {
                                         address: "",
                                         open_time: "",
                                         close_time: "",
-
-                                        rate: "",
-                                        user_id: "",
                                     },
                                     isDetailView: false,
                                 })
@@ -274,22 +268,10 @@ export default class extends Component {
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h4 className="text-center">Điền thông tin sân</h4>
+                                <h4 className="text-center">Điền thông tin cơ sở</h4>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="court_id">Mã cơ sở</label>
-                                    <input
-                                        id="court_id"
-                                        name="court_id"
-                                        className="form-control"
-                                        placeholder="Mã cơ sở"
-                                        value={this.state.newCourt.id}
-                                        onChange={this.handleInputChange}
-                                        readOnly={true}
-                                    />
-                                </div>
                                 <div className="form-group">
                                     <label htmlFor="court_name">Tên cơ sở</label>
                                     <input
@@ -315,43 +297,29 @@ export default class extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="open_time">Khung giờ hoạt động</label>
+                                    <label htmlFor="open_time">Giờ mở cửa</label>
                                     <input
                                         id="open_time"
                                         name="open_time"
                                         className="form-control"
-                                        placeholder="Nhập giờ mở cửa (7:00)"
+                                        placeholder="Nhập giờ mở cửa (ví dụ: 07:00)"
                                         value={this.state.newCourt.open_time}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="close_time">Khung giờ đóng cửa</label>
+                                    <label htmlFor="close_time">Giờ đóng cửa</label>
                                     <input
                                         id="close_time"
                                         name="close_time"
                                         className="form-control"
-                                        placeholder="Nhập giờ đóng cửa"
+                                        placeholder="Nhập giờ đóng cửa (ví dụ: 21:00)"
                                         value={this.state.newCourt.close_time}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
                                 </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="numberOfCourt">Số sân</label>
-                                    <input
-                                        id="numberOfCourt"
-                                        name="numberOfCourt"
-                                        className="form-control"
-                                        placeholder="Nhập số sân"
-                                        value={this.state.newCourt.numberOfCourt}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-
                                 <div className="form-group">
                                     <label htmlFor="imgURL">Hình ảnh</label>
                                     <input
