@@ -87,19 +87,23 @@
     font-size: 1.5rem;
     margin-bottom: 10px;
 }
-p {
+.form-select-role h1 {
+    color: white !important;
+}
+.form-select-role p {
     line-height: 30px;
 }
-.title {
+.form-select-role .title-role {
     color: white;
     font-size: 35px;
 }
-.title span {
+.form-select-role .form-select-role-tilte span {
     color: #34a853;
+    font-weight: 700;
     font-size: 40px;
     font-family: "Playwrite PL", cursive;
 }
-.title2 {
+.form-select-role .title2 {
     color: white;
     font-size: 20px;
 }

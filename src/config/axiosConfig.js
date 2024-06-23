@@ -1,0 +1,32 @@
+import axios from 'axios';
+import { showConfirmAlert } from '../utils/alertUtils';
+
+const axiosInstance = axios.create({
+    baseURL: 'http://localhost:8080',
+});
+
+axiosInstance.interceptors.request.use(config => {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+});
+
+axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+            showConfirmAlert("Phiên đăng nhập đã hết hạn.", "Vui lòng đăng nhập lại để tiếp tục.", 'Đăng nhập lại.' ,'top')
+            .then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem('jwtToken');
+                    window.location.href = '/login';
+                }
+            })         
+        }
+        return Promise.reject(error);
+    }
+);
+
+export default axiosInstance;

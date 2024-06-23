@@ -1,129 +1,215 @@
 import axios from "axios";
 import React, { Component } from "react";
+import { showAlert, showConfirmAlert } from '../../utils/alertUtils';
+import axiosInstance from "../../config/axiosConfig";
+import { handleTokenError } from "../../utils/tokenErrorHandle";
 
 export default class extends Component {
     state = {
         courts: [],
         newCourt: {
-            court_name: "",
+            courtId: "",
+            courtName: "",
             address: "",
-            open_time: "",
-            close_time: "",
+            openTime: "",
+            closeTime: "",
+            rate: "",
+            imageUrl: ""
         },
-        isDetailView: false,
-        showAlert: false,
-        alertMessage: "",
-        alertType: "",
-    };
+        isDetailView: false
+    }
 
     componentDidMount() {
         this.fetchCourts();
     }
 
     fetchCourts = () => {
-        axios
-            .get("http://167.99.67.127:8080/court/all-of-owner")
+        axiosInstance
+            .get("/court/courts-of-owner")
             .then((res) => {
-                this.setState({ courts: res.data });
+                if (res.status === 200) {
+                    this.setState({ courts: res.data });
+                } else {
+                    this.setState({ courts: [] });
+                    showAlert('error', 'Lỗi !', 'Không lấy được dữ liệu', 'top-end');
+                    console.error("Response không thành công:", res.status);
+                }
             })
-            .catch((err) => {
-                alert("Không thể lấy dữ liệu từ API");
+            .catch((error) => {
+                if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                    handleTokenError();
+                }
+                this.handleRequestError(error);
             });
+    };
+
+    handleRequestError = (error) => {
+        console.error("Lỗi từ server:", error.response.data);
     };
 
     handleInputChange = (event) => {
-        const { name, value, files } = event.target;
-        if (files && files.length > 0) {
-            this.setState((prevState) => ({
-                newCourt: {
-                    ...prevState.newCourt,
-                    [name]: files[0],
-                },
-            }));
-        } else {
-            this.setState((prevState) => ({
-                newCourt: {
-                    ...prevState.newCourt,
-                    [name]: value,
-                },
-            }));
-        }
+        const { name, value } = event.target;
+        this.setState((prevState) => ({
+            newCourt: {
+                ...prevState.newCourt,
+                [name]: value
+            }
+        }));
     };
+
+    handleFileChange = (event) => {
+        const file = event.target.files[0];
+        this.setState((prevState) => ({
+            newCourt: {
+                ...prevState.newCourt,
+                imageUrl: file
+            }
+        }));
+    };
+
+
 
     handleAddCourt = () => {
-        axios
-            .post("http://localhost:3001/court", this.state.newCourt)
-            .then(() => {
-                this.fetchCourts();
-                this.setState({
-                    newCourt: {
-                        court_name: "",
-                        address: "",
-                        open_time: "",
-                        close_time: "",
+        const { newCourt } = this.state;
 
-                        rate: "",
-                        user_id: "",
-                    },
-                    showAlert: true,
-                    alertMessage: "Thêm cơ sở thành công!",
-                    alertType: "success",
-                });
+        let formData = new FormData();
+        formData.append('courtName', newCourt.courtName);
+        formData.append('address', newCourt.address);
+        formData.append('openTime', newCourt.openTime);
+        formData.append('closeTime', newCourt.closeTime);
+        if (newCourt.imageUrl) {
+            formData.append('imageUrl', newCourt.imageUrl);
+        }
+
+        axiosInstance
+            .post("/court/add", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
             })
-            .catch((error) => {
-                alert("Có lỗi khi thêm cơ sở!", error);
-            });
-    };
-
-    handleDeleteCourt = (id) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa cơ sở này?")) {
-            axios
-                .delete(`http://localhost:3001/court/${id}`)
-                .then(() => {
+            .then((res) => {
+                if (res.status === 200) {
                     this.fetchCourts();
                     this.setState({
-                        showAlert: true,
-                        alertMessage: "Xóa cơ sở thành công!",
-                        alertType: "success",
+                        newCourt: {
+                            courtId: "",
+                            courtName: "",
+                            address: "",
+                            openTime: "",
+                            closeTime: "",
+                            rate: "",
+                            imageUrl: ""
+                        },
                     });
-                })
-                .catch((error) => {
-                    alert("Có lỗi khi xóa cơ sở!", error);
-                });
-        }
-    };
-
-    handleUpdateCourt = () => {
-        const { id, ...updatedCourt } = this.state.newCourt;
-        axios
-            .put(`http://localhost:3001/court/${id}`, updatedCourt)
-            .then(() => {
-                this.fetchCourts();
-                this.setState({
-                    newCourt: {
-                        ...updatedCourt,
-                    },
-                    showAlert: true,
-                    alertMessage: "Cập nhật cơ sở thành công!",
-                    alertType: "success",
-                });
+                    showAlert('success', '', 'Thêm cơ sở thành công', 'top-end');
+                } else {
+                    showAlert('error', 'Lỗi !', 'Thêm cơ sở không thành công', 'top-end');
+                    console.error("Response không thành công:", res.status);
+                }
             })
             .catch((error) => {
-                alert("Có lỗi khi cập nhật cơ sở!", error);
+                if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                    handleTokenError();
+                } else {
+                    showAlert('error', 'Lỗi !', 'Thêm cơ sở không thành công', 'top-end');
+                }
+                this.handleRequestError(error);
             });
     };
+
+
+
+    handleDeleteCourt = (courtId) => {
+        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa toàn bộ dữ liệu của cơ sở này bao gồm cả nhân viên, đơn hàng,...", 'Xóa', 'center')
+            .then((result) => {
+                if (result.isConfirmed) {
+                    axiosInstance.delete(`/court/delete?courtId=${courtId}`)
+                        .then((res) => {
+                            if (res.status === 200) {
+                                this.fetchCourts();
+                                showAlert('success', '', 'Đã xóa cơ sở thành công', 'top-end');
+                            } else {
+                                showAlert('error', '', 'Xóa cơ sở không thành công', 'top-end');
+                            }
+                        })
+                        .catch((error) => {
+                            if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                                handleTokenError();
+                            } else {
+                                showAlert('error', '', 'Xóa cơ sở không thành công', 'top-end');
+                            }
+                            console.error("Response không thành công:", error);
+                        });
+                }
+            });
+    };
+
+
+    handleUpdateCourt = () => {
+        const { newCourt } = this.state;
+
+        let formData = new FormData();
+        formData.append('courtId', newCourt.courtId); // Thêm courtId vào formData
+        formData.append('courtName', newCourt.courtName);
+        formData.append('address', newCourt.address);
+        formData.append('openTime', newCourt.openTime);
+        formData.append('closeTime', newCourt.closeTime);
+        if (newCourt.imageUrl && newCourt.imageUrl instanceof File) {
+            formData.append('imageUrl', newCourt.imageUrl);
+        }
+
+        axiosInstance
+            .put(`/court/update`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
+            .then((res) => {
+                if (res.status === 200) {
+                    this.fetchCourts();
+                    this.setState({
+                        newCourt: {
+                            courtId: "",
+                            courtName: "",
+                            address: "",
+                            openTime: "",
+                            closeTime: "",
+                            rate: "",
+                            imageUrl: ""
+                        },
+                    });
+                    showAlert('success', '', 'Cập nhật cơ sở thành công', 'top-end');
+                } else {
+                    showAlert('error', 'Lỗi !', 'Cập nhật cơ sở không thành công', 'top-end');
+                    console.error("Response không thành công:", res.status);
+                }
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                    handleTokenError();
+                } else {
+                    showAlert('error', 'Lỗi !', 'Cập nhật cơ sở không thành công', 'top-end');
+                }
+                this.handleRequestError(error);
+            });
+    };
+
+    renderStars(rate) {
+        const totalStars = 5; // Tổng số ngôi sao
+        const stars = [];
+        for (let i = 1; i <= totalStars; i++) {
+            if (i <= rate) {
+                stars.push(<span key={i} className="fa fa-star checked" style={{ color: '#ffc107' }}></span>);
+            } else {
+                stars.push(<span key={i} className="fa fa-star" style={{ color: '#000000' }}></span>);
+            }
+        }
+        return stars;
+    }
 
     render() {
         return (
             <div>
-                {/* Modal Thông Báo */}
-                {this.state.showAlert && (
-                    <div className={`alert alert-${this.state.alertType} alert-dismissible fade show`} role="alert">
-                        {this.state.alertMessage}
-                        <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                )}
-
                 {/* Modal Chi Tiết */}
                 <div className="modal fade" id="detailModal" tabIndex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
                     <div className="modal-dialog modal-lg">
@@ -137,23 +223,23 @@ export default class extends Component {
                             <div className="modal-body">
                                 <div className="row">
                                     <div className="col-md-6">
-                                        <img src={this.state.newCourt.imgURL} alt="Court Image" className="img-fluid" />
+                                        <img src={this.state.newCourt.imageUrl} alt="Hình ảnh cơ sở" className="img-fluid" />
                                     </div>
                                     <div className="col-md-6">
-                                        <h4>{this.state.newCourt.court_name}</h4>
+                                        <h4>{this.state.newCourt.courtName}</h4>
                                         <p>
-                                            <strong>Mã cơ sở:</strong> {this.state.newCourt.id}
+                                            <strong>Mã cơ sở:</strong> {this.state.newCourt.courtId}
                                         </p>
 
                                         <p>
                                             <strong>Địa chỉ:</strong> {this.state.newCourt.address}
                                         </p>
                                         <p>
-                                            <strong>Khung giờ hoạt động:</strong> {this.state.newCourt.open_time} - {this.state.newCourt.close_time}
+                                            <strong>Khung giờ hoạt động:</strong> {this.state.newCourt.openTime} - {this.state.newCourt.closeTime}
                                         </p>
-                                        <p>
-                                            <strong>Số sân:</strong> {this.state.newCourt.numberOfCourt}
-                                        </p>
+                                        <div>
+                                            {this.renderStars(this.state.newCourt.rate)}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -167,8 +253,6 @@ export default class extends Component {
                 </div>
                 {/* Kết thúc Modal Chi Tiết */}
 
-                <h1 className="text-center">Thông tin quản lí cơ sở</h1>
-
                 <div className="row">
                     <div className="col-md-8">
                         <button
@@ -179,10 +263,11 @@ export default class extends Component {
                             onClick={() =>
                                 this.setState({
                                     newCourt: {
-                                        court_name: "",
+                                        courtName: "",
                                         address: "",
-                                        open_time: "",
-                                        close_time: "",
+                                        openTime: "",
+                                        closeTime: "",
+                                        imageUrl: ""
                                     },
                                     isDetailView: false,
                                 })
@@ -212,53 +297,58 @@ export default class extends Component {
 
                 <div className="clear-fix" />
                 <div className="tblCoSo" id="tblCoSo">
-                    <table className="table table-bordered">
+                    <table className="table table-hover">
                         <thead>
                             <tr>
                                 <th>STT</th>
                                 <th>Mã cơ sở</th>
                                 <th className="text-start">Tên Cơ Sở</th>
                                 <th className="text-start">Địa chỉ</th>
-                                <th>Giờ làm việc</th>
-                                <th>Số sân</th>
+                                <th>Giờ hoạt động</th>
                                 <th>Đánh giá</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.courts.map((court, index) => (
-                                <tr className="" key={court.id} style={{}}>
-                                    <td className="text-center">{index + 1}</td>
-                                    <td className="text-center">{court.id}</td>
-                                    <td className="text-start">{court.court_name}</td>
-                                    <td>{court.address}</td>
-                                    <td className="text-center">{`${court.open_time} - ${court.close_time}`}</td>
-                                    <td className="text-center">{court.numberOfCourt}</td>
-                                    <td className="text-center">4/5</td>
-                                    <td className="d-flex btn-action ">
-                                        <button
-                                            className="btn btn-info mr-2"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#detailModal"
-                                            onClick={() => this.setState({ newCourt: court, isDetailView: true })}
-                                        >
-                                            <i className="fa fa-info-circle"></i>
-                                        </button>
-                                        <button
-                                            className="btn btn-warning mr-2"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#updateCourt"
-                                            onClick={() => this.setState({ newCourt: court, isDetailView: false })}
-                                        >
-                                            <i className="fa fa-pen-to-square"></i>
-                                        </button>
-                                        <button className="btn btn-danger" onClick={() => this.handleDeleteCourt(court.id)}>
-                                            <i className="fa fa-trash"></i>
-                                        </button>
-                                    </td>
+                            {this.state.courts.length === 0 ? (
+                                <tr>
+                                    <td colSpan="7" className="text-center">Danh sách cơ sở trống</td>
                                 </tr>
-                            ))}
+                            ) : (
+                                this.state.courts.map((court, index) => (
+                                    <tr className="" key={court.courtId}>
+                                        <td className="text-center">{index + 1}</td>
+                                        <td className="text-center">{court.courtId}</td>
+                                        <td className="text-start">{court.courtName}</td>
+                                        <td>{court.address}</td>
+                                        <td className="text-center">{`${court.openTime} - ${court.closeTime}`}</td>
+                                        <td className="text-center">{court.rate}/5</td>
+                                        <td className="d-flex btn-action">
+                                            <button
+                                                className="btn btn-info mr-2"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#detailModal"
+                                                onClick={() => this.setState({ newCourt: court, isDetailView: true })}
+                                            >
+                                                <i className="fa fa-info-circle"></i>
+                                            </button>
+                                            <button
+                                                className="btn btn-warning mr-2"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#updateCourt"
+                                                onClick={() => this.setState({ newCourt: court, isDetailView: false })}
+                                            >
+                                                <i className="fa fa-pen-to-square"></i>
+                                            </button>
+                                            <button className="btn btn-danger" onClick={() => this.handleDeleteCourt(court.courtId)}>
+                                                <i className="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
+
                     </table>
                 </div>
                 <br />
@@ -275,11 +365,11 @@ export default class extends Component {
                                 <div className="form-group">
                                     <label htmlFor="court_name">Tên cơ sở</label>
                                     <input
-                                        id="court_name"
-                                        name="court_name"
+                                        id="courtName"
+                                        name="courtName"
                                         className="form-control"
                                         placeholder="Nhập tên cơ sở"
-                                        value={this.state.newCourt.court_name}
+                                        value={this.state.newCourt.courtName}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
@@ -297,38 +387,38 @@ export default class extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="open_time">Giờ mở cửa</label>
+                                    <label htmlFor="openTime">Giờ mở cửa</label>
                                     <input
-                                        id="open_time"
-                                        name="open_time"
+                                        id="openTime"
+                                        name="openTime"
                                         className="form-control"
                                         placeholder="Nhập giờ mở cửa (ví dụ: 07:00)"
-                                        value={this.state.newCourt.open_time}
+                                        value={this.state.newCourt.openTime}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="close_time">Giờ đóng cửa</label>
+                                    <label htmlFor="closeTime">Giờ đóng cửa</label>
                                     <input
-                                        id="close_time"
-                                        name="close_time"
+                                        id="closeTime"
+                                        name="closeTime"
                                         className="form-control"
                                         placeholder="Nhập giờ đóng cửa (ví dụ: 21:00)"
-                                        value={this.state.newCourt.close_time}
+                                        value={this.state.newCourt.closeTime}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="imgURL">Hình ảnh</label>
+                                    <label htmlFor="imageUrl">Hình ảnh</label>
                                     <input
-                                        id="imgURL"
-                                        name="imgURL"
+                                        id="imageUrl"
+                                        name="imageUrl"
                                         type="file"
                                         className="form-control"
                                         // value={this.state.newCourt.imgURL}
-                                        onChange={this.handleInputChange}
+                                        onChange={this.handleFileChange}
                                         readOnly={this.state.isDetailView}
                                     />
                                 </div>
@@ -359,27 +449,16 @@ export default class extends Component {
                             </div>
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <label htmlFor="court_id">Mã cơ sở</label>
+                                    <label htmlFor="courtName">Tên cơ sở</label>
                                     <input
-                                        id="court_id"
-                                        name="court_id"
-                                        className="form-control"
-                                        placeholder="Mã cơ sở"
-                                        value={this.state.newCourt.id}
-                                        onChange={this.handleInputChange}
-                                        readOnly={true}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="court_name">Tên cơ sở</label>
-                                    <input
-                                        id="court_name"
-                                        name="court_name"
+                                        id="courtName"
+                                        name="courtName"
+                                        type="text"
+                                        readOnly={false}
                                         className="form-control"
                                         placeholder="Nhập tên cơ sở"
-                                        value={this.state.newCourt.court_name}
+                                        value={this.state.newCourt.courtName}
                                         onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -395,52 +474,39 @@ export default class extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="open_time">Khung giờ hoạt động</label>
+                                    <label htmlFor="openTime">Khung giờ hoạt động</label>
                                     <input
-                                        id="open_time"
-                                        name="open_time"
+                                        id="openTime"
+                                        name="openTime"
                                         className="form-control"
                                         placeholder="Nhập giờ mở cửa (7:00)"
-                                        value={this.state.newCourt.open_time}
+                                        value={this.state.newCourt.openTime}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="close_time">Khung giờ đóng cửa</label>
+                                    <label htmlFor="closeTime">Khung giờ đóng cửa</label>
                                     <input
-                                        id="close_time"
-                                        name="close_time"
+                                        id="closeTime"
+                                        name="closeTime"
                                         className="form-control"
                                         placeholder="Nhập giờ đóng cửa"
-                                        value={this.state.newCourt.close_time}
+                                        value={this.state.newCourt.closeTime}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
                                 </div>
 
                                 <div className="form-group">
-                                    <label htmlFor="numberOfCourt">Số sân</label>
+                                    <label htmlFor="imageUrl">Hình ảnh</label>
                                     <input
-                                        id="numberOfCourt"
-                                        name="numberOfCourt"
-                                        className="form-control"
-                                        placeholder="Nhập số sân"
-                                        value={this.state.newCourt.numberOfCourt}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="imgURL">Hình ảnh</label>
-                                    <input
-                                        id="imgURL"
-                                        name="imgURL"
+                                        id="imageUrl"
+                                        name="imageUrl"
                                         type="file"
                                         className="form-control"
                                         // value={this.state.newCourt.imgURL}
-                                        onChange={this.handleInputChange}
+                                        onChange={this.handleFileChange}
                                         readOnly={this.state.isDetailView}
                                     />
                                 </div>
@@ -449,7 +515,7 @@ export default class extends Component {
                                 {!this.state.isDetailView && (
                                     <div className="d-flex w-100">
                                         <button type="button" className="btn btn-success " onClick={this.handleUpdateCourt}>
-                                            Cập nhật
+                                            Lưu
                                         </button>
                                     </div>
                                 )}

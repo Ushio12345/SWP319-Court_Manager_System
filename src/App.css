@@ -1,22 +1,19 @@
 /* Global Styles */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-
 body {
-  background-color: #eeeded !important;
-  font-family: "Roboto", Arial, sans-serif;
-  font-weight: 500;
+    background-color: #eeeded !important;
+    font-family: "Roboto", Arial, sans-serif;
+    font-weight: 500;
 }
-
 a {
-  text-decoration: none !important;
+    text-decoration: none !important;
 }
-
 p {
-  margin: 0 !important;
+    margin: 0 !important;
 }
 
 @keyframes slideUp {
