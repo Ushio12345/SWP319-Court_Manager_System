@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 import "../../css/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
@@ -12,6 +13,37 @@ import Order from "./Order";
 import Slot from "./Slot";
 
 export default class CourtManager extends Component {
+    state = {
+        courts: [],
+        newCourt: {
+            court_name: "",
+            address: "",
+            open_time: "",
+            close_time: "",
+
+            rate: "",
+            user_id: "",
+            selectedCourtId: "",
+        },
+    };
+
+    componentDidMount() {
+        this.fetchCourts();
+        this.fetchCourts();
+    }
+    fetchCourts = () => {
+        axios
+            .get("http://localhost:3001/court")
+            .then((res) => {
+                this.setState({ courts: res.data });
+            })
+            .catch((err) => {
+                alert("Không thể lấy dữ liệu từ API");
+            });
+    };
+    handleCourtChange = (event) => {
+        this.setState({ selectedCourtId: event.target.value });
+    };
     render() {
         return (
             <div>
@@ -26,11 +58,15 @@ export default class CourtManager extends Component {
                             </div>
                         </div>
                         <div className="select-branch">
-                            <select id="branch-select">
-                                <option value>Thủ Đức</option>
-                                <option value={1}>Gò Vấp</option>
-                                <option value={2}>Bình Thạnh</option>
-                                <option value={3}>Tân Bình</option>
+                            <select id="" onChange={this.handleCourtChange}>
+                                <option value={""} className="text-center">
+                                    ---Chọn cơ sở---
+                                </option>
+                                {this.state.courts.map((court) => (
+                                    <option value={court.id} key={court.id} active>
+                                        {court.court_name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="search">
@@ -183,18 +219,18 @@ export default class CourtManager extends Component {
                                 {/* ----------------------Staff---------------------------------------------------------------------- */}
 
                                 <div className="tab-pane fade" id="dsStaff" role="tabpanel">
-                                    <Staff />
+                                    <Staff selectedCourtId={this.state.selectedCourtId} />
                                 </div>
 
                                 {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
                                 <div className="tab-pane fade" id="dsYard" role="tabpanel">
-                                    <Yard />
+                                    <Yard selectedCourtId={this.state.selectedCourtId} />
                                 </div>
                                 <div className="tab-pane fade" id="dsServices" role="tabpanel">
                                     <Services />
                                 </div>
                                 <div className="tab-pane fade" id="dsSlot" role="tabpanel">
-                                    <Slot />
+                                    <Slot selectedCourtId={this.state.selectedCourtId} />
                                 </div>
                             </div>
                         </div>

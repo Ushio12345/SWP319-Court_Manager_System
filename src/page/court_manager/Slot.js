@@ -1,5 +1,5 @@
-import axios from "axios";
 import React, { Component } from "react";
+import axios from "axios";
 
 export default class Slot extends Component {
     state = {
@@ -10,29 +10,39 @@ export default class Slot extends Component {
             end_time: "",
             price: "",
             yard_id: [],
+            court_id: "",
         },
+        courts: [],
         yards: [],
         alertMessage: "",
         alertType: "",
     };
 
     componentDidMount() {
-        this.fetchSlot();
-        this.fetchYard();
+        this.fetchCourts();
     }
 
-    fetchYard = () => {
+    componentDidUpdate(prevProps) {
+        if (prevProps.selectedCourtId !== this.props.selectedCourtId) {
+            this.fetchSlot();
+        }
+    }
+
+    fetchCourts = () => {
         axios
-            .get("http://localhost:3001/yard")
+            .get("http://localhost:3001/court")
             .then((res) => {
-                this.setState({ yards: res.data });
+                this.setState({ courts: res.data });
             })
-            .catch((err) => console.error("Error fetching yards:", err));
+            .catch((err) => {
+                this.showAlert("Không thể lấy dữ liệu từ API", "danger");
+            });
     };
 
     fetchSlot = () => {
+        const { selectedCourtId } = this.props;
         axios
-            .get("http://localhost:3001/slot")
+            .get(`http://localhost:3001/slot?court_id=${selectedCourtId}`)
             .then((res) => {
                 this.setState({ Slots: res.data });
             })
@@ -42,16 +52,27 @@ export default class Slot extends Component {
     };
 
     handleAddSlot = () => {
+        const { selectedCourtId } = this.props;
+        const slotToAdd = { ...this.state.SlotsOb, court_id: selectedCourtId };
         axios
-            .post("http://localhost:3001/slot", this.state.SlotsOb)
+            .post("http://localhost:3001/slot", slotToAdd)
             .then(() => {
                 this.fetchSlot();
-                this.showAlert("Thêm slot thành công!", "success");
-                this.clearForm();
+                this.setState({
+                    SlotsOb: {
+                        slot_name: "",
+                        start_time: "",
+                        end_time: "",
+                        price: "",
+                        yard_id: [],
+                        court_id: "",
+                    },
+                    alertMessage: "Thêm slot thành công!",
+                    alertType: "success",
+                });
             })
-            .catch((err) => {
-                console.log(err);
-                this.showAlert("Thêm slot thất bại!", "danger");
+            .catch((error) => {
+                this.showAlert("Xảy ra lỗi trong quá trình thêm slot. Thử lại sau!", "danger");
             });
     };
 
@@ -78,7 +99,6 @@ export default class Slot extends Component {
                 this.clearForm();
             })
             .catch((error) => {
-                console.log("Error updating slot:", error);
                 this.showAlert("Cập nhật slot thất bại!", "danger");
             });
     };
@@ -148,6 +168,7 @@ export default class Slot extends Component {
                 end_time: "",
                 price: "",
                 yard_id: [],
+                court_id: "",
             },
         });
     };
@@ -215,28 +236,12 @@ export default class Slot extends Component {
                     <tbody>{this.renderSlots()}</tbody>
                 </table>
 
-                {/* Modal chọn sân cho slot */}
-                <div className="modal fade" id="addNameYard" tabIndex="-1" aria-labelledby="addSlotLabel" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h4 className="text-center">Điền thông tin Slot</h4>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                <div className="form-group">{this.renderNameYard()}</div>
-                            </div>
-                            <div className="modal-footer"></div>
-                        </div>
-                    </div>
-                </div>
-
                 {/* Modal Thêm Mới Slot */}
                 <div className="modal fade" id="addNewSlot" tabIndex="-1" aria-labelledby="addSlotLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h4 className="text-center">Điền thông tin Slot</h4>
+                                <h4 className="text-center">Thêm mới Slot</h4>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
