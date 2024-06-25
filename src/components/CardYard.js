@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-
+import "../css/style.css";
 export default class CardYard extends Component {
     render() {
         return (
-            <div>
-                <div className="card-yard">
+            <div className="yard">
+                <div className="card-yard m-2">
                     <div className="card-yard-img">
                         <img src="asserts/img/download.jpg" alt="Ảnh Sân" />
                     </div>

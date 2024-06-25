@@ -5,9 +5,10 @@ export default class extends Component {
     state = {
         courts: [],
         newCourt: {
-            court_name: "",
+            courtId: "",
+            courtName: "",
             address: "",
-            open_time: "",
+            openTime: "",
             close_time: "",
         },
         isDetailView: false,
@@ -22,7 +23,7 @@ export default class extends Component {
 
     fetchCourts = () => {
         axios
-            .get("http://167.99.67.127:8080/court/all-of-owner")
+            .get("http://localhost:8080/court/all-of-owner")
             .then((res) => {
                 this.setState({ courts: res.data });
             })
@@ -57,9 +58,9 @@ export default class extends Component {
                 this.fetchCourts();
                 this.setState({
                     newCourt: {
-                        court_name: "",
+                        courtName: "",
                         address: "",
-                        open_time: "",
+                        openTime: "",
                         close_time: "",
 
                         rate: "",
@@ -140,7 +141,7 @@ export default class extends Component {
                                         <img src={this.state.newCourt.imgURL} alt="Court Image" className="img-fluid" />
                                     </div>
                                     <div className="col-md-6">
-                                        <h4>{this.state.newCourt.court_name}</h4>
+                                        <h4>{this.state.newCourt.courtName}</h4>
                                         <p>
                                             <strong>Mã cơ sở:</strong> {this.state.newCourt.id}
                                         </p>
@@ -149,7 +150,7 @@ export default class extends Component {
                                             <strong>Địa chỉ:</strong> {this.state.newCourt.address}
                                         </p>
                                         <p>
-                                            <strong>Khung giờ hoạt động:</strong> {this.state.newCourt.open_time} - {this.state.newCourt.close_time}
+                                            <strong>Khung giờ hoạt động:</strong> {this.state.newCourt.openTime} - {this.state.newCourt.close_time}
                                         </p>
                                         <p>
                                             <strong>Số sân:</strong> {this.state.newCourt.numberOfCourt}
@@ -179,9 +180,9 @@ export default class extends Component {
                             onClick={() =>
                                 this.setState({
                                     newCourt: {
-                                        court_name: "",
+                                        courtName: "",
                                         address: "",
-                                        open_time: "",
+                                        openTime: "",
                                         close_time: "",
                                     },
                                     isDetailView: false,
@@ -230,9 +231,9 @@ export default class extends Component {
                                 <tr className="" key={court.id} style={{}}>
                                     <td className="text-center">{index + 1}</td>
                                     <td className="text-center">{court.id}</td>
-                                    <td className="text-start">{court.court_name}</td>
+                                    <td className="text-start">{court.courtName}</td>
                                     <td>{court.address}</td>
-                                    <td className="text-center">{`${court.open_time} - ${court.close_time}`}</td>
+                                    <td className="text-center">{`${court.openTime} - ${court.close_time}`}</td>
                                     <td className="text-center">{court.numberOfCourt}</td>
                                     <td className="text-center">4/5</td>
                                     <td className="d-flex btn-action ">
@@ -273,13 +274,13 @@ export default class extends Component {
                             </div>
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <label htmlFor="court_name">Tên cơ sở</label>
+                                    <label htmlFor="courtName">Tên cơ sở</label>
                                     <input
-                                        id="court_name"
-                                        name="court_name"
+                                        id="courtName"
+                                        name="courtName"
                                         className="form-control"
                                         placeholder="Nhập tên cơ sở"
-                                        value={this.state.newCourt.court_name}
+                                        value={this.state.newCourt.courtName}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
@@ -297,13 +298,13 @@ export default class extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="open_time">Giờ mở cửa</label>
+                                    <label htmlFor="openTime">Giờ mở cửa</label>
                                     <input
-                                        id="open_time"
-                                        name="open_time"
+                                        id="openTime"
+                                        name="openTime"
                                         className="form-control"
                                         placeholder="Nhập giờ mở cửa (ví dụ: 07:00)"
-                                        value={this.state.newCourt.open_time}
+                                        value={this.state.newCourt.openTime}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
@@ -371,13 +372,13 @@ export default class extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="court_name">Tên cơ sở</label>
+                                    <label htmlFor="courtName">Tên cơ sở</label>
                                     <input
-                                        id="court_name"
-                                        name="court_name"
+                                        id="courtName"
+                                        name="courtName"
                                         className="form-control"
                                         placeholder="Nhập tên cơ sở"
-                                        value={this.state.newCourt.court_name}
+                                        value={this.state.newCourt.courtName}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />
@@ -395,13 +396,13 @@ export default class extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="open_time">Khung giờ hoạt động</label>
+                                    <label htmlFor="openTime">Khung giờ hoạt động</label>
                                     <input
-                                        id="open_time"
-                                        name="open_time"
+                                        id="openTime"
+                                        name="openTime"
                                         className="form-control"
                                         placeholder="Nhập giờ mở cửa (7:00)"
-                                        value={this.state.newCourt.open_time}
+                                        value={this.state.newCourt.openTime}
                                         onChange={this.handleInputChange}
                                         readOnly={this.state.isDetailView}
                                     />

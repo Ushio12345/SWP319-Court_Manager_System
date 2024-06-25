@@ -1,23 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import '../header/index.css';
-import '../../App.css';
-import forbad_logo from '../../assets/images/forbad_logo.png'; 
+import "./index.css";
+import "../../App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+
+import forbad_logo from "../../assets/images/forbad_logo.png";
 
 const Header = ({ isLoggedIn, user, handleLogout }) => {
     return (
         <div>
             <section className="header">
-                <div className="header-top">
+                <div className="header-top ">
                     <div className="logo">
                         <img src={forbad_logo} alt="Logo" />
                     </div>
-                    <div className="search-name">
-                        <input type="text" placeholder="Nhập tên sân cần tìm" />
-                        <i className="fa-solid fa-magnifying-glass" />
-                    </div>
+
                     <div className="header-top-right">
-                        <div className="list-location">
+                        {/* <div className="list-location">
                             <p>
                                 <i className="fa-solid fa-location-dot" /> Tìm theo vị trí
                             </p>
@@ -37,15 +37,24 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                     </li>
                                 </ul>
                             </div>
-                        </div>
+                        </div> */}
+
                         <div className="login">
+                            <div className="search-name m-auto p-3 w-100">
+                                <input className="w-100 p-1" style={{ borderRadius: "10px" }} type="text" placeholder="Nhập tên sân cần tìm " />
+                            </div>
                             {isLoggedIn ? (
                                 <div className="user-info">
-                                    <div className="user-name"><p>Xin chào, {user.username}</p></div>
                                     <Link to="/updateProfile" className="user">
                                         <img src={user.avatar} alt="User Avatar" />
-                                    </Link>  
-                                    <button className="btn btn-primary" onClick={handleLogout}>Đăng xuất</button>       
+                                        <div className="user-name m-0">
+                                            <p>Xin chào, {user.username}</p>
+                                        </div>
+                                    </Link>
+
+                                    <button className="btn btn-primary w-25 py-2" onClick={handleLogout}>
+                                        Đăng xuất
+                                    </button>
                                 </div>
                             ) : (
                                 <div className="auth-buttons">
@@ -60,12 +69,13 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                         </div>
                     </div>
                 </div>
+
                 <div className="header-bot">
                     <Link to="/" className="active">
                         Trang Chủ
                     </Link>
                     <Link to="/about">Giới Thiệu</Link>
-                    {isLoggedIn ? (<Link to="/historyOrder">Lịch sử đặt sân</Link>) : ""}
+                    {isLoggedIn ? <Link to="/historyOrder">Lịch sử đặt sân</Link> : ""}
                     <Link to="/contact">Liên hệ</Link>
                     <Link to="/rules">Quy định</Link>
                 </div>

@@ -1,3 +1,4 @@
+// App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import GuestPage from "./pages/guest/index";
@@ -8,6 +9,8 @@ import CourtManager from "./page/court_manager/CourtManager";
 import ForgotPassword from "./pages/forgot-password";
 import TokenResetPassword from "./pages/token-reset-password";
 import InputNewPassword from "./pages/input-new-password";
+import Booking from "../src/page/customer/bookingPage/Booking";
+import DetailBooking from "./page/customer/bookingPage/detailBooking/detailBooking";
 
 function App() {
     return (
@@ -21,6 +24,8 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/verify-token" element={<TokenResetPassword />} />
                 <Route path="/reset-password" element={<InputNewPassword />} />
+                <Route path="/bookingPage" element={<Booking />} />
+                <Route path="/detailBooking" element={<DetailBooking />} />
             </Routes>
         </Router>
     );

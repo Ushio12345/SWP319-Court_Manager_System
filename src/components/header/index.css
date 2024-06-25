@@ -12,9 +12,10 @@
     justify-content: space-between;
     color: #eeeded;
     border-bottom: 3px solid #eeeded;
+    width: 100%;
 }
 .header .header-top .logo {
-    width: 450px;
+    width: 10%;
 }
 .header .header-top .logo img {
     width: 150px;
@@ -22,19 +23,28 @@
 .header .header-top .header-top-right {
     display: flex;
     align-items: center;
-    width: 500px;
+    justify-content: end;
+    width: 90%;
 }
-.header .header-top .header-top-right .login {
+.header-top-right .login {
+    width: 60%;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+.header .header-top .header-top-right .location {
+    width: 20%;
+}
+.header-top-right button {
+    padding: 0;
+}
+
 .header .header-top .header-top-right .login a {
     padding: 10px 15px;
     margin: 0 10px;
     color: white;
-    width: 110px;
 }
 .header .header-top .header-top-right .login .user {
-    width: 90px;
     border-radius: 50%;
 }
 .header .header-top .header-top-right .login .user img {
@@ -128,6 +138,7 @@
     font-weight: 600;
     position: relative;
     cursor: pointer;
+    color: white;
 }
 .header .header-bot a::before,
 .header .header-bot p::before {
@@ -162,11 +173,15 @@
 
 .user-info {
     display: flex;
-    margin-left: 100px;
-}
 
+    align-items: center;
+
+    justify-content: end;
+    width: 100%;
+}
 .user-name {
     margin-top: 30px;
 }
-
-
+.auth-buttons {
+    width: 100%;
+}
