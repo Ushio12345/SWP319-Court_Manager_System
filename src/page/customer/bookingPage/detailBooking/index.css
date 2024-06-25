@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.fromOrder {
+    padding: 300px 0 40px 0;
+}
+.detailOrder .button-function button {
+}
+.detailOrder .info-order,
+.detailOrder .info-customer {
+    background-color: white;
+    padding: 30px;
+    margin-left: 30px;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}

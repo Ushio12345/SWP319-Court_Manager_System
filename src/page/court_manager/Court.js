@@ -10,6 +10,8 @@ export default class extends Component {
         newCourt: {
             courtId: "",
             courtName: "",
+            courtId: "",
+            courtName: "",
             address: "",
             openTime: "",
             closeTime: "",
@@ -227,6 +229,7 @@ export default class extends Component {
                                     </div>
                                     <div className="col-md-6">
                                         <h4>{this.state.newCourt.courtName}</h4>
+                                        <h4>{this.state.newCourt.courtName}</h4>
                                         <p>
                                             <strong>Mã cơ sở:</strong> {this.state.newCourt.courtId}
                                         </p>
@@ -263,6 +266,7 @@ export default class extends Component {
                             onClick={() =>
                                 this.setState({
                                     newCourt: {
+                                        courtName: "",
                                         courtName: "",
                                         address: "",
                                         openTime: "",
@@ -363,7 +367,7 @@ export default class extends Component {
                             </div>
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <label htmlFor="court_name">Tên cơ sở</label>
+                                    <label htmlFor="courtName">Tên cơ sở</label>
                                     <input
                                         id="courtName"
                                         name="courtName"
@@ -387,6 +391,7 @@ export default class extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
+                                    <label htmlFor="openTime">Giờ mở cửa</label>
                                     <label htmlFor="openTime">Giờ mở cửa</label>
                                     <input
                                         id="openTime"

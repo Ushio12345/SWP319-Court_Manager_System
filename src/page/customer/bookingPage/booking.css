@@ -1,0 +1,230 @@
+@import url("https://fonts.googleapis.com/css2?family=Playwrite+PL:wght@100..400&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
+.detail-yard {
+    width: 80%;
+    padding: 200px 0;
+    margin: 0 auto;
+    font-family: "Roboto Condensed", sans-serif;
+}
+.bookingPage {
+    font-family: "Roboto Condensed", sans-serif;
+}
+.detail-yard h1 {
+    font-size: 30px;
+    font-weight: 700;
+}
+.detail-yard i {
+    color: red;
+}
+.detail-yard .rate i {
+    color: rgb(234, 234, 90);
+}
+.detail-yard .detail-yard-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+.detail-yard .detail-yard-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.detail-yard .detail-yard-info .yard-left,
+.detail-yard .detail-yard-info .yard-right {
+    height: 400px;
+}
+.detail-yard .detail-yard-info .yard-left {
+    background-color: white;
+    font-size: 18px;
+    padding: 20px;
+}
+.detail-yard .detail-yard-info .yard-left span {
+    font-size: 20px;
+    font-weight: 700;
+}
+.detail-yard .detail-yard-info .yard-left h3 {
+    border-left: 5px solid green;
+    padding-left: 10px;
+    font-size: 25px;
+    font-weight: 800;
+}
+.detail-yard .detail-yard-info .yard-service {
+    margin: 30px 0;
+    background-color: #f3f3f3;
+    padding: 30px 10px;
+    border-radius: 20px;
+}
+.detail-yard .detail-yard-info .yard-service i {
+    color: green;
+    margin-right: 10px;
+}
+.detail-yard .detail-yard-info .yard-service div {
+    padding: 10px;
+}
+.detail-yard .detail-yard-info .yard-service h4 {
+    font-weight: 800;
+    font-size: 22px;
+    position: relative;
+    padding-bottom: 10px;
+}
+.detail-yard .detail-yard-info .yard-service h4::before {
+    position: absolute;
+    content: "";
+    bottom: -3px;
+    left: 10px;
+    width: 150px;
+    background-color: orangered;
+    height: 4px;
+}
+.form-booking {
+    font-weight: 6 0;
+    background-color: white;
+    padding: 40px;
+}
+.form-booking .nap-gio {
+    border: 1px solid black;
+    padding: 20px;
+}
+.form-booking .nap-gio h2 {
+    font-size: 20px;
+    font-weight: 800;
+}
+.form-booking .nap-gio .input-gio input {
+    margin: 10px 0;
+    width: 100%;
+    height: 30px;
+    padding-left: 10px;
+    border: 2px solid black;
+}
+.form-booking button {
+    padding: 10px;
+    margin: 10px 0 0 0;
+    background-color: #002e86;
+}
+
+/* order */
+.order .select-slot ul li button {
+    background-color: #002e86;
+    color: white;
+    margin-right: 30px;
+}
+.order .select-slot {
+    background-color: #f5f5f5;
+}
+.order .select-slot table th,
+.order .select-slot table td {
+    background-color: #f3f3f3;
+    color: black;
+    text-align: center;
+}
+.order .select-slot table {
+    width: 100%;
+    padding: 50px;
+}
+.order .select-slot table td:hover:not(:first-child) {
+    background-color: #002e86;
+    transition: 0.5s;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+}
+.selected {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+.yard .card-yard {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+.yard .card-yard:hover {
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+        rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+.yard .card-yard img {
+    border-radius: 20px;
+    width: 100%;
+    overflow: hidden;
+}
+.yard .card-yard:hover .card-yard-img img {
+    transform: scale(1.2);
+    transition: 0.5s;
+}
+.yard .card-yard-img {
+    padding: 10px;
+}
+.yard .card-yard-content {
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.yard .card-yard-content p {
+    font-size: 15px;
+    text-align: left;
+}
+.yard .card-yard-content a {
+    font-size: 17px;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 5px 10px;
+}
+
+.yard .card-yard-content a:hover {
+    background-color: #1f1f6a;
+    color: #eeeded !important;
+    transition: 0.5s;
+}
+
+.yard[data-index="1"] .list-yard {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-gap: 20px;
+}
+.yard[data-index="1"] .list-yard h1::before {
+    position: absolute;
+    content: "";
+    top: 50%;
+    left: 10%;
+    background-color: black;
+    width: 20%;
+    height: 3px;
+}
+.yard[data-index="1"] .list-yard h1::after {
+    position: absolute;
+    content: "";
+    top: 50%;
+    right: 10%;
+    background-color: black;
+    width: 20%;
+    height: 3px;
+}
+.yard[data-index="1"] .list-yard .card-yard:nth-child(2),
+.yard[data-index="1"] .list-yard .card-yard:nth-child(3) {
+    display: flex;
+    align-items: center;
+}
+.yard[data-index="1"] .list-yard .card-yard .card-yard-img {
+    overflow: hidden;
+}
+.yard[data-index="1"] .list-yard .card-yard .card-yard-img:nth-child(2),
+.yard[data-index="1"] .list-yard .card-yard .card-yard-img:nth-child(3) {
+    width: 50%;
+}
+.yard[data-index="1"] .list-yard .card-yard:nth-child(1) {
+    grid-row: 1/3;
+}
+.yard h1 {
+    font-size: 30px;
+}
+.bookingPage h1 {
+    text-align: center;
+}
+
+.feedback {
+    border: 1px solid black;
+
+    width: 100%;
+    margin: 50px auto;
+}
+.feedback h3 {
+}
