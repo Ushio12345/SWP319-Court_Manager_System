@@ -1,36 +1,38 @@
-import React, { Component } from "react";
+import React from "react";
 
-export default class CardYard extends Component {
-    render() {
+const CardYard = ({ court }) => {
+    const renderStars = (rate) => {
+        const totalStars = 5; // Tổng số ngôi sao
+        const stars = [];
+        for (let i = 1; i <= totalStars; i++) {
+            if (i <= rate) {
+                stars.push(<span key={i} className="fa fa-star checked" style={{ color: "#ffc107" }}></span>);
+            } else {
+                stars.push(<span key={i} className="fa fa-star" style={{ color: "#000000" }}></span>);
+            }
+        }
+        return stars;
+    };
+
+    // Kiểm tra xem court có tồn tại và có thuộc tính imageUrl không
+    if (!court || !court.imageUrl) {
+        return null; // Trả về null nếu không có dữ liệu hợp lệ
+    }
+
         return (
-            <div>
                 <div className="card-yard">
                     <div className="card-yard-img">
-                        <img src="asserts/img/download.jpg" alt="Ảnh Sân" />
+                {court.imageUrl && <img src={court.imageUrl} alt="Ảnh Sân" />} {/* Kiểm tra imageUrl trước khi sử dụng */}
                     </div>
                     <div className="card-yard-content">
-                        <p>Tên sân:</p>
-                        <p>Địa chỉ:</p>
-                        <p>Giá tiền:</p>
-                        <p>Giờ mở cửa:</p>
-                        {/* <div className="stars">
-                            <form action>
-                                <input className="star star-5" id="star-5" type="radio" name="star" />
-                                <label className="star star-5" htmlFor="star-5" />
-                                <input className="star star-4" id="star-4" type="radio" name="star" />
-                                <label className="star star-4" htmlFor="star-4" />
-                                <input className="star star-3" id="star-3" type="radio" name="star" />
-                                <label className="star star-3" htmlFor="star-3" />
-                                <input className="star star-2" id="star-2" type="radio" name="star" />
-                                <label className="star star-2" htmlFor="star-2" />
-                                <input className="star star-1" id="star-1" type="radio" name="star" />
-                                <label className="star star-1" htmlFor="star-1" />
-                            </form>
-                        </div> */}
-                        <a href>Đặt Ngay</a>
-                    </div>
-                </div>
+                <p>Tên sân: {court.courtName}</p>
+                <p>Địa chỉ: {court.address}</p>
+                <p>Giờ mở cửa: {court.openTime} - {court.closeTime}</p>
+                <p>Đánh giá: {renderStars(court.rate)}</p>
+                <a href="#">Đặt Ngay</a>
+            </div>
             </div>
         );
-    }
-}
+};
+
+export default CardYard;

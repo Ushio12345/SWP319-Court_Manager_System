@@ -1,5 +1,6 @@
-import React, { Component, Profiler } from "react";
+import React, { Component } from "react";
 import axios from "axios";
+
 export default class Staff extends Component {
     state = {
         StaffList: [],
@@ -10,15 +11,42 @@ export default class Staff extends Component {
             email: "",
             profile_picture: "",
         },
-        isDetailView: false,
+        courts: [],
+        newCourt: {
+            court_name: "",
+            address: "",
+            open_time: "",
+            close_time: "",
+
+            rate: "",
+            user_id: "",
+        },
+
         showAlert: false,
         alertMessage: "",
         alertType: "",
     };
+
     componentDidMount() {
         this.fetchStaffList();
+        this.fetchCourts();
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.selectedCourtId !== this.props.selectedCourtId) {
+            this.fetchStaffList();
+        }
+    }
+    fetchCourts = () => {
+        axios
+            .get("http://localhost:3001/court")
+            .then((res) => {
+                this.setState({ courts: res.data });
+            })
+            .catch((err) => {
+                alert("Không thể lấy dữ liệu từ API");
+            });
+    };
     fetchStaffList = () => {
         axios
             .get("http://localhost:3001/staff")
@@ -32,7 +60,6 @@ export default class Staff extends Component {
 
     handleInputChange = (event) => {
         const { name, value, files } = event.target;
-        // Kiểm tra xem trường nhập là hình ảnh
         if (files) {
             const profile_picture = URL.createObjectURL(files[0]);
             this.setState((prevState) => ({
@@ -52,8 +79,9 @@ export default class Staff extends Component {
     };
 
     handleAddStaff = () => {
+        const staffToAdd = { ...this.state.newStaff, court_id: this.props.selectedCourtId };
         axios
-            .post("http://localhost:3001/staff", this.state.newStaff)
+            .post("http://localhost:3001/staff", staffToAdd)
             .then(() => {
                 this.fetchStaffList();
                 this.setState({
@@ -92,7 +120,7 @@ export default class Staff extends Component {
         }
     };
 
-    handleUpdatetaff = () => {
+    handleUpdateStaff = () => {
         const { id, ...updateStaff } = this.state.newStaff;
         axios
             .put(`http://localhost:3001/staff/${id}`, updateStaff)
@@ -113,100 +141,23 @@ export default class Staff extends Component {
     };
 
     render() {
+        const filteredStaffList = this.state.StaffList.filter((staff) => staff.court_id === this.props.selectedCourtId);
+
         return (
             <div>
-                {/* Modal Thông Báo */}
+                {/* Alert Message */}
                 {this.state.showAlert && (
                     <div className={`alert alert-${this.state.alertType} alert-dismissible fade show`} role="alert">
                         {this.state.alertMessage}
                         <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 )}
+                <h1 className="text-center">Danh sách nhân viên</h1>
 
-                {/* Modal Chi Tiết */}
-                <div className="modal fade" id="detailStaff" tabIndex="-1" aria-labelledby="detailStaffLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-lg">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="detailStaffLabel">
-                                    Thông tin nhân viên
-                                </h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <img src={this.state.newStaff.profile_picture} alt="User Image" className="img-fluid" />
-                                    </div>
-                                    <div className="col-md-6">
-                                        <h4>{this.state.newStaff.full_name}</h4>
-                                        <p>
-                                            <strong>Mã nhân viên:</strong> {this.state.newStaff.id}
-                                        </p>
-                                        <p>
-                                            <strong>Mã cơ sở:</strong> {this.state.newStaff.court_id}
-                                        </p>
-
-                                        <p>
-                                            <strong>Số điện thoại:</strong> {this.state.newStaff.phone_number}
-                                        </p>
-                                        <p>
-                                            <strong>Email:</strong> {this.state.newStaff.email}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                                    Đóng
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* Kết thúc Modal Chi Tiết */}
-                {/*  */}
-                <div className="row">
-                    <div className="col-md-8">
-                        <button
-                            id="btnThemStaff"
-                            className="btn btn-success w-25"
-                            data-bs-toggle="modal"
-                            data-bs-target="#addStaff"
-                            onClick={() => {
-                                this.setState({
-                                    newStaff: {
-                                        court_id: "",
-                                        full_name: "",
-                                        phone_number: "",
-                                        email: "",
-                                        profile_picture: "",
-                                    },
-                                    isDetailView: false,
-                                });
-                            }}
-                        >
-                            <i className="fa fa-plus mr-1" />
-                            Thêm Mới
-                        </button>
-                    </div>
-                    <div className="col-md-4">
-                        <div className="input-group mb-3">
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Nhập từ khóa"
-                                aria-label="Recipient's username"
-                                aria-describedby="basic-addon2"
-                            />
-                            <div className="input-group-append">
-                                <span className="input-group-text" id="basic-addon2">
-                                    <i className="fa fa-search" />
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <button className="btn btn-success w-25 mb-2" data-bs-toggle="modal" data-bs-target="#addStaff">
+                    Thêm nhân viên
+                </button>
+                {/* Staff List */}
                 <div className="tblStaff" id="tblStaff">
                     <table className="table table-bordered">
                         <thead>
@@ -221,7 +172,7 @@ export default class Staff extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.StaffList.map((staff, index) => (
+                            {filteredStaffList.map((staff, index) => (
                                 <tr key={staff.id}>
                                     <td className="text-center">{index + 1}</td>
                                     <td className="text-center">{staff.id}</td>
@@ -230,14 +181,14 @@ export default class Staff extends Component {
                                     <td className="text-center">{staff.phone_number}</td>
                                     <td>{staff.email}</td>
                                     <td className="d-flex">
-                                        <button
+                                        {/* <button
                                             className="btn btn-info mr-2 btn-action"
                                             data-bs-toggle="modal"
                                             data-bs-target="#detailStaff"
                                             onClick={() => this.setState({ newStaff: staff, isDetailView: true })}
                                         >
                                             <i className="fa fa-info-circle"></i>
-                                        </button>
+                                        </button> */}
                                         <button
                                             className="btn btn-warning mr-2"
                                             data-bs-toggle="modal"
@@ -254,20 +205,16 @@ export default class Staff extends Component {
                             ))}
                         </tbody>
                     </table>
-                    {/* END TABLE SẢN PHẨM */}
                 </div>
-                <br />
 
-                {/*-them mơi cập nhât modal Staff-*/}
+                {/* Add Staff Modal */}
                 <div className="modal fade" id="addStaff" tabIndex="-1" aria-labelledby="addStaffLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
-                            {/* Modal Header */}
                             <div className="modal-header">
                                 <h4 className="modal-title">Thêm nhân viên</h4>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            {/* Modal body */}
                             <div className="modal-body">
                                 <div className="form-group">
                                     <label htmlFor="full_name">Tên nhân viên</label>
@@ -307,45 +254,42 @@ export default class Staff extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <labe htmlFor="court_id">Cơ sở làm việc</labe>
+                                    <label htmlFor="court_id">Cơ sở làm việc</label>
                                     <input
                                         id="court_id"
                                         name="court_id"
                                         className="form-control"
                                         placeholder="Nhập cơ sở"
-                                        value={this.state.newStaff.court_id}
+                                        value={this.props.selectedCourtId}
                                         onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
+                                        readOnly
                                     />
                                 </div>
-
-                                <div className="modal-footer">
-                                    {!this.state.isDetailView && (
-                                        <div className="d-flex w-100">
-                                            <button type="button" className="btn btn-primary" onClick={this.handleAddStaff}>
-                                                Thêm mới
-                                            </button>
-                                        </div>
-                                    )}
-
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                                        Đóng
-                                    </button>
-                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                {!this.state.isDetailView && (
+                                    <div className="d-flex w-100">
+                                        <button type="button" className="btn btn-primary" onClick={this.handleAddStaff}>
+                                            Thêm mới
+                                        </button>
+                                    </div>
+                                )}
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                                    Đóng
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                {/* Update Staff Modal */}
                 <div className="modal fade" id="updateStaff" tabIndex="-1" aria-labelledby="addStaffLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
-                            {/* Modal Header */}
                             <div className="modal-header">
                                 <h4 className="modal-title">Cập nhật thông tin nhân viên</h4>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            {/* Modal body */}
                             <div className="modal-body">
                                 <div className="form-group">
                                     <label htmlFor="full_name">Tên nhân viên</label>
@@ -385,36 +329,38 @@ export default class Staff extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <labe htmlFor="court_id">Cơ sở làm việc</labe>
-                                    <input
-                                        id="court_id"
+                                    <label htmlFor="court_id_update">Cơ sở làm việc</label>
+                                    <select
+                                        id="court_id_update"
                                         name="court_id"
                                         className="form-control"
-                                        placeholder="Nhập cơ sở"
                                         value={this.state.newStaff.court_id}
                                         onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
+                                    >
+                                        <option value="">Chọn cơ sở làm việc</option>
+                                        {this.state.courts.map((court) => (
+                                            <option key={court.id} value={court.id}>
+                                                {court.court_name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
-
-                                <div className="modal-footer">
-                                    {!this.state.isDetailView && (
-                                        <div className="d-flex w-100">
-                                            <button type="button" className="btn btn-success " onClick={this.handleUpdatetaff}>
-                                                Cập nhật
-                                            </button>
-                                        </div>
-                                    )}
-
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                                        Đóng
-                                    </button>
-                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                {!this.state.isDetailView && (
+                                    <div className="d-flex w-100">
+                                        <button type="button" className="btn btn-success" onClick={this.handleUpdateStaff}>
+                                            Cập nhật
+                                        </button>
+                                    </div>
+                                )}
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                                    Đóng
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                {/* kết thúc modal newStaff */}
             </div>
         );
     }

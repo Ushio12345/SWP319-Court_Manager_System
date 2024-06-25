@@ -14,6 +14,7 @@ class GuestPage extends Component {
             user: {
                 username: "",
                 avatar: "",
+                role: ""
             },
         };
     }
@@ -23,6 +24,7 @@ class GuestPage extends Component {
         const userId = localStorage.getItem("userId");
         const username = localStorage.getItem("fullName");
         const avatar = localStorage.getItem("imageUrl");
+        const role = localStorage.getItem("role");
 
         if (userId && username && avatar) {
             this.setState({
@@ -30,6 +32,7 @@ class GuestPage extends Component {
                 user: {
                     username: username,
                     avatar: avatar,
+                    role: role
                 },
             });
         }
@@ -42,6 +45,7 @@ class GuestPage extends Component {
         localStorage.removeItem("imageUrl");
         localStorage.removeItem("jwtToken");
         localStorage.removeItem("tokenExpiration");
+        localStorage.removeItem("role");
 
         // Update logout state
         this.setState({
@@ -49,6 +53,7 @@ class GuestPage extends Component {
             user: {
                 username: "",
                 avatar: "",
+                role: ""
             },
         });
 
@@ -63,6 +68,11 @@ class GuestPage extends Component {
             <div className="GuestPage">
                 <section className="header">
                     <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
+                    {user.role === "customer" && ( // Hiển thị chào mừng nếu role là customer
+                        <div className="welcome-message">
+                            Xin chào {user.username}
+                        </div>
+                    )}
                 </section>
                 <Banner />
                 <div className="filter">

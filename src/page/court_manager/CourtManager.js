@@ -1,11 +1,11 @@
 import React, { Component } from "react";
+import axios from "axios";
 import "../../css/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 
 import Court from "./Court";
 import Staff from "./Staff";
-
 import Yard from "./Yard";
 import Services from "./Services";
 import Order from "./Order";
@@ -20,15 +20,15 @@ export default class CourtManager extends Component {
                 username: "",
                 avatar: "",
             },
+            courts: [],
+            selectedCourtId: "",
         };
     }
 
     componentDidMount() {
-        // Check localStorage or other storage to get user info
         const userId = localStorage.getItem("userId");
         const username = localStorage.getItem("fullName");
         const avatar = localStorage.getItem("imageUrl");
-
         if (userId && username && avatar) {
             this.setState({
                 isLoggedIn: true,
@@ -38,18 +38,30 @@ export default class CourtManager extends Component {
                 },
             });
         }
+        this.fetchCourts();
     }
 
+    fetchCourts = () => {
+        axios
+            .get("http://localhost:3001/court")
+            .then((res) => {
+                this.setState({ courts: res.data });
+            })
+            .catch((err) => {
+                alert("Không thể lấy dữ liệu từ API");
+            });
+    };
+
+    handleCourtChange = (event) => {
+        this.setState({ selectedCourtId: event.target.value });
+    };
 
     handleLogout = () => {
-        // Clear user data from localStorage
         localStorage.removeItem("userId");
         localStorage.removeItem("fullName");
         localStorage.removeItem("imageUrl");
         localStorage.removeItem("jwtToken");
         localStorage.removeItem("tokenExpiration");
-
-        // Update logout state
         this.setState({
             isLoggedIn: false,
             user: {
@@ -57,35 +69,33 @@ export default class CourtManager extends Component {
                 avatar: "",
             },
         });
-
-        // Redirect to login page
         window.location.href = "/";
     };
 
-
-
     render() {
-
-        const { isLoggedIn, user } = this.state;
-
+        const { isLoggedIn, user, courts, selectedCourtId } = this.state;
         return (
             <div>
                 <section className="manager">
                     <div className="topbar">
                         <div className="logo">
                             <div className="logo-img">
-                                <img src="asserts/img/logo-cau-long-dep-01.png" alt />
+                                <img src="asserts/img/logo-cau-long-dep-01.png" alt="logo" />
                             </div>
                             <div className="nameapp">
                                 <p>ForBaD</p>
                             </div>
                         </div>
                         <div className="select-branch">
-                            <select id="branch-select">
-                                <option value>Thủ Đức</option>
-                                <option value={1}>Gò Vấp</option>
-                                <option value={2}>Bình Thạnh</option>
-                                <option value={3}>Tân Bình</option>
+                            <select id="" onChange={this.handleCourtChange}>
+                                <option value={""} className="text-center">
+                                    ---Chọn cơ sở---
+                                </option>
+                                {courts.map((court) => (
+                                    <option value={court.id} key={court.id}>
+                                        {court.court_name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="search">
@@ -104,7 +114,7 @@ export default class CourtManager extends Component {
                         </div>
                         <div className="login">
                             <a href="updateProfile.html" className="user">
-                                <img src={user.avatar} alt />
+                                <img src={user.avatar} alt="User Avatar" />
                             </a>
                             <p className="user-name">Xin chào, {user.username}</p>
                         </div>
@@ -124,7 +134,7 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsOrder" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa-solid fa-file-invoice"></i>
+                                                <i className="fa-solid fa-file-invoice"></i>
                                             </span>
                                             <span className="title">Quản lý đơn đặt hàng</span>
                                         </a>
@@ -148,7 +158,7 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsYard" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa fa-table-tennis"></i>
+                                                <i className="fa fa-table-tennis"></i>
                                             </span>
                                             <span className="title">Quản lý Sân</span>
                                         </a>
@@ -156,7 +166,7 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsSlot" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa-solid fa-clock"></i>
+                                                <i className="fa-solid fa-clock"></i>
                                             </span>
                                             <span className="title">Quản lý Slot</span>
                                         </a>
@@ -164,7 +174,7 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsServices" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa-solid fa-mug-saucer"></i>
+                                                <i className="fa-solid fa-mug-saucer"></i>
                                             </span>
                                             <span className="title">Quản lý tiện ích sân</span>
                                         </a>
@@ -233,23 +243,23 @@ export default class CourtManager extends Component {
                                     <Order />
                                 </div>
 
-                                {/* ---------------------------------------kết thúc COw so------------------------------------------------- */}
+                                {/* ---------------------------------------kết thúc Coso------------------------------------------------- */}
 
                                 {/* ----------------------Staff---------------------------------------------------------------------- */}
 
                                 <div className="tab-pane fade" id="dsStaff" role="tabpanel">
-                                    <Staff />
+                                    <Staff selectedCourtId={selectedCourtId} />
                                 </div>
 
                                 {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
                                 <div className="tab-pane fade" id="dsYard" role="tabpanel">
-                                    <Yard />
+                                    <Yard selectedCourtId={selectedCourtId} />
                                 </div>
                                 <div className="tab-pane fade" id="dsServices" role="tabpanel">
                                     <Services />
                                 </div>
                                 <div className="tab-pane fade" id="dsSlot" role="tabpanel">
-                                    <Slot />
+                                    <Slot selectedCourtId={selectedCourtId} />
                                 </div>
                             </div>
                         </div>

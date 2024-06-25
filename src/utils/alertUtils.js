@@ -19,3 +19,19 @@ export const showAlert = (icon, title, text, position) => {
         }
     });
 };
+
+export const showConfirmAlert = (title, text, confirmText, position) => {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        position: position,
+        confirmButtonText: confirmText
+    }).then((result) => {
+        return result; // Return the result of Swal.fire()
+    });
+};
+

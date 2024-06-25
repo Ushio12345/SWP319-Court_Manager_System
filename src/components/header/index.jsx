@@ -39,7 +39,7 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                             </div>
                         </div>
                         <div className="login">
-                            {isLoggedIn ? (
+                            {isLoggedIn && user.role === "customer" ? (
                                 <div className="user-info">
                                     <div className="user-name"><p>Xin chào, {user.username}</p></div>
                                     <Link to="/updateProfile" className="user">
@@ -65,7 +65,9 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                         Trang Chủ
                     </Link>
                     <Link to="/about">Giới Thiệu</Link>
-                    {isLoggedIn ? (<Link to="/historyOrder">Lịch sử đặt sân</Link>) : ""}
+                    {isLoggedIn && user.role === "customer" && (
+                        <Link to="/historyOrder">Lịch sử đặt sân</Link>
+                    )}
                     <Link to="/contact">Liên hệ</Link>
                     <Link to="/rules">Quy định</Link>
                 </div>

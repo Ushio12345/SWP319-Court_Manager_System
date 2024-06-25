@@ -7,7 +7,6 @@ export default class Services extends Component {
         selectedServices: [],
         selectedCourt: "",
         selectedCourtName: "",
-
         courts: [],
         newCourt: {
             court_name: "",
@@ -74,6 +73,26 @@ export default class Services extends Component {
         console.log(this.state.selectedServices);
     };
 
+    handleSaveServices = () => {
+        const { selectedCourt, selectedServices } = this.state;
+
+        const data = {
+            court_id: selectedCourt,
+            services: selectedServices,
+        };
+
+        axios
+            .post("http://localhost:3001/services", data)
+            .then((response) => {
+                console.log("Services saved successfully:", response);
+                alert("Services saved successfully!");
+            })
+            .catch((error) => {
+                console.error("Error saving services:", error);
+                alert("Error saving services!");
+            });
+    };
+
     renderSerSelectedOption = () => {
         if (this.state.selectedServices.length === 0) {
             return <p>Không có dịch vụ nào được chọn.</p>;
@@ -85,7 +104,7 @@ export default class Services extends Component {
                     const service = this.state.Services.find((ser) => ser.id === serviceId);
                     return (
                         <div key={serviceId} className="d-flex align-items-center">
-                            <i className={service.servicesIcon}></i> <li className="ms-3">{service?.servicesName}</li>
+                            <i className={service?.servicesIcon}></i> <li className="ms-3">{service?.servicesName}</li>
                         </div>
                     );
                 })}
@@ -144,7 +163,7 @@ export default class Services extends Component {
                     {this.renderSer()}
                 </div>
                 <div className="w-25 m-auto">
-                    <button onClick={this.getValueServices} className="btn btn-primary mt-3">
+                    <button onClick={this.handleSaveServices} className="btn btn-primary mt-3">
                         Hoàn tất
                     </button>
                 </div>
