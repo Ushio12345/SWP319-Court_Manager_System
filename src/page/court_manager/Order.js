@@ -103,7 +103,7 @@ export default class Order extends Component {
                 )}
 
                 {/* Modal Chi Tiết */}
-                <div className="modal fade" id="detailModal" tabIndex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+                <div className="modal fade" id="detailOrder" tabIndex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
                     <div className="modal-dialog modal-lg">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -129,6 +129,10 @@ export default class Order extends Component {
 
                                         <p>
                                             <strong>Ngày đặt:</strong> {this.state.newOrder.booking_date}
+                                        </p>
+
+                                        <p>
+                                            <strong>Discount:</strong> {this.state.newOrder.discount}
                                         </p>
 
                                         <p>
@@ -201,7 +205,7 @@ export default class Order extends Component {
                                         <button
                                             className="btn btn-info mr-2"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#detailModal"
+                                            data-bs-target="#detailOrder"
                                             onClick={() => this.setState({ newOrder: order, isDetailView: true })}
                                         >
                                             <i className="fa fa-info-circle"></i>
