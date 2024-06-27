@@ -74,7 +74,7 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                     <Link to="/" className="active">
                         Trang Chủ
                     </Link>
-                    <Link to="/about">Giới Thiệu</Link>
+                    <Link to="/aboutUs">Giới Thiệu</Link>
                     {isLoggedIn ? <Link to="/historyOrder">Lịch sử đặt sân</Link> : ""}
                     <Link to="/contact">Liên hệ</Link>
                     <Link to="/rules">Quy định</Link>

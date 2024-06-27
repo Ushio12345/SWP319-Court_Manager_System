@@ -38,6 +38,9 @@ export default function Booking() {
                     </div>
                 </div>
             </section>
+            <section className="feedback container w-50">
+                <Feedback />
+            </section>
             <section>
                 <div className="container">
                     <h1 className="mt-5">SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
@@ -51,10 +54,6 @@ export default function Booking() {
                         <CardYard />
                     </div>
                 </div>
-            </section>
-
-            <section className="feedback container w-50">
-                <Feedback />
             </section>
 
             <Footer />

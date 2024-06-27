@@ -11,6 +11,10 @@ import TokenResetPassword from "./pages/token-reset-password";
 import InputNewPassword from "./pages/input-new-password";
 import Booking from "../src/page/customer/bookingPage/Booking";
 import DetailBooking from "./page/customer/bookingPage/detailBooking/detailBooking";
+import GioiThieu from "./page/customer/introduction/GioiThieu";
+import LienHe from "./page/customer/introduction/LienHe";
+import HistoryBooking from "./page/customer/historyBooking/HistoryBooking";
+import Rule from "./page/customer/rules/Rule";
 
 function App() {
     return (
@@ -26,6 +30,10 @@ function App() {
                 <Route path="/reset-password" element={<InputNewPassword />} />
                 <Route path="/bookingPage" element={<Booking />} />
                 <Route path="/detailBooking" element={<DetailBooking />} />
+                <Route path="/aboutUs" element={<GioiThieu />} />
+                <Route path="/contact" element={<LienHe />} />
+                <Route path="/historyOrder" element={<HistoryBooking />} />
+                <Route path="/rules" element={<Rule />} />
             </Routes>
         </Router>
     );
