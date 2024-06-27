@@ -109,6 +109,10 @@ export default function Booking() {
                     </section>
                 </div>
             </section>
+<<<<<<< HEAD
+=======
+
+>>>>>>> dev-qanh
             <Footer />
         </div>
     );

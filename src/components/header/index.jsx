@@ -8,11 +8,8 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import forbad_logo from "../../assets/images/forbad_logo.png";
 
 const Header = ({ isLoggedIn, user, handleLogout }) => {
-
     // handleManagePage = () => {
     //     const roles = JSON.parse(localStorage.getItem("roles"));
-
-        
 
     //     // Redirect to login page
     //     window.location.href = "/";
@@ -32,9 +29,15 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                         <div className="login">
                             {isLoggedIn ? (
                                 <div className="user-info">
-                                    <div className="user-name"><p>{user.username}</p></div>
-                                    <div className="user"><img src={user.avatar} alt="User Avatar" /></div>
-                                    <button className="btn btn-primary" onClick={handleLogout}>Đăng xuất</button>
+                                    <div className="user-name">
+                                        <p>{user.username}</p>
+                                    </div>
+                                    <div className="user">
+                                        <img src={user.avatar} alt="User Avatar" />
+                                    </div>
+                                    <button className="btn btn-primary" onClick={handleLogout}>
+                                        Đăng xuất
+                                    </button>
                                 </div>
                             ) : (
                                 <div className="auth-buttons">
@@ -55,9 +58,7 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                         Trang Chủ
                     </Link>
                     {/* <Link onClick={handleManagePage}>Quản Lý</Link> */}
-                    {isLoggedIn && (
-                        <Link to="/history">Lịch sử đặt hàng</Link>
-                    )} 
+                    {isLoggedIn && <Link to="/history">Lịch sử đặt hàng</Link>}
                     <Link to="/about">Giới Thiệu</Link>
                     <Link to="/contact">Liên hệ</Link>
                     <Link to="/rules">Quy định</Link>
