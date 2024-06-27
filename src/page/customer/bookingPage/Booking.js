@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import $ from 'jquery';
-import 'slick-carousel';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import React, { useEffect, useState, useRef } from "react";
+import $ from "jquery";
+import "slick-carousel";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 import Header from "../../../components/header/index";
 import Footer from "../../../components/footer";
@@ -11,7 +11,6 @@ import NapGio from "./formBooking/NapGio";
 import Slot from "./formBooking/Slot";
 import "../bookingPage/booking.css";
 import CardYard from "../../../components/CardYard";
-import "../bookingPage/booking.css";
 import Feedback from "../bookingPage/feedback/feedback";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../../config/axiosConfig";
@@ -22,13 +21,14 @@ export default function Booking() {
     const [user, setUser] = useState({
         username: "",
         avatar: "",
-        roles: []
+        roles: [],
     });
 
     const [latestCourts, setLatestCourts] = useState([]);
+    const listYardRef = useRef(null);
 
     const location = useLocation();
-    const { court } = location.state || {}; // Check if state exists
+    const { court } = location.state || {};
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -38,7 +38,7 @@ export default function Booking() {
             setUser({
                 username: user.fullName,
                 avatar: user.imageUrl,
-                roles: user.roles
+                roles: user.roles,
             });
         }
 
@@ -51,28 +51,63 @@ export default function Booking() {
                 showAlert("error", "Lỗi", "Lấy dữ liệu không thành công. Vui lòng thử lại !", "top-end");
                 console.error("There was an error fetching the amenities!", error);
             });
-
-        $(".ListcardYard").slick({
-            slidesToShow: 3,
-            slidesToScroll: 1,
-            autoplay: true,
-            autoplaySpeed: 2000,
-        });
     }, []);
+
+    useEffect(() => {
+        const initializeSlick = () => {
+            if (listYardRef.current && !$(listYardRef.current).hasClass("slick-initialized")) {
+                $(listYardRef.current).slick({
+                    centerMode: true,
+                    centerPadding: "60px",
+                    slidesToShow: 3,
+                    responsive: [
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                arrows: false,
+                                centerMode: true,
+                                centerPadding: "40px",
+                                slidesToShow: 3,
+                            },
+                        },
+                        {
+                            breakpoint: 480,
+                            settings: {
+                                arrows: false,
+                                centerMode: true,
+                                centerPadding: "40px",
+                                slidesToShow: 2,
+                            },
+                        },
+                    ],
+                });
+            }
+        };
+
+        const timer = setTimeout(() => {
+            initializeSlick();
+        }, 500);
+
+        return () => {
+            clearTimeout(timer);
+            if (listYardRef.current && $(listYardRef.current).hasClass("slick-initialized")) {
+                $(listYardRef.current).slick("unslick");
+            }
+        };
+    }, [latestCourts]);
 
     if (!court) {
         return <div>No court information available</div>;
     }
 
     const handleLogout = () => {
-
         localStorage.removeItem("user");
 
         setIsLoggedIn(false);
         setUser({
             username: "",
             avatar: "",
-            roles: []
+            roles: [],
         });
 
         window.location.href = "/";
@@ -100,8 +135,8 @@ export default function Booking() {
                     <h1 className="mt-5">SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
                     <section className="yard">
                         <div className="container w-4/5">
-                            <div className="list-yard grid lg:grid-cols-4 md:grid-cols-3 gap-4 sm:lg:grid-cols-2">
-                                {latestCourts.slice(0, 4).map((court) => (
+                            <div className="list-yard" ref={listYardRef}>
+                                {latestCourts.slice(0, 10).map((court) => (
                                     <CardYard key={court.courtId} court={court} />
                                 ))}
                             </div>
@@ -109,10 +144,6 @@ export default function Booking() {
                     </section>
                 </div>
             </section>
-<<<<<<< HEAD
-=======
-
->>>>>>> dev-qanh
             <Footer />
         </div>
     );

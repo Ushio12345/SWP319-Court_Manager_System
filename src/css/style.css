@@ -255,6 +255,7 @@ label.star:before {
     border-radius: 20px;
     width: 100%;
     overflow: hidden;
+    height: 200px;
 }
 .yard .card-yard:hover .card-yard-img img {
     transform: scale(1.2);

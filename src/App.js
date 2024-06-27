@@ -15,6 +15,7 @@ import GioiThieu from "./page/customer/introduction/GioiThieu";
 import LienHe from "./page/customer/introduction/LienHe";
 import HistoryBooking from "./page/customer/historyBooking/HistoryBooking";
 import Rule from "./page/customer/rules/Rule";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
     return (

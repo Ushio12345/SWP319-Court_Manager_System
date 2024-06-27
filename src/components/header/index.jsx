@@ -25,17 +25,18 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                         <input type="text" placeholder="Nhập tên sân cần tìm" />
                         <i className="fa-solid fa-magnifying-glass" />
                     </div>
+
                     <div className="header-top-right">
                         <div className="login">
                             {isLoggedIn ? (
                                 <div className="user-info">
-                                    <div className="user-name">
-                                        <p>{user.username}</p>
-                                    </div>
-                                    <div className="user">
+                                    <div className="user d-flex ">
                                         <img src={user.avatar} alt="User Avatar" />
+                                        <div className="user-name">
+                                            <p>{user.username}</p>
+                                        </div>
                                     </div>
-                                    <button className="btn btn-primary" onClick={handleLogout}>
+                                    <button className="btn btn-primary p-2" onClick={handleLogout}>
                                         Đăng xuất
                                     </button>
                                 </div>

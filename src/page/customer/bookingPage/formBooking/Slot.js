@@ -15,9 +15,10 @@ export default class Slot extends Component {
             endDate: addDays(new Date(), 6),
             daysOfWeek: [],
             selectedTab: "lichdon",
-            selectedSlots: [],
+            selectedSlots: {},
             selectedDay: null,
             selectedYard: "",
+            errorMessage: "",
         };
     }
 
@@ -49,31 +50,46 @@ export default class Slot extends Component {
     };
 
     handleTabChange = (tab) => {
-        this.setState({ selectedTab: tab, selectedSlots: [], selectedDay: null });
+        this.setState({ selectedTab: tab, selectedSlots: {}, selectedDay: null, errorMessage: "" });
     };
 
     handleSlotSelection = (slot, dayIndex) => {
         const { selectedTab, selectedSlots, selectedDay } = this.state;
+        const dayKey = this.state.daysOfWeek[dayIndex];
+        const newSelectedSlots = { ...selectedSlots };
+
+        if (!newSelectedSlots[dayKey]) {
+            newSelectedSlots[dayKey] = [];
+        }
 
         if (selectedTab === "lichdon") {
-            this.setState({ selectedSlots: [slot], selectedDay: dayIndex });
-        } else if (selectedTab === "codinh") {
-            if (selectedSlots.includes(slot)) {
-                this.setState({
-                    selectedSlots: selectedSlots.filter((s) => s !== slot),
-                });
-            } else {
-                this.setState({
-                    selectedSlots: [slot],
-                });
+            if (selectedDay !== null && selectedDay !== dayIndex) {
+                this.setState({ errorMessage: "Bạn chỉ có thể chọn nhiều slot trong cùng một ngày." });
+                return;
             }
-        } else if (selectedTab === "linhhoat") {
-            if (selectedDay !== dayIndex) {
-                this.setState({ selectedSlots: [slot], selectedDay: dayIndex });
+
+            if (newSelectedSlots[dayKey].includes(slot)) {
+                newSelectedSlots[dayKey] = newSelectedSlots[dayKey].filter((s) => s !== slot);
+                if (newSelectedSlots[dayKey].length === 0) {
+                    delete newSelectedSlots[dayKey];
+                    this.setState({ selectedDay: null });
+                }
             } else {
-                const slots = selectedSlots.includes(slot) ? selectedSlots.filter((s) => s !== slot) : [...selectedSlots, slot];
-                this.setState({ selectedSlots: slots });
+                newSelectedSlots[dayKey].push(slot);
             }
+
+            this.setState({
+                selectedSlots: newSelectedSlots,
+                selectedDay: Object.keys(newSelectedSlots).length > 0 ? dayIndex : null,
+                errorMessage: "",
+            });
+        } else if (selectedTab === "codinh" || selectedTab === "linhhoat") {
+            newSelectedSlots[dayKey] = [slot];
+            this.setState({
+                selectedSlots: newSelectedSlots,
+                selectedDay: dayIndex,
+                errorMessage: "",
+            });
         }
     };
 
@@ -87,7 +103,7 @@ export default class Slot extends Component {
 
     render() {
         const { court } = this.props;
-        const { startDate, endDate, daysOfWeek, selectedTab, selectedSlots, selectedDay } = this.state;
+        const { startDate, endDate, daysOfWeek, selectedTab, selectedSlots, errorMessage } = this.state;
 
         const slotTimes = {
             "Slot 1": "7:30 - 8:30",
@@ -95,6 +111,10 @@ export default class Slot extends Component {
             "Slot 3": "9:30 - 10:30",
             "Slot 4": "10:30 - 11:30",
         };
+
+        const selectedSlotDetails = Object.entries(selectedSlots).flatMap(([day, slots]) =>
+            slots.map((slot) => `${day} - ${slot}: ${slotTimes[slot]}`)
+        );
 
         return (
             <div className="">
@@ -196,23 +216,26 @@ export default class Slot extends Component {
                                 <table className="table table-borderless">
                                     <thead>
                                         <tr>
-                                            <th>Thứ / Slot</th>
+                                            <th>Slot</th>
                                             {daysOfWeek.map((day, index) => (
                                                 <th key={index}>{day}</th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {["Slot 1", "Slot 2", "Slot 3", "Slot 4"].map((slot, slotIndex) => (
+                                        {Object.keys(slotTimes).map((slot, slotIndex) => (
                                             <tr key={slotIndex}>
                                                 <td>{slot}</td>
                                                 {daysOfWeek.map((_, dayIndex) => (
-                                                    <td
-                                                        key={dayIndex}
-                                                        className={selectedDay === dayIndex && selectedSlots.includes(slot) ? "selected" : ""}
-                                                        onClick={() => this.handleSlotSelection(slot, dayIndex)}
-                                                    >
-                                                        {slotTimes[slot]}
+                                                    <td key={dayIndex} className="slot-times-column">
+                                                        <div
+                                                            className={`slot-time ${
+                                                                selectedSlots[this.state.daysOfWeek[dayIndex]]?.includes(slot) ? "selected" : ""
+                                                            }`}
+                                                            onClick={() => this.handleSlotSelection(slot, dayIndex)}
+                                                        >
+                                                            {slotTimes[slot]}
+                                                        </div>
                                                     </td>
                                                 ))}
                                             </tr>
@@ -229,23 +252,26 @@ export default class Slot extends Component {
                                 <table className="table table-borderless">
                                     <thead>
                                         <tr>
-                                            <th>Thứ / Slot</th>
+                                            <th>Slot</th>
                                             {daysOfWeek.map((day, index) => (
                                                 <th key={index}>{day}</th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {["Slot 1", "Slot 2", "Slot 3", "Slot 4"].map((slot, slotIndex) => (
+                                        {Object.keys(slotTimes).map((slot, slotIndex) => (
                                             <tr key={slotIndex}>
                                                 <td>{slot}</td>
                                                 {daysOfWeek.map((_, dayIndex) => (
-                                                    <td
-                                                        key={dayIndex}
-                                                        className={selectedSlots.includes(slot) ? "selected" : ""}
-                                                        onClick={() => this.handleSlotSelection(slot, dayIndex)}
-                                                    >
-                                                        {slotTimes[slot]}
+                                                    <td key={dayIndex} className="slot-times-column">
+                                                        <div
+                                                            className={`slot-time ${
+                                                                selectedSlots[this.state.daysOfWeek[dayIndex]]?.includes(slot) ? "selected" : ""
+                                                            }`}
+                                                            onClick={() => this.handleSlotSelection(slot, dayIndex)}
+                                                        >
+                                                            {slotTimes[slot]}
+                                                        </div>
                                                     </td>
                                                 ))}
                                             </tr>
@@ -262,23 +288,26 @@ export default class Slot extends Component {
                                 <table className="table table-borderless">
                                     <thead>
                                         <tr>
-                                            <th>Thứ / Slot</th>
+                                            <th>Slot</th>
                                             {daysOfWeek.map((day, index) => (
                                                 <th key={index}>{day}</th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {["Slot 1", "Slot 2", "Slot 3", "Slot 4"].map((slot, slotIndex) => (
+                                        {Object.keys(slotTimes).map((slot, slotIndex) => (
                                             <tr key={slotIndex}>
                                                 <td>{slot}</td>
                                                 {daysOfWeek.map((_, dayIndex) => (
-                                                    <td
-                                                        key={dayIndex}
-                                                        className={selectedDay === dayIndex && selectedSlots.includes(slot) ? "selected" : ""}
-                                                        onClick={() => this.handleSlotSelection(slot, dayIndex)}
-                                                    >
-                                                        {slotTimes[slot]}
+                                                    <td key={dayIndex} className="slot-times-column">
+                                                        <div
+                                                            className={`slot-time ${
+                                                                selectedSlots[this.state.daysOfWeek[dayIndex]]?.includes(slot) ? "selected" : ""
+                                                            }`}
+                                                            onClick={() => this.handleSlotSelection(slot, dayIndex)}
+                                                        >
+                                                            {slotTimes[slot]}
+                                                        </div>
                                                     </td>
                                                 ))}
                                             </tr>
@@ -286,12 +315,19 @@ export default class Slot extends Component {
                                     </tbody>
                                 </table>
                             </div>
+                            {errorMessage && (
+                                <div className="alert alert-danger" role="alert">
+                                    {errorMessage}
+                                </div>
+                            )}
                             <div>
                                 Bạn đã chọn : {selectedTab === "lichdon" ? "Lịch đơn" : selectedTab === "codinh" ? "Lịch cố định" : "Lịch linh hoạt"}{" "}
-                                - Slot: {selectedSlots.map((slot) => `${slot}: ${slotTimes[slot]}`).join(", ")}
+                                - Slot: {selectedSlotDetails.join(", ")}
                             </div>
                             <div className="w-25 m-auto">
-                                <button onClick={this.handleButtonClick} className="btn btn-primary">Đặt sân ngay</button>
+                                <button onClick={this.handleButtonClick} className="btn btn-primary">
+                                    Đặt sân ngay
+                                </button>
                             </div>
                         </div>
                     </div>
