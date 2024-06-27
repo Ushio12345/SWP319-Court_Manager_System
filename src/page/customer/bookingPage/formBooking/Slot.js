@@ -17,11 +17,16 @@ export default class Slot extends Component {
             selectedTab: "lichdon",
             selectedSlots: [],
             selectedDay: null,
+            selectedYard: "",
         };
     }
 
     componentDidMount() {
         this.updateDaysOfWeek(this.state.startDate, this.state.endDate);
+
+        if (this.props.court && this.props.court.yards && this.props.court.yards.length > 0) {
+            this.setState({ selectedYard: this.props.court.yards[0].yardId });
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -72,7 +77,16 @@ export default class Slot extends Component {
         }
     };
 
+    handleButtonClick = () => {
+        window.location.href = "/detailBooking";
+    };
+
+    handleYardChange = (event) => {
+        this.setState({ selectedYard: event.target.value });
+    };
+
     render() {
+        const { court } = this.props;
         const { startDate, endDate, daysOfWeek, selectedTab, selectedSlots, selectedDay } = this.state;
 
         const slotTimes = {
@@ -158,7 +172,19 @@ export default class Slot extends Component {
                                 </button>
                             </li>
                         </ul>
-
+                        <select
+                            className="form-select"
+                            aria-label="Default select example"
+                            value={this.state.selectedYard}
+                            onChange={this.handleYardChange}
+                        >
+                            <option value="">Chọn sân</option>
+                            {court?.yards?.map((yard, index) => (
+                                <option key={index} value={yard.yardId}>
+                                    {yard.yardName}
+                                </option>
+                            ))}
+                        </select>
                         <div className="tab-content" id="pills-tabContent">
                             <div className="schedual"></div>
                             <div
@@ -265,7 +291,7 @@ export default class Slot extends Component {
                                 - Slot: {selectedSlots.map((slot) => `${slot}: ${slotTimes[slot]}`).join(", ")}
                             </div>
                             <div className="w-25 m-auto">
-                                <button className="btn btn-primary">Đặt sân ngay</button>
+                                <button onClick={this.handleButtonClick} className="btn btn-primary">Đặt sân ngay</button>
                             </div>
                         </div>
                     </div>

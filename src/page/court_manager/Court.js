@@ -16,7 +16,8 @@ export default class extends Component {
             openTime: "",
             closeTime: "",
             rate: "",
-            imageUrl: ""
+            imageUrl: "",
+            beginDate: ""
         },
         isDetailView: false
     }
@@ -240,6 +241,9 @@ export default class extends Component {
                                         <p>
                                             <strong>Khung giờ hoạt động:</strong> {this.state.newCourt.openTime} - {this.state.newCourt.closeTime}
                                         </p>
+                                        <p>
+                                            <strong>Ngày bắt đầu hoạt động:</strong> {this.state.newCourt.beginDate}
+                                        </p>
                                         <div>
                                             {this.renderStars(this.state.newCourt.rate)}
                                         </div>
@@ -391,7 +395,6 @@ export default class extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="openTime">Giờ mở cửa</label>
                                     <label htmlFor="openTime">Giờ mở cửa</label>
                                     <input
                                         id="openTime"

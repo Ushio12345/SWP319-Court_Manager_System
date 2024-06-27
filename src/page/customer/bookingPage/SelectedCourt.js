@@ -1,24 +1,64 @@
 import React, { Component } from "react";
 import "./booking.css";
+import axiosInstance from "../../../config/axiosConfig";
+import { showAlert } from "../../../utils/alertUtils";
 export default class selectedCourt extends Component {
+    state = {
+        facilities: [],
+    };
+
+    componentDidMount() {
+        const { court } = this.props;
+
+        // Example API call to fetch amenities for a court
+        axiosInstance.get(`court/facilities-of-court/${court.courtId}`)
+            .then(response => {
+                this.setState({ facilities: response.data });
+            })
+            .catch(error => {
+                showAlert("error", "Lỗi", "Lấy dữ liệu không thành công. Vui lòng thử lại !", "top-end");
+                console.error("There was an error fetching the facilities!", error);
+            });
+    }
+
     render() {
+        const { court } = this.props;
+        const { facilities } = this.state;
+
+        if (!court) {
+            return <div>No court information available</div>;
+        }
+
+        const renderStars = (rate) => {
+            const totalStars = 5;
+            const stars = [];
+            for (let i = 1; i <= totalStars; i++) {
+                if (i <= rate) {
+                    stars.push(<span key={i} className="fa fa-star checked" style={{ color: "#ffc107" }}></span>);
+                } else {
+                    stars.push(<span key={i} className="fa fa-star" style={{ color: "#000000" }}></span>);
+                }
+            }
+            return stars;
+        };
+
         return (
             <div>
                 <section className="detail-yard">
                     <h1 className="text-center" style={{ fontSize: 40 }}>
                         THÔNG TIN CHI TIẾT
                     </h1>
-                    <h1 className>SÂN CẦU LÔNG ABC</h1>
+                    <h1>{court.courtName}</h1>
                     <div className="detail-yard-title">
                         <div className="address">
                             <p>
                                 <i className="fa-solid fa-location-dot" /> Địa chỉ:
-                                <span> 123 Phường Tân Nhơn Phú, Quận 9, Thành phố Hồ Chí Minh</span>
+                                <span> {court.address}</span>
                             </p>
                         </div>
                         <div className="rate">
                             <p>
-                                Đánh giá: 4/5 <i className="fa-solid fa-star" /> (2 / Đánh giá)
+                                Đánh giá: {renderStars(court.rate)} {court.rate}/5 <i className="fa-solid fa-star" /> (0  Đánh giá)
                             </p>
                         </div>
                     </div>
@@ -26,33 +66,29 @@ export default class selectedCourt extends Component {
                         <div className="yard-left col-lg-6">
                             <h3>Thông tin sân</h3>
                             <p>
-                                Số sân: <span>5 sân</span>
+                                Số sân: <span>{court.yards.length}</span>
                             </p>
                             <p>
-                                Giờ hoạt động: <span>7:00 - 23:00</span>
+                                Giờ hoạt động: <span>{court.openTime} - {court.closeTime}</span>
                             </p>
                             <p>
                                 Giá tiền/giờ: <span>50.000 - 75.000</span>
                             </p>
                             <div className="yard-service row">
                                 <h4>Dịch vụ tiện ích</h4>
-                                <div className="col-lg-6">
-                                    <i className="fa-solid fa-wifi" /> Wifi
-                                </div>
-                                <div className="col-lg-6">
-                                    <i className="fa-solid fa-square-parking" /> Bãi đỗ xe rộng rãi
-                                </div>
-                                <div className="col-lg-6">
-                                    <i className="fa-solid fa-mug-saucer" /> Quán cà phê
-                                </div>
-                                <div className="col-lg-6">
-                                    <i className="fa-solid fa-whiskey-glass" />
-                                    Trà đá miễn phí
-                                </div>
+                                {facilities.length > 0 ? (
+                                    facilities.map((facility, index) => (
+                                        <div className="col-lg-6" key={index}>
+                                            <i className={`fa-solid ${facility.facilityIcon}`} /> {facility.facilityName}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>Trống</p>
+                                )}
                             </div>
                         </div>
                         <div className="yard-right col-lg-6">
-                            <img className="h-100" src="" alt />
+                            <img className="h-100" src={court.imageUrl} alt />
                         </div>
                     </div>
                 </section>

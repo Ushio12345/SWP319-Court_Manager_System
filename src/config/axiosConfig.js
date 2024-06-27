@@ -2,11 +2,13 @@ import axios from 'axios';
 import { showConfirmAlert } from '../utils/alertUtils';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://167.99.67.127:8080',
+    baseURL: 'http://localhost:8080',
 });
 
 axiosInstance.interceptors.request.use(config => {
-    const token = localStorage.getItem('jwtToken');
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user ? user.accessToken : null;
+
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }

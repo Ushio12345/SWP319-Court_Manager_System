@@ -4,7 +4,8 @@ import HeaderLoginForm from "../../components/header-login-form";
 import Footer from "../../components/footer";
 import "./index.css";
 import '../../App.css';
-import { showAlert } from '../../utils/alertUtils'; 
+import { showAlert } from '../../utils/alertUtils';
+import axiosInstance from "../../config/axiosConfig";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -42,45 +43,29 @@ const Login = () => {
         }
 
         // If validations pass, proceed with login
-        fetch("http://167.99.67.127:8080/auth/signin", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        axiosInstance
+            .post("/auth/signin", {
                 email: email,
                 password: password,
-            }),
-        })
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    showAlert('error', 'Đăng nhập không thành công!', 'Sai email hoặc mật khẩu. Vui lòng thử lại.', 'top-end');
-                }
             })
-            .then((data) => {
-                localStorage.setItem("userId", data.userId);
-                localStorage.setItem("fullName", data.fullName);
-                localStorage.setItem("imageUrl", data.imageUrl);
-                localStorage.setItem("role", data.role);
-                localStorage.setItem("jwtToken", data.accessToken);
-                localStorage.setItem("tokenExpiration", data.expirationTime);
-                console.log("Authentication successful");
-
-                // Check if the user's role is "temp"
-                if (data.role === "temp") {
-                    window.location.href = "/role-selector";
-                } else if (data.role === "manager"){
-                    window.location.href = "/court_manager";
-                } else if (data.role === "customer"){
+            .then((response) => {
+                if (response.status === 200) {
+                    const data = response.data;
+    
+                    localStorage.setItem("user", JSON.stringify(data));
+    
+                    console.log("Authentication successful");
+    
+                    // Chuyển hướng người dùng sau khi đăng nhập thành công
                     window.location.href = "/";
-                } 
-                // else if (data.role === "staff"){
-                //     window.location.href = "/staff";
-                // } else if (data.role === "admin"){
-                //     window.location.href = "/admin";
-                // } 
+                } else {
+                    showAlert(
+                        'error',
+                        'Đăng nhập không thành công!',
+                        'Sai email hoặc mật khẩu. Vui lòng thử lại.',
+                        'top-end'
+                    );
+                }
             })
             .catch((error) => {
                 console.error(error);
@@ -90,22 +75,23 @@ const Login = () => {
     const handleGoogleLogin = (event) => {
         event.preventDefault();
 
-        fetch("http://167.99.67.127:8080/auth/google")
+        axiosInstance
+            .get("/auth/google")
             .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    showAlert('error', 'Lỗi !', 'Có lỗi xảy ra. Vui lòng thử lại.', 'top-end');
-                }
-            })
-            .then((data) => {
-                if (data && data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
+                if (response.status === 200) {
+                    const data = response.data;
+
+                    if (data && data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else {
+                        showAlert('error', 'Lỗi !', 'Có lỗi xảy ra. Vui lòng thử lại.', 'top-end');
+                    }
                 } else {
                     showAlert('error', 'Lỗi !', 'Có lỗi xảy ra. Vui lòng thử lại.', 'top-end');
                 }
             })
             .catch((error) => {
+                showAlert("error", "", "Đăng nhập không thành công.", "top-end");
                 console.error(error);
             });
     };
@@ -117,7 +103,7 @@ const Login = () => {
         const sendCodeToBackend = async () => {
             try {
                 const response = await fetch(
-                    "http://167.99.67.127:8080/auth/google/callback",
+                    "http://localhost:8080/auth/google/callback",
                     {
                         method: "POST",
                         headers: {
@@ -132,27 +118,12 @@ const Login = () => {
                 }
 
                 const data = await response.json();
-                localStorage.setItem("userId", data.userId);
-                localStorage.setItem("fullName", data.fullName);
-                localStorage.setItem("imageUrl", data.imageUrl);
-                localStorage.setItem("role", data.role);
-                localStorage.setItem("jwtToken", data.accessToken);
-                localStorage.setItem("tokenExpiration", data.expirationTime);
+                
+                localStorage.setItem("user", JSON.stringify(data));
                 console.log("Authentication successful");
 
-                // Check if the user's role is "temp"
-                if (data.role === "temp") {
-                    window.location.href = "/role-selector";
-                } else if (data.role === "manager"){
-                    window.location.href = "/court_manager";
-                } else if (data.role === "customer"){
-                    window.location.href = "/";
-                } 
-                // else if (data.role === "staff"){
-                //     window.location.href = "/staff";
-                // } else if (data.role === "admin"){
-                //     window.location.href = "/admin";
-                // } 
+                // Chuyển hướng người dùng sau khi đăng nhập thành công
+                window.location.href = "/";
             } catch (error) {
                 console.error("Error sending code to backend:", error);
                 // Handle error if needed

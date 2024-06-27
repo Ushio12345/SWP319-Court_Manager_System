@@ -12,10 +12,9 @@
     justify-content: space-between;
     color: #eeeded;
     border-bottom: 3px solid #eeeded;
-    width: 100%;
 }
 .header .header-top .logo {
-    width: 10%;
+    width: 450px;
 }
 .header .header-top .logo img {
     width: 150px;
@@ -23,28 +22,19 @@
 .header .header-top .header-top-right {
     display: flex;
     align-items: center;
-    justify-content: end;
-    width: 90%;
+    width: 500px;
 }
-.header-top-right .login {
-    width: 60%;
+.header .header-top .header-top-right .login {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
-.header .header-top .header-top-right .location {
-    width: 20%;
-}
-.header-top-right button {
-    padding: 0;
-}
-
 .header .header-top .header-top-right .login a {
     padding: 10px 15px;
     margin: 0 10px;
     color: white;
+    width: 125px;
 }
 .header .header-top .header-top-right .login .user {
+    width: 90px;
     border-radius: 50%;
 }
 .header .header-top .header-top-right .login .user img {
@@ -138,7 +128,6 @@
     font-weight: 600;
     position: relative;
     cursor: pointer;
-    color: white;
 }
 .header .header-bot a::before,
 .header .header-bot p::before {
@@ -173,15 +162,10 @@
 
 .user-info {
     display: flex;
-
-    align-items: center;
-
-    justify-content: end;
-    width: 100%;
+    margin-left: 100px;
 }
+
 .user-name {
     margin-top: 30px;
 }
-.auth-buttons {
-    width: 100%;
-}
+

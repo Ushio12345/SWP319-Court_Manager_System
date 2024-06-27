@@ -12,40 +12,16 @@ export default class Slot extends Component {
             startTime: "",
             endTime: "",
             price: "",
-            yard_id: [],
-            court_id: "",
         },
-        courts: [],
-        yards: [],
-        alertMessage: "",
-        alertType: "",
     };
 
     componentDidMount() {
-        this.fetchCourts();
+        this.fetchSlot();
     }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.selectedCourtId !== this.props.selectedCourtId) {
-            this.fetchSlot();
-        }
-    }
-
-    fetchYard = () => {
-        axiosInstance
-            .get("http://localhost:3001/yard")
-            .then((res) => {
-                this.setState({ courts: res.data });
-            })
-            .catch((err) => {
-                showAlert("Không thể lấy dữ liệu từ API", "danger");
-            });
-    };
 
     fetchSlot = () => {
-        const { selectedCourtId } = this.props;
         axiosInstance
-            .get(`http://localhost:3001/slot?court_id=${selectedCourtId}`)
+            .get("/time-slot/findAllSlot")
             .then((res) => {
                 if (res.status === 200) {
                     this.setState({ slots: res.data });
@@ -64,41 +40,47 @@ export default class Slot extends Component {
     };
 
     handleAddSlot = () => {
-        const { selectedCourtId } = this.props;
-        const slotToAdd = { ...this.state.SlotsOb, court_id: selectedCourtId };
+        const { slot } = this.state;
+        const slotData = {
+            slotName: slot.slotName,
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            price: slot.price,
+        };
         axiosInstance
-            .post("http://localhost:3001/slot", slotToAdd)
-            .then(() => {
-                this.fetchSlot();
-                this.setState({
-                    SlotsOb: {
-                        slot_name: "",
-                        start_time: "",
-                        end_time: "",
-                        price: "",
-                        yard_id: [],
-                        court_id: "",
-                    },
-                    alertMessage: "Thêm slot thành công!",
-                    alertType: "success",
-                });
+            .post("time-slot/createSlot", slotData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then((res) => {
+                if (res.status === 200) {
+                    this.fetchSlot();
+                    this.setState({
+                        slot: {
+                            slotId: "",
+                            slotName: "",
+                            startTime: "",
+                            endTime: "",
+                            price: "",
+                        },
+                    });
+                    showAlert('success', '', 'Thêm slot thành công', 'top-end');
+                } else {
+                    showAlert('error', 'Lỗi !', 'Thêm slot không thành công', 'top-end');
+                    console.error("Response không thành công:", res.status);
+                }
             })
             .catch((error) => {
-                this.showAlert("Xảy ra lỗi trong quá trình thêm slot. Thử lại sau!", "danger");
+                if (error.response && error.response.status === 401) {
+                    if (error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                        handleTokenError();
+                    } else if (error.response.data.message === 'Slot với tên này đã có trong danh sách.') {
+                        showAlert('error', 'Lỗi!', 'Slot với tên này đã có trong danh sách.', 'top-end');
+                    }
+                }
+                this.handleRequestError(error);
             });
-    };
-
-    handleCheckboxChange = (yardId, checked) => {
-        this.setState((prevState) => {
-            const selectedYards = checked ? [...prevState.SlotsOb.yard_id, yardId] : prevState.SlotsOb.yard_id.filter((id) => id !== yardId);
-
-            return {
-                SlotsOb: {
-                    ...prevState.SlotsOb,
-                    yard_id: selectedYards,
-                },
-            };
-        });
     };
 
     handleUpdateSlot = () => {
@@ -122,12 +104,19 @@ export default class Slot extends Component {
                     });
                     showAlert('success', '', 'Chỉnh sửa slot thành công', 'top-end');
                 } else {
-                    this.showAlert('error', 'Lỗi !', 'Chỉnh sửa slot không thành công', 'top-end');
+                    showAlert('error', 'Lỗi !', 'Chỉnh sửa slot không thành công', 'top-end');
                     console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
-                this.showAlert("Cập nhật slot thất bại!", "danger");
+                if (error.response && error.response.status === 401) {
+                    if (error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                        handleTokenError();
+                    } else if (error.response.data.message === 'Slot với tên này đã có trong danh sách.') {
+                        showAlert('error', 'Lỗi!', 'Slot với tên này đã có trong danh sách.', 'top-end');
+                    }
+                }
+                this.handleRequestError(error);
             });
     };
 
@@ -166,84 +155,8 @@ export default class Slot extends Component {
         }));
     };
 
-    renderNameYard = () => {
-        return this.state.yards.map((yard) => (
-            <div className="d-flex" key={yard.id}>
-                <input
-                    type="checkbox"
-                    value={yard.id}
-                    checked={this.state.SlotsOb.yard_id.includes(yard.id)}
-                    onChange={(e) => this.handleCheckboxChange(yard.id, e.target.checked)}
-                />
-                <strong>{yard.yard_name}</strong>
-            </div>
-        ));
-    };
-
-    showAlert = (message, type) => {
-        this.setState({
-            alertMessage: message,
-            alertType: type,
-        });
-        setTimeout(() => {
-            this.hideAlert();
-        }, 3000);
-    };
-
-    hideAlert = () => {
-        this.setState({
-            alertMessage: "",
-            alertType: "",
-        });
-    };
-
-    clearForm = () => {
-        this.setState({
-            SlotsOb: {
-                id: "",
-                slot_name: "",
-                start_time: "",
-                end_time: "",
-                price: "",
-                yard_id: [],
-                court_id: "",
-            },
-        });
-    };
-
-    renderSlots = () => {
-        return this.state.Slots.map((slot, index) => (
-            <tr key={slot.id}>
-                <td className="text-center">{index + 1}</td>
-                <td className="text-center">{slot.slot_name}</td>
-                <td className="text-center">
-                    {slot.start_time} - {slot.end_time}
-                </td>
-                <td className="text-center">{slot.price}</td>
-                <td className="text-center">
-                    <div className="d-flex">
-                        <button
-                            className="btn btn-warning mr-2"
-                            data-bs-toggle="modal"
-                            data-bs-target="#updateSlot"
-                            onClick={() => {
-                                this.setState({ SlotsOb: { ...slot, yard_id: [...slot.yard_id] } });
-                            }}
-                        >
-                            <i className="fa fa-pen-to-square"></i>
-                        </button>
-                        <button
-                            className="btn btn-danger"
-                            onClick={() => {
-                                this.handleDeleteSlot(slot.id);
-                            }}
-                        >
-                            <i className="fa fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        ));
+    handleRequestError = (error) => {
+        console.error("Lỗi từ server:", error.response.data);
     };
 
     render() {
@@ -316,12 +229,13 @@ export default class Slot extends Component {
                     </tbody>
                 </table>
 
+
                 {/* Modal Thêm Mới Slot */}
                 <div className="modal fade" id="addNewSlot" tabIndex="-1" aria-labelledby="addSlotLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h4 className="text-center">Thêm mới Slot</h4>
+                                <h4 className="text-center">Điền thông tin slot</h4>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">

@@ -1,6 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const CardYard = ({ court }) => {
+
+    const navigate = useNavigate();
+
+    const handleBookingClick = (e) => {
+        e.preventDefault(); // Prevent default anchor behavior
+        navigate('/bookingPage', { state: { court } });
+    };
+
     const renderStars = (rate) => {
         const totalStars = 5; // Tổng số ngôi sao
         const stars = [];
@@ -19,20 +28,21 @@ const CardYard = ({ court }) => {
         return null; // Trả về null nếu không có dữ liệu hợp lệ
     }
 
-        return (
-                <div className="card-yard">
-                    <div className="card-yard-img">
+    return (        
+        <div className="card-yard">
+            <div className="card-yard-img">
                 {court.imageUrl && <img src={court.imageUrl} alt="Ảnh Sân" />} {/* Kiểm tra imageUrl trước khi sử dụng */}
-                    </div>
-                    <div className="card-yard-content">
-                <p>Tên sân: {court.courtName}</p>
-                <p>Địa chỉ: {court.address}</p>
-                <p>Giờ mở cửa: {court.openTime} - {court.closeTime}</p>
-                <p>Đánh giá: {renderStars(court.rate)}</p>
-                <a href="#">Đặt Ngay</a>
             </div>
+            <div className="card-yard-content">
+                <h6><b>{court.courtName}</b></h6>
+                <p><b>Địa chỉ:</b> {court.address}</p>
+                <p><b>Số sân:</b> {court.yards.length}</p>
+                <p><b>Giờ mở cửa:</b> {court.openTime} - {court.closeTime}</p>
+                <p><b>Đánh giá:</b> {renderStars(court.rate)}</p>
+                <a href="#" onClick={handleBookingClick}>Đặt Ngay</a>
             </div>
-        );
+        </div>
+    );
 };
 
 export default CardYard;

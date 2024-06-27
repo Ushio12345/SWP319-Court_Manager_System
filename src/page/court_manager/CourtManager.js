@@ -10,6 +10,7 @@ import Yard from "./Yard";
 import Services from "./Services";
 import Order from "./Order";
 import Slot from "./Slot";
+import axiosInstance from "../../config/axiosConfig";
 
 export default class CourtManager extends Component {
     constructor(props) {
@@ -26,30 +27,31 @@ export default class CourtManager extends Component {
     }
 
     componentDidMount() {
-        const userId = localStorage.getItem("userId");
-        const username = localStorage.getItem("fullName");
-        const avatar = localStorage.getItem("imageUrl");
-        if (userId && username && avatar) {
-            this.setState({
-                isLoggedIn: true,
-                user: {
-                    username: username,
-                    avatar: avatar,
-                },
-            });
-        }
+        this.checkLoginStatus();
         this.fetchCourts();
     }
 
-    fetchCourts = () => {
-        axios
-            .get("http://localhost:3001/court")
-            .then((res) => {
-                this.setState({ courts: res.data });
-            })
-            .catch((err) => {
-                alert("Không thể lấy dữ liệu từ API");
+    checkLoginStatus = () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user) {
+            this.setState({
+                isLoggedIn: true,
+                user: {
+                    username: user.fullName,
+                    avatar: user.imageUrl,
+                },
             });
+        }
+    };
+
+    fetchCourts = async () => {
+        try {
+            const res = await axiosInstance.get("/court/courts-of-owner");
+            this.setState({ courts: res.data });
+        } catch (error) {
+            console.error("Không thể lấy dữ liệu từ API", error);
+        }
     };
 
     handleCourtChange = (event) => {
@@ -57,11 +59,7 @@ export default class CourtManager extends Component {
     };
 
     handleLogout = () => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("fullName");
-        localStorage.removeItem("imageUrl");
-        localStorage.removeItem("jwtToken");
-        localStorage.removeItem("tokenExpiration");
+        localStorage.clear();
         this.setState({
             isLoggedIn: false,
             user: {
@@ -71,6 +69,7 @@ export default class CourtManager extends Component {
         });
         window.location.href = "/";
     };
+
 
     render() {
         const { isLoggedIn, user, courts, selectedCourtId } = this.state;
@@ -259,7 +258,7 @@ export default class CourtManager extends Component {
                                     <Services />
                                 </div>
                                 <div className="tab-pane fade" id="dsSlot" role="tabpanel">
-                                    <Slot selectedCourtId={selectedCourtId} />
+                                    <Slot fetchCourts={this.fetchCourts} selectedCourtId={selectedCourtId} />                          
                                 </div>
                             </div>
                         </div>

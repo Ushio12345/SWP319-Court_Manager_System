@@ -10,6 +10,8 @@ import TokenResetPassword from "./pages/token-reset-password";
 import InputNewPassword from "./pages/input-new-password";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CourtManager from "./page/court_manager/CourtManager";
+import Booking from "./page/customer/bookingPage/Booking";
+import DetailBooking from "./page/customer/bookingPage/detailBooking/detailBooking";
 
 function App() {
     return (
@@ -30,6 +32,14 @@ function App() {
                 <Route path="/court_manager" element={
                     <ProtectedRoute>
                         <CourtManager />
+                    </ProtectedRoute>
+                } />
+                <Route path="/bookingPage" element={
+                    <Booking />
+                } />
+                <Route path="/detailBooking" element={
+                    <ProtectedRoute>
+                        <DetailBooking />
                     </ProtectedRoute>
                 } />
             </Routes>

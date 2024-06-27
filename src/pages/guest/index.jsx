@@ -14,50 +14,38 @@ class GuestPage extends Component {
             user: {
                 username: "",
                 avatar: "",
-                role: ""
+                roles: []
             },
         };
     }
 
     componentDidMount() {
-        // Check localStorage or other storage to get user info
-        const userId = localStorage.getItem("userId");
-        const username = localStorage.getItem("fullName");
-        const avatar = localStorage.getItem("imageUrl");
-        const role = localStorage.getItem("role");
+        const user = JSON.parse(localStorage.getItem("user"));
 
-        if (userId && username && avatar) {
+        if (user) {
             this.setState({
                 isLoggedIn: true,
                 user: {
-                    username: username,
-                    avatar: avatar,
-                    role: role
+                    username: user.fullName,
+                    avatar: user.imageUrl,
+                    roles: user.roles
                 },
             });
         }
     }
 
     handleLogout = () => {
-        // Clear user data from localStorage
-        localStorage.removeItem("userId");
-        localStorage.removeItem("fullName");
-        localStorage.removeItem("imageUrl");
-        localStorage.removeItem("jwtToken");
-        localStorage.removeItem("tokenExpiration");
-        localStorage.removeItem("role");
+        localStorage.removeItem("user");
 
-        // Update logout state
         this.setState({
             isLoggedIn: false,
             user: {
                 username: "",
                 avatar: "",
-                role: ""
+                roles: []
             },
         });
 
-        // Redirect to login page
         window.location.href = "/";
     };
 
@@ -68,11 +56,6 @@ class GuestPage extends Component {
             <div className="GuestPage">
                 <section className="header">
                     <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
-                    {user.role === "customer" && ( // Hiển thị chào mừng nếu role là customer
-                        <div className="welcome-message">
-                            Xin chào {user.username}
-                        </div>
-                    )}
                 </section>
                 <Banner />
                 <div className="filter">

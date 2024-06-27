@@ -31,17 +31,7 @@ export default class Footer extends Component {
                                         <i className="fa-brands fa-linkedin-in" />
                                     </a>
                                 </div>
-                            </div>
-                            <div className="category col-lg-2 col-md-6 col-sm-6">
-                                <h2>Khu vực</h2>
-                                <a href>Bình Thạnh</a>
-                                <br />
-                                <a href>Tân Phú</a>
-                                <br />
-                                <a href>Quận 7</a>
-                                <br />
-                                <a href>TP. Thủ Đức</a>
-                            </div>
+                            </div>                        
                             <div className="archieve col-lg-2 col-md-6 col-sm-6">
                                 <h2>Liên hệ</h2>
                                 <p>
