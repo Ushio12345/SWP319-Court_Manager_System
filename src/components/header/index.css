@@ -7,31 +7,24 @@
     background-color: rgba(39, 38, 38, 0.9058823529);
 }
 .header .header-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     color: #eeeded;
-    border-bottom: 3px solid #eeeded;
+    border-bottom: 3px solid white;
+    margin: 0 auto;
 }
-.header .header-top .logo {
-    width: 450px;
-}
+
 .header .header-top .logo img {
     width: 150px;
 }
 .header .header-top .header-top-right {
     display: flex;
     align-items: center;
-    width: 500px;
+    justify-content: end;
 }
 .header .header-top .header-top-right .login {
-    display: flex;
 }
-.header .header-top .header-top-right .login a {
+.header .header-top .header-top-right .login .user-info a {
     padding: 10px 15px;
     margin: 0 10px;
-    color: white;
-    width: 125px;
 }
 .header .header-top .header-top-right .login .user {
     width: 90px;
@@ -98,11 +91,12 @@
     }
 }
 .header .header-top .search-name {
-    margin-right: 30px;
     position: relative;
+    display: flex;
+    align-items: center;
 }
 .header .header-top .search-name input {
-    width: 350px;
+    width: 100%;
     height: 40px;
     border-radius: 20px;
     padding-left: 20px;
@@ -111,7 +105,7 @@
 .header .header-top .search-name i {
     position: absolute;
     top: 50%;
-    right: 15px;
+    right: 25px;
     transform: translateY(-50%);
     color: #000000;
 }
@@ -120,10 +114,13 @@
     margin-bottom: 20px;
     padding-top: 20px;
     border-top: 1px solid black;
-    color: #eeeded;
+
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.header-bot a {
+    color: white;
 }
 .header .header-bot a,
 .header .header-bot p {
@@ -158,12 +155,6 @@
 .header .header-bot a.active::before {
     width: 100%;
 }
-
-.auth-buttons {
-    display: flex;
-    margin-left: 50px;
-}
-
 .user-info {
     display: flex;
     margin-left: 100px;
@@ -171,4 +162,46 @@
 
 .user-name {
     margin-top: 30px;
+}
+.user-info {
+    position: relative;
+    cursor: pointer;
+}
+.user-infor-dropdown {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: #eeeded;
+}
+.user-infor-dropdown ul li i {
+    margin-right: 10px;
+}
+.user-info i {
+    color: black;
+}
+.user-infor-dropdown li {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid black;
+    width: 250px;
+    color: black;
+}
+.user-infor-dropdown li:hover {
+    background-color: #1f1f6a;
+}
+.user-infor-dropdown li:hover a,
+.user-infor-dropdown li:hover i,
+.user-infor-dropdown li:hover button {
+    transition: 0.2s;
+    color: #eeeded;
+}
+.user-infor-dropdown li a,
+.user-infor-dropdown li button {
+    color: black;
+    width: 100%;
+}
+.auth-buttons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

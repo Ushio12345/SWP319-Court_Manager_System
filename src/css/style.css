@@ -15,17 +15,6 @@ p {
     margin: 0 !important;
 }
 
-.login a i {
-    padding: 10px;
-    border: 2px solid white;
-    border-radius: 50%;
-    margin-left: 20px;
-}
-.login a:hover i {
-    color: aqua;
-    border: 2px solid aqua;
-    box-shadow: rgb(250, 249, 249) 0px 22px 70px 4px;
-}
 .button {
     width: 200px;
     height: 50px;

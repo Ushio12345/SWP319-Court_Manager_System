@@ -5,7 +5,6 @@ import "../../App.css";
 import axiosInstance from "../../config/axiosConfig";
 
 const CourtList = () => {
-
     const [courts, setCourts] = useState([]);
     const [latestCourts, setLatestCourts] = useState([]);
     const [favoriteCourts, setFavoriteCourts] = useState([]);
@@ -17,7 +16,7 @@ const CourtList = () => {
 
     const fetchCourts = () => {
         axiosInstance
-            .get("/court/all") 
+            .get("/court/all")
             .then((response) => {
                 setCourts(response.data); // Lưu danh sách sân vào state
             })
@@ -28,7 +27,7 @@ const CourtList = () => {
 
     const fetchLatestCourts = () => {
         axiosInstance
-            .get("/court/latest-courts") 
+            .get("/court/latest-courts")
             .then((response) => {
                 setLatestCourts(response.data); // Lưu danh sách sân vào state
             })
@@ -57,7 +56,7 @@ const CourtList = () => {
             </div>
             <h1 className="m-4">TẤT CẢ SÂN CẦU LÔNG</h1>
             <div className="container w-4/5">
-                <div className="list-yard grid lg:grid-cols-4 md:grid-cols-3 gap-4 sm:lg:grid-cols-2">
+                <div className="list-yard showAllYard grid lg:grid-cols-4 md:grid-cols-3 gap-4 sm:lg:grid-cols-2">
                     {courts.map((court) => (
                         <CardYard
                             key={court.courtId} // Đảm bảo mỗi CardYard có key duy nhất

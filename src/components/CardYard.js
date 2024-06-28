@@ -48,7 +48,7 @@ const CardYard = ({ court }) => {
                 <p>
                     <b>Đánh giá:</b> {renderStars(court.rate)}
                 </p>
-                <a href="#" onClick={handleBookingClick}>
+                <a href="#" onClick={handleBookingClick} style={{ color: "black" }}>
                     Đặt Ngay
                 </a>
             </div>

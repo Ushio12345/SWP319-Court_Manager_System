@@ -14,7 +14,7 @@ class GuestPage extends Component {
             user: {
                 username: "",
                 avatar: "",
-                roles: []
+                roles: [],
             },
         };
     }
@@ -28,7 +28,7 @@ class GuestPage extends Component {
                 user: {
                     username: user.fullName,
                     avatar: user.imageUrl,
-                    roles: user.roles
+                    roles: user.roles,
                 },
             });
         }
@@ -42,7 +42,7 @@ class GuestPage extends Component {
             user: {
                 username: "",
                 avatar: "",
-                roles: []
+                roles: [],
             },
         });
 

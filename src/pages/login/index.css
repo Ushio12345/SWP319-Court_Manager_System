@@ -51,7 +51,7 @@ form h1 {
     text-align: center;
     color: aliceblue;
     width: 60%;
-    background-color: rgba(46,58,53, 0.8);
+    background-color: rgba(46, 58, 53, 0.8);
     padding: 20px;
     border-radius: 15px;
     display: flex;
@@ -131,4 +131,7 @@ form h1 {
 
 .text-danger {
     text-align: start;
+}
+.login-form i {
+    color: white;
 }

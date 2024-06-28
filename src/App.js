@@ -16,6 +16,7 @@ import LienHe from "./page/customer/introduction/LienHe";
 import HistoryBooking from "./page/customer/historyBooking/HistoryBooking";
 import Rule from "./page/customer/rules/Rule";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./page/customer/profile/Profile";
 
 function App() {
     return (
@@ -55,11 +56,12 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-                <Route path="/detailBooking" element={<DetailBooking />} />
+
                 <Route path="/aboutUs" element={<GioiThieu />} />
                 <Route path="/contact" element={<LienHe />} />
                 <Route path="/historyOrder" element={<HistoryBooking />} />
                 <Route path="/rules" element={<Rule />} />
+                <Route path="/profile" element={<Profile />} />
             </Routes>
         </Router>
     );

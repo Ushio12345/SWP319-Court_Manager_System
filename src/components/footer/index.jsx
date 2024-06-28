@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import logo from '../../assets/images/forbad_logo.png';
-import '../footer/index.css';
-import '../../App.css';
+import logo from "../../assets/images/forbad_logo.png";
+import "../footer/index.css";
+import "../../App.css";
 
 export default class Footer extends Component {
     render() {
@@ -31,16 +31,18 @@ export default class Footer extends Component {
                                         <i className="fa-brands fa-linkedin-in" />
                                     </a>
                                 </div>
-                            </div>                        
-                            <div className="archieve col-lg-2 col-md-6 col-sm-6">
+                            </div>
+                            <div className="archieve col-lg-4 col-md-6 col-sm-6" style={{ lineHeight: "40px" }}>
                                 <h2>Liên hệ</h2>
                                 <p>
                                     <i className="fa-solid fa-phone" />
-                                    <br />
                                     0123456789
                                 </p>
                                 <p>
                                     <i className="fa-solid fa-envelope" /> forbadbooking@gmail.com
+                                </p>
+                                <p>
+                                    <i class="fa-solid fa-house"></i>Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Hồ Chí Minh 700000
                                 </p>
                             </div>
                             <div className="contact col-lg-4 col-md-6">

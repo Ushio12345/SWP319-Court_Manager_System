@@ -91,6 +91,7 @@ export default class Slot extends Component {
                 errorMessage: "",
             });
         }
+        console.log();
     };
 
     handleButtonClick = () => {
@@ -142,6 +143,7 @@ export default class Slot extends Component {
                                 minDate={startDate}
                                 dateFormat="dd/MM/yyyy"
                                 locale="vi"
+                                className="p-2 me-4"
                             />
                         </div>
 
