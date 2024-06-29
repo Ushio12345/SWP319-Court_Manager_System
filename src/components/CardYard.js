@@ -45,8 +45,8 @@ const CardYard = ({ court }) => {
                 <p>
                     <b>Giờ mở cửa:</b> {court.openTime} - {court.closeTime}
                 </p>
-                <p>
-                    <b>Đánh giá:</b> {renderStars(court.rate)}
+                <p className="" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <b>Đánh giá:</b> <div className="rate-start">{renderStars(court.rate)}</div>
                 </p>
                 <a href="#" onClick={handleBookingClick} style={{ color: "black" }}>
                     Đặt Ngay

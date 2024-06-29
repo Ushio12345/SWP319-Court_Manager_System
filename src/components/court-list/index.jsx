@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
+import Slider from "react-slick";
 import CardYard from "../CardYard";
 import "../court-list/index.css";
 import "../../App.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import axiosInstance from "../../config/axiosConfig";
 
 const CourtList = () => {
@@ -36,34 +40,108 @@ const CourtList = () => {
             });
     };
 
+    const settings = {
+        dots: true,
+        infinite: true,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        speed: 300,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                    infinite: true,
+                    dots: true,
+                },
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
+                },
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                },
+            },
+        ],
+    };
+
+    const settingForShowAllYard = {
+        infinite: true,
+        rows: 3,
+        slidesPerRow: 1,
+        slidesToShow: 4,
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
+                    rows: 3,
+                    slidesPerRow: 1,
+                    infinite: true,
+                    dots: true,
+                },
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
+                    rows: 3,
+                    slidesPerRow: 1,
+                },
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    rows: 3,
+                    slidesPerRow: 1,
+                },
+            },
+        ],
+    };
+
     return (
         <section className="yard">
             <h1 className="m-4">CÁC SÂN CẦU LÔNG ĐƯỢC YÊU THÍCH</h1>
             <div className="container w-4/5">
-                <div className="list-yard grid lg:grid-cols-4 md:grid-cols-3 gap-4 sm:lg:grid-cols-2">
-                    {courts.slice(0, 4).map((court) => (
+                <Slider {...settings} className="list-yard favorite-yard">
+                    {courts.slice(0, 10).map((court) => (
                         <CardYard key={court.courtId} court={court} />
                     ))}
-                </div>
+                </Slider>
             </div>
             <h1 className="m-4">CÁC SÂN CẦU LÔNG MỚI</h1>
             <div className="container w-4/5">
-                <div className="list-yard grid lg:grid-cols-4 md:grid-cols-3 gap-4 sm:lg:grid-cols-2">
-                    {latestCourts.slice(0, 4).map((court) => (
+                <Slider {...settings} className="list-yard showNewYard">
+                    {latestCourts.slice(0, 10).map((court) => (
                         <CardYard key={court.courtId} court={court} />
                     ))}
-                </div>
+                </Slider>
             </div>
             <h1 className="m-4">TẤT CẢ SÂN CẦU LÔNG</h1>
             <div className="container w-4/5">
-                <div className="list-yard showAllYard grid lg:grid-cols-4 md:grid-cols-3 gap-4 sm:lg:grid-cols-2">
+                <Slider {...settingForShowAllYard} className="list-yard showAllYard">
                     {courts.map((court) => (
-                        <CardYard
-                            key={court.courtId} // Đảm bảo mỗi CardYard có key duy nhất
-                            court={court} // Truyền thông tin sân vào CardYard
-                        />
+                        <div className="card-container" key={court.courtId}>
+                            <CardYard court={court} />
+                        </div>
                     ))}
-                </div>
+                </Slider>
             </div>
         </section>
     );

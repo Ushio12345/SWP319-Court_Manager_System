@@ -22,15 +22,21 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
         <div>
             <section className="header">
                 <div className="header-top container row">
-                    <div className="logo col-lg-3">
-                        <img src={forbad_logo} alt="Logo" />
+                    <div className="logo col-md-2">
+                        <Link to="/">
+                            {" "}
+                            <img src={forbad_logo} alt="Logo" />
+                        </Link>
                     </div>
-                    <div className="search-name col-lg-5">
-                        <input type="text" placeholder="Nhập tên sân cần tìm" />
-                        <i className="fa-solid fa-magnifying-glass" />
+                    <div className="header-bot col-lg-6 col-md-7">
+                        <Link to="/" className="active">
+                            Trang Chủ
+                        </Link>
+                        <Link to="/aboutUs">Giới Thiệu</Link>
+                        <Link to="/contact">Liên hệ</Link>
+                        <Link to="/rules">Quy định</Link>
                     </div>
-
-                    <div className="header-top-right col-lg-4">
+                    <div className="header-top-right col-lg-4 col-md-3">
                         <div className="login w-100">
                             {isLoggedIn ? (
                                 <div className="user-info" onClick={toggleDropdown}>
@@ -57,6 +63,13 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                     )}
                                                 </li>
                                                 <li>
+                                                    {isLoggedIn && (
+                                                        <Link to="/historyOrder" onClick={hideDropdown}>
+                                                            <i class="fa-solid fa-user-minus"></i> Xóa tài khoản
+                                                        </Link>
+                                                    )}
+                                                </li>
+                                                <li>
                                                     <button
                                                         className="btn-logout d-flex p-2"
                                                         style={{ alignItems: "center", justifyContent: "center" }}
@@ -73,8 +86,8 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                     )}
                                 </div>
                             ) : (
-                                <div className="auth-buttons w-100">
-                                    <Link to="/login" className="btn btn-primary login-link">
+                                <div className="auth-buttons w-100 ">
+                                    <Link to="/login" className="btn btn-primary login-link" style={{ marginRight: "5px" }}>
                                         Đăng nhập
                                     </Link>
                                     <Link to="/register" className="btn btn-outline-primary register-link">
@@ -84,15 +97,6 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                             )}
                         </div>
                     </div>
-                </div>
-
-                <div className="header-bot">
-                    <Link to="/" className="active">
-                        Trang Chủ
-                    </Link>
-                    <Link to="/aboutUs">Giới Thiệu</Link>
-                    <Link to="/contact">Liên hệ</Link>
-                    <Link to="/rules">Quy định</Link>
                 </div>
             </section>
         </div>

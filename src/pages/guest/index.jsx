@@ -58,7 +58,7 @@ class GuestPage extends Component {
                     <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
                 </section>
                 <Banner />
-                <div className="filter">
+                <div className="filter ">
                     <div className="locGio">
                         <p>Giờ hoạt động</p>
                         <ul className="filter-time">
@@ -75,6 +75,10 @@ class GuestPage extends Component {
                                 <a href="login.html">10:00 - 20:00</a>
                             </li>
                         </ul>
+                    </div>
+                    <div className="search-name">
+                        <input type="text" placeholder="Nhập tên sân cần tìm" />
+                        <i className="fa-solid fa-magnifying-glass" />
                     </div>
                     <div className="sort">
                         {/* drop down sắp xếp các sân */}

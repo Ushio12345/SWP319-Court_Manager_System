@@ -16,6 +16,15 @@ import { useLocation } from "react-router-dom";
 import axiosInstance from "../../../config/axiosConfig";
 import { showAlert } from "../../../utils/alertUtils";
 
+const generateDummyData = (num) => {
+    return Array.from({ length: num }, (_, index) => ({
+        courtId: `dummy-${index}`,
+        name: `Sân Cầu Lông ${index + 1}`,
+        location: `Địa chỉ ${index + 1}`,
+        // Thêm các thuộc tính khác tùy theo cấu trúc dữ liệu thực tế của bạn
+    }));
+};
+
 export default function Booking() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState({
@@ -45,60 +54,56 @@ export default function Booking() {
         axiosInstance
             .get("/court/latest-courts")
             .then((response) => {
-                setLatestCourts(response.data);
+                const latest = response.data.length ? response.data : generateDummyData(20);
+                setLatestCourts(latest);
             })
             .catch((error) => {
                 showAlert("error", "Lỗi", "Lấy dữ liệu không thành công. Vui lòng thử lại !", "top-end");
                 console.error("There was an error fetching the amenities!", error);
+                setLatestCourts(generateDummyData(20)); // Sử dụng dữ liệu giả lập nếu có lỗi
             });
     }, []);
 
-    useEffect(() => {
-        const initializeSlick = () => {
-            if (listYardRef.current && !$(listYardRef.current).hasClass("slick-initialized")) {
-                $(listYardRef.current).slick({
-                    centerMode: true,
-                    centerPadding: "60px",
-                    slidesToShow: 3,
-                    responsive: [
-                        {
-                            breakpoint: 768,
-                            settings: {
-                                arrows: false,
-                                centerMode: true,
-                                centerPadding: "40px",
-                                slidesToShow: 3,
-                            },
-                        },
-                        {
-                            breakpoint: 480,
-                            settings: {
-                                arrows: false,
-                                centerMode: true,
-                                centerPadding: "40px",
-                                slidesToShow: 2,
-                            },
-                        },
-                    ],
-                });
-            }
-        };
-
-        const timer = setTimeout(() => {
-            initializeSlick();
-        }, 500);
-
-        return () => {
-            clearTimeout(timer);
-            if (listYardRef.current && $(listYardRef.current).hasClass("slick-initialized")) {
-                $(listYardRef.current).slick("unslick");
-            }
-        };
-    }, [latestCourts]);
-
-    if (!court) {
-        return <div>No court information available</div>;
-    }
+    const settings = {
+        dots: true,
+        infinite: false,
+        speed: 300,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        rows: 3,
+        slidesPerRow: 4,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    rows: 3,
+                    slidesPerRow: 3,
+                    infinite: true,
+                    dots: true,
+                },
+            },
+            {
+                breakpoint: 600,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    rows: 3,
+                    slidesPerRow: 2,
+                },
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1,
+                    rows: 3,
+                    slidesPerRow: 1,
+                },
+            },
+        ],
+    };
 
     const handleLogout = () => {
         localStorage.removeItem("user");
@@ -135,8 +140,8 @@ export default function Booking() {
                     <h1 className="mt-5">SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
                     <section className="yard">
                         <div className="container w-4/5">
-                            <div className="list-yard" ref={listYardRef}>
-                                {latestCourts.slice(0, 10).map((court) => (
+                            <div ref={listYardRef} className="list-yard">
+                                {latestCourts.slice(0, 12).map((court) => (
                                     <CardYard key={court.courtId} court={court} />
                                 ))}
                             </div>
