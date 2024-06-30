@@ -4,8 +4,8 @@ import "./index.css";
 import "../../App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-
 import forbad_logo from "../../assets/images/forbad_logo.png";
+import { NavLink } from "react-router-dom";
 
 const Header = ({ isLoggedIn, user, handleLogout }) => {
     const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -24,17 +24,22 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                 <div className="header-top container row">
                     <div className="logo col-md-2">
                         <Link to="/">
-                            {" "}
                             <img src={forbad_logo} alt="Logo" />
                         </Link>
                     </div>
                     <div className="header-bot col-lg-6 col-md-7">
-                        <Link to="/" className="active">
+                        <NavLink exact to="/" activeClassName="active">
                             Trang Chủ
-                        </Link>
-                        <Link to="/aboutUs">Giới Thiệu</Link>
-                        <Link to="/contact">Liên hệ</Link>
-                        <Link to="/rules">Quy định</Link>
+                        </NavLink>
+                        <NavLink to="/aboutUs" activeClassName="active">
+                            Giới Thiệu
+                        </NavLink>
+                        <NavLink to="/contact" activeClassName="active">
+                            Liên hệ
+                        </NavLink>
+                        <NavLink to="/rules" activeClassName="active">
+                            Quy định
+                        </NavLink>
                     </div>
                     <div className="header-top-right col-lg-4 col-md-3">
                         <div className="login w-100">
@@ -56,18 +61,14 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                     </Link>
                                                 </li>
                                                 <li>
-                                                    {isLoggedIn && (
-                                                        <Link to="/historyOrder" onClick={hideDropdown}>
-                                                            <i className="fa-solid fa-clock-rotate-left"></i> Lịch sử đặt hàng
-                                                        </Link>
-                                                    )}
+                                                    <Link to="/historyOrder" onClick={hideDropdown}>
+                                                        <i className="fa-solid fa-clock-rotate-left"></i> Lịch sử đặt hàng
+                                                    </Link>
                                                 </li>
                                                 <li>
-                                                    {isLoggedIn && (
-                                                        <Link to="/historyOrder" onClick={hideDropdown}>
-                                                            <i class="fa-solid fa-user-minus"></i> Xóa tài khoản
-                                                        </Link>
-                                                    )}
+                                                    <Link to="/historyOrder" onClick={hideDropdown}>
+                                                        <i className="fa-solid fa-user-minus"></i> Xóa tài khoản
+                                                    </Link>
                                                 </li>
                                                 <li>
                                                     <button
@@ -86,7 +87,7 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                     )}
                                 </div>
                             ) : (
-                                <div className="auth-buttons w-100 ">
+                                <div className="auth-buttons w-100">
                                     <Link to="/login" className="btn btn-primary login-link" style={{ marginRight: "5px" }}>
                                         Đăng nhập
                                     </Link>

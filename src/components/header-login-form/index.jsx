@@ -1,7 +1,7 @@
 import React from "react";
-import '../../App.css';
+import "../../App.css";
 
-const HeaderLoginForm = ( {title} ) => (
+const HeaderLoginForm = ({ title }) => (
     <div className="header-login-form">
         <div className="container d-flex align-items-center justify-content-between">
             <div className="header-login-form-left">

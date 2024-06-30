@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import $ from "jquery";
-import "slick-carousel";
+import React, { useEffect, useState } from "react";
+import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -34,7 +33,6 @@ export default function Booking() {
     });
 
     const [latestCourts, setLatestCourts] = useState([]);
-    const listYardRef = useRef(null);
 
     const location = useLocation();
     const { court } = location.state || {};
@@ -66,20 +64,18 @@ export default function Booking() {
 
     const settings = {
         dots: true,
-        infinite: false,
+        infinite: true,
+        autoplay: true,
+        autoplaySpeed: 3000,
         speed: 300,
-        slidesToShow: 1,
+        slidesToShow: 4,
         slidesToScroll: 1,
-        rows: 3,
-        slidesPerRow: 4,
         responsive: [
             {
                 breakpoint: 1024,
                 settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    rows: 3,
-                    slidesPerRow: 3,
+                    slidesToShow: 3,
+                    slidesToScroll: 3,
                     infinite: true,
                     dots: true,
                 },
@@ -87,10 +83,8 @@ export default function Booking() {
             {
                 breakpoint: 600,
                 settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    rows: 3,
-                    slidesPerRow: 2,
+                    slidesToShow: 2,
+                    slidesToScroll: 2,
                 },
             },
             {
@@ -98,8 +92,6 @@ export default function Booking() {
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
-                    rows: 3,
-                    slidesPerRow: 1,
                 },
             },
         ],
@@ -140,11 +132,11 @@ export default function Booking() {
                     <h1 className="mt-5">SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
                     <section className="yard">
                         <div className="container w-4/5">
-                            <div ref={listYardRef} className="list-yard">
+                            <Slider {...settings} className="list-yard">
                                 {latestCourts.slice(0, 12).map((court) => (
                                     <CardYard key={court.courtId} court={court} />
                                 ))}
-                            </div>
+                            </Slider>
                         </div>
                     </section>
                 </div>
