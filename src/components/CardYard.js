@@ -28,7 +28,7 @@ const CardYard = ({ court }) => {
     }
 
     return (
-        <div className="card-yard">
+        <div className="card-yard" style={{ height: 400 }}>
             <div className="card-yard-img ">
                 {court.imageUrl && <img src={court.imageUrl} alt="Ảnh Sân" />} {/* Kiểm tra imageUrl trước khi sử dụng */}
             </div>

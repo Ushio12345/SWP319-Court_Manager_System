@@ -14,103 +14,26 @@ const DetailBooking = () => {
                             <label htmlFor="nameYard" className="col-lg-5 col-form-label">
                                 Ngày tạo đơn:
                             </label>
-                            <div className="col-lg-7 ">
-                                <input type="text" readOnly className="form-control-plaintext" id="nameYard" defaultValue="24/06/2024 " />
+                            <div className="col-lg-7 d-flex " style={{ alignItems: "center" }}>
+                                <div className="create-day me-4">30/06/2024</div> <div className="create-time">12:02</div>
                             </div>
                         </div>
-                        <div className="mb-1 row ">
-                            <label htmlFor="nameYard" className="col-lg-5 col-form-label">
-                                Thời gian tạo đơn:
-                            </label>
-                            <div className="col-lg-7 ">
-                                <input type="text" readOnly className="form-control-plaintext" id="nameYard" defaultValue="21:07" />
-                            </div>
-                        </div>
-                        <div className="mb-1 row ">
-                            <label htmlFor="nameYard" className="col-lg-5 col-form-label">
-                                Tên cơ sở:
-                            </label>
-                            <div className="col-lg-7 ">
-                                <input type="text" readOnly className="form-control-plaintext" id="nameYard" defaultValue="Sân cầu lông Phú Hữu" />
-                            </div>
-                        </div>
-                        <div className="mb-1 row ">
-                            <label htmlFor="nameYard" className="col-lg-5 col-form-label">
-                                Địa chỉ:
-                            </label>
-                            <div className="col-lg-7 ">
-                                <input
-                                    type="text"
-                                    readOnly
-                                    className="form-control-plaintext"
-                                    id="nameYard"
-                                    defaultValue="01, đường Phú Hữu, TP. Thủ Đức"
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-1 row ">
-                            <label htmlFor="" className="col-lg-5 col-form-label">
-                                Tên sân:
-                            </label>
-                            <div className="col-lg-7 ">
-                                <input type="text" readOnly className="form-control-plaintext" id="" defaultValue="Sân A" />
-                            </div>
-                        </div>
-                        <div className="mb-1 row ">
-                            <label htmlFor="" className="col-lg-5 col-form-label">
-                                Dạng lịch:
-                            </label>
-                            <div className="col-lg-7 ">
-                                <input type="text" readOnly className="form-control-plaintext" id="" defaultValue="Lịch đơn" />
-                            </div>
-                        </div>
-                        <div className="mb-1 row ">
-                            <label htmlFor="" className="col-lg-5 col-form-label">
-                                Slot:
-                            </label>
-                            <div className="col-lg-7 ">
-                                <input type="text" readOnly className="form-control-plaintext" id="" defaultValue="Slot 1: 7:30 - 8:30" />
-                            </div>
-                        </div>
-
-                        <div className="mb-1 row ">
-                            <label htmlFor="" className="col-lg-5 col-form-label" style={{ fontSize: "22px" }}>
-                                <i class="fa-solid fa-money-bill"></i> Tổng tiền:
-                            </label>
-                            <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
-                                <strong style={{ fontSize: "22px", color: "orangered", display: "flex", alignItems: "center" }}>75.000VNĐ</strong>
-                            </div>
-                        </div>
-                        <div className="mb-1 row ">
-                            <label htmlFor="" className="col-lg-5 col-form-label" style={{ fontSize: "22px" }}>
-                                Thanh toán bằng
-                            </label>
-                            <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
-                                <input type="radio"></input>
-                                <label className="d-flex" style={{ display: "flex", alignItems: "center" }}>
-                                    <i class="fa-brands fa-paypal"></i>
-                                    <p>paypal</p>
+                        <div className="mb-1">
+                            <div className="id-order d-flex">
+                                <label htmlFor="" className="col-lg-5 col-form-label">
+                                    Mã đơn hàng
                                 </label>
+                                <p className="col-lg-7 ms-2" style={{ display: "flex", alignItems: "center" }}>
+                                    ABC123
+                                </p>
                             </div>
                         </div>
-                    </div>
-                    <div className="col-lg-4 info-customer">
-                        <h4>Thông tin khách hàng</h4>
                         <div className="mb-1 row ">
                             <label htmlFor="nameYard" className="col-lg-5 col-form-label">
                                 Họ và tên:
                             </label>
-                            <div className="col-lg-7 ">
-                                <input type="text" readOnly className="form-control-plaintext" id="nameYard" defaultValue="Nguyễn Xuân Hợp" />
-                            </div>
-                        </div>
-
-                        <div className="mb-1 row ">
-                            <label htmlFor="nameYard" className="col-lg-5 col-form-label">
-                                Số điện thoại:
-                            </label>
-                            <div className="col-lg-7 ">
-                                <input type="text" readOnly className="form-control" id="nameYard" defaultValue="0773866692" />
+                            <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
+                                <p className="">Nguyễn Xuân Hợp</p>
                             </div>
                         </div>
 
@@ -118,17 +41,73 @@ const DetailBooking = () => {
                             <label htmlFor="nameYard" className="col-lg-5 col-form-label">
                                 Email:
                             </label>
-                            <div className="col-lg-7 ">
-                                <input type="email" className="form-control" id="nameYard" defaultValue="abc@gmail.com " />
+                            <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
+                                <p className="">abc123@gmail.com</p>
                             </div>
+                        </div>
+
+                        <div className="mb-1 row ">
+                            <label htmlFor="" className="col-lg-5 col-form-label">
+                                Dạng lịch:
+                            </label>
+                            <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
+                                <p>Lịch đơn</p>
+                            </div>
+                        </div>
+
+                        <div className="mb-1 infoOfBooking mt-3 py-2">
+                            <table className="table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th>Slot</th>
+                                        <th>Sân</th>
+                                        <th>Ngày check-in</th>
+                                        <th>Giá tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {/* Example row, replace with dynamic data */}
+                                    <tr>
+                                        <td>10:00 - 11:00</td>
+                                        <td>Sân A</td>
+                                        <td>01/07/2024</td>
+                                        <td>200,000 VND</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div className="col-lg-4 info-customer">
+                        <h4>Thanh toán</h4>
+                        <div className="mb-1 row ">
+                            <label htmlFor="" className="col-lg-6 col-form-label" style={{ fontSize: "18px" }}>
+                                <i class="fa-solid fa-money-bill"></i> Tổng tiền:
+                            </label>
+                            <div className="col-lg-6 " style={{ display: "flex", alignItems: "center" }}>
+                                <strong style={{ fontSize: "22px", color: "orangered", display: "flex", alignItems: "center" }}>75.000VNĐ</strong>
+                            </div>
+                        </div>
+                        <div className="mb-1 row ">
+                            <label htmlFor="" className="col-lg-6 col-form-label" style={{ fontSize: "17px" }}>
+                                Thanh toán bằng
+                            </label>
+                            <div className="col-lg-6 pay mb-5" style={{ display: "flex", alignItems: "center" }}>
+                                <input type="radio"></input>
+                                <label className="d-flex ms-3" style={{ display: "flex", alignItems: "center" }}>
+                                    <i class="fa-brands fa-paypal"></i>
+                                    <p>paypal</p>
+                                </label>
+                            </div>
+                            <button className="btn btn-primary m-0 p-2" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                Xác nhận
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div className="button-function d-flex w-50 m-auto pb-4">
-                <button className="btn btn-success py-2">Trở về trang đặt sân</button>
-                <button className="btn btn-primary py-2">Xác nhận</button>
+                <button className="btn btn-success py-2 w-50 m-auto">Trở về trang đặt sân</button>
             </div>
             <Footer />
         </div>
