@@ -4,7 +4,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { addDays, format, eachDayOfInterval } from "date-fns";
 import { vi } from "date-fns/locale";
 import axiosInstance from "../../../../config/axiosConfig";
-import { showAlert } from "../../../../utils/alertUtils";
 
 // Register the Vietnamese locale with react-datepicker
 registerLocale("vi", vi);
@@ -18,6 +17,7 @@ export default class Slot extends Component {
             daysOfWeek: [],
             selectedTab: "lichdon",
             slots: [],
+            bookedSlots: [],
             selectedSlots: {},
             selectedDay: null,
             selectedYard: "",
@@ -43,6 +43,7 @@ export default class Slot extends Component {
 
         if (prevState.selectedYard !== this.state.selectedYard) {
             this.fetchSlots();
+            this.fetchBookedSlots();
         }
     }
 
@@ -56,6 +57,19 @@ export default class Slot extends Component {
                 console.error("There was an error fetching the slots!", error);
             });
     };
+
+    fetchBookedSlots = () => {
+        const formattedDates = this.state.daysOfWeek.map((day) => day.split(" ")[0]);
+
+        axiosInstance
+            .post(`/booking-details/booked-slots/${this.state.selectedYard}`, formattedDates)
+            .then((response) => {
+                this.setState({ bookedSlots: response.data });
+            })
+            .catch((error) => {
+                console.error("There was an error fetching the slots!", error);
+            });
+    }
 
     updateDaysOfWeek = (start, end) => {
         const days = eachDayOfInterval({ start, end }).map((date) => format(date, "dd/MM/yyyy EEEE", { locale: vi }));
@@ -139,6 +153,19 @@ export default class Slot extends Component {
     handleYardChange = (event) => {
         this.setState({ selectedYard: event.target.value });
     };
+
+    isSlotBooked = (dayKey, slotId) => {
+        const { bookedSlots } = this.state;
+        const formattedDayKey = dayKey.split(" ")[0]; 
+
+        if (!bookedSlots[formattedDayKey] || bookedSlots[formattedDayKey].length === 0) {
+            return false;
+        }
+
+        return bookedSlots[formattedDayKey].some((slot) => slot.slotId === slotId);
+    };
+    
+    
 
     render() {
         const { court } = this.props;
@@ -271,7 +298,7 @@ export default class Slot extends Component {
                                                         <div
                                                             className={`slot-time ${
                                                                 selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                            }`}
+                                                            } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""}`}
                                                             onClick={() => this.handleSlotSelection(slot.slotId, dayIndex)}
                                                         >
                                                             {`${slot.startTime} - ${slot.endTime}`}

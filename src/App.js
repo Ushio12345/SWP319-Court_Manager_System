@@ -29,15 +29,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/verify-token" element={<TokenResetPassword />} />
                 <Route path="/reset-password" element={<InputNewPassword />} />
-
-                <Route
-                    path="/bookingPage"
-                    element={
-                        <ProtectedRoute>
-                            <Booking />
-                        </ProtectedRoute>
-                    }
-                />
+                <Route path="/bookingPage" element={<Booking />} />
                 <Route
                     path="/detailBooking"
                     element={
@@ -49,17 +41,17 @@ function App() {
                 <Route
                     path="/aboutUs"
                     element={
-                        <ProtectedRoute>
-                            <GioiThieu />
-                        </ProtectedRoute>
+
+                        <GioiThieu />
+
                     }
                 />
                 <Route
                     path="/contact"
                     element={
-                        <ProtectedRoute>
-                            <LienHe />
-                        </ProtectedRoute>
+
+                        <LienHe />
+
                     }
                 />
                 <Route
