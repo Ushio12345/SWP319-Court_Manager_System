@@ -40,7 +40,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/court_manager"
+                    path="/court-manager"
                     element={
                         <ProtectedRoute>
                             <CourtManager />

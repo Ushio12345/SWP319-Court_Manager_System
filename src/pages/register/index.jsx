@@ -94,7 +94,7 @@ const Register = () => {
         }
 
         // If validations pass, proceed with login
-        fetch("http://localhost:8080/auth/signup", {
+        fetch("http://167.99.67.127:8080/auth/signup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -127,7 +127,7 @@ const Register = () => {
     const handleGoogleLogin = (event) => {
         event.preventDefault();
 
-        fetch("http://localhost:8080/auth/google")
+        fetch("http://167.99.67.127:8080/auth/google")
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -154,7 +154,7 @@ const Register = () => {
         const sendCodeToBackend = async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:8080/auth/google/callback",
+                    "http://167.99.67.127:8080/auth/google/callback",
                     {
                         method: "POST",
                         headers: {

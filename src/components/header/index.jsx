@@ -57,6 +57,13 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                 </li>
                                                 <li>
                                                     {isLoggedIn && (
+                                                        <Link to="/court-manager" onClick={hideDropdown}>
+                                                            <i className="fa-solid fa-shop"></i> Cơ sở của tôi
+                                                        </Link>
+                                                    )}
+                                                </li>
+                                                <li>
+                                                    {isLoggedIn && (
                                                         <Link to="/historyOrder" onClick={hideDropdown}>
                                                             <i className="fa-solid fa-clock-rotate-left"></i> Lịch sử đặt hàng
                                                         </Link>

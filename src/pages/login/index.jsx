@@ -103,7 +103,7 @@ const Login = () => {
         const sendCodeToBackend = async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:8080/auth/google/callback",
+                    "http://167.99.67.127:8080/auth/google/callback",
                     {
                         method: "POST",
                         headers: {
