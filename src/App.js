@@ -1,4 +1,3 @@
-// App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import GuestPage from "./pages/guest/index";
@@ -32,22 +31,13 @@ function App() {
                 <Route path="/reset-password" element={<InputNewPassword />} />
 
                 <Route
-                    path="/role-selector"
+                    path="/bookingPage"
                     element={
                         <ProtectedRoute>
-                            <RoleSelector />
+                            <Booking />
                         </ProtectedRoute>
                     }
                 />
-                <Route
-                    path="/court-manager"
-                    element={
-                        <ProtectedRoute>
-                            <CourtManager />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route path="/bookingPage" element={<Booking />} />
                 <Route
                     path="/detailBooking"
                     element={
@@ -56,12 +46,46 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-
-                <Route path="/aboutUs" element={<GioiThieu />} />
-                <Route path="/contact" element={<LienHe />} />
-                <Route path="/historyOrder" element={<HistoryBooking />} />
-                <Route path="/rules" element={<Rule />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route
+                    path="/aboutUs"
+                    element={
+                        <ProtectedRoute>
+                            <GioiThieu />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/contact"
+                    element={
+                        <ProtectedRoute>
+                            <LienHe />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/historyOrder"
+                    element={
+                        <ProtectedRoute>
+                            <HistoryBooking />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/rules"
+                    element={
+                        <ProtectedRoute>
+                            <Rule />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <Profile />
+                        </ProtectedRoute>
+                    }
+                />
             </Routes>
         </Router>
     );

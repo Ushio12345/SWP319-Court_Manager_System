@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import HeaderLoginForm from "../../components/header-login-form";
 import Footer from "../../components/footer";
 import "./index.css";
-import '../../App.css';
-import { showAlert } from '../../utils/alertUtils';
+import "../../App.css";
+import { showAlert } from "../../utils/alertUtils";
 import axiosInstance from "../../config/axiosConfig";
 
 const Login = () => {
@@ -51,20 +51,15 @@ const Login = () => {
             .then((response) => {
                 if (response.status === 200) {
                     const data = response.data;
-    
+
                     localStorage.setItem("user", JSON.stringify(data));
-    
+
                     console.log("Authentication successful");
-    
+
                     // Chuyển hướng người dùng sau khi đăng nhập thành công
                     window.location.href = "/";
                 } else {
-                    showAlert(
-                        'error',
-                        'Đăng nhập không thành công!',
-                        'Sai email hoặc mật khẩu. Vui lòng thử lại.',
-                        'top-end'
-                    );
+                    showAlert("error", "Đăng nhập không thành công!", "Sai email hoặc mật khẩu. Vui lòng thử lại.", "top-end");
                 }
             })
             .catch((error) => {
@@ -84,10 +79,10 @@ const Login = () => {
                     if (data && data.redirectUrl) {
                         window.location.href = data.redirectUrl;
                     } else {
-                        showAlert('error', 'Lỗi !', 'Có lỗi xảy ra. Vui lòng thử lại.', 'top-end');
+                        showAlert("error", "Lỗi !", "Có lỗi xảy ra. Vui lòng thử lại.", "top-end");
                     }
                 } else {
-                    showAlert('error', 'Lỗi !', 'Có lỗi xảy ra. Vui lòng thử lại.', 'top-end');
+                    showAlert("error", "Lỗi !", "Có lỗi xảy ra. Vui lòng thử lại.", "top-end");
                 }
             })
             .catch((error) => {
@@ -114,11 +109,11 @@ const Login = () => {
                 );
 
                 if (!response.ok) {
-                    showAlert('error', 'Lỗi !', 'Kết nối không ổn định. Vui lòng thử lại.', 'top-end');
+                    showAlert("error", "Lỗi !", "Kết nối không ổn định. Vui lòng thử lại.", "top-end");
                 }
 
                 const data = await response.json();
-                
+
                 localStorage.setItem("user", JSON.stringify(data));
                 console.log("Authentication successful");
 
@@ -156,9 +151,7 @@ const Login = () => {
                             />
                             <i className="fa-solid fa-user" />
                         </div>
-                        {emailError && (
-                            <p className="text-danger">{emailError}</p>
-                        )}
+                        {emailError && <p className="text-danger">{emailError}</p>}
                         <div className="input-box">
                             <input
                                 type="password"
@@ -171,9 +164,7 @@ const Login = () => {
                             />
                             <i className="fa-solid fa-lock" />
                         </div>
-                        {passwordError && (
-                            <p className="text-danger">{passwordError}</p>
-                        )}
+                        {passwordError && <p className="text-danger">{passwordError}</p>}
                         <div className="remember-forgot">
                             <label>
                                 <input type="checkbox" />
@@ -191,10 +182,7 @@ const Login = () => {
                         </div>
                         <div className="login-with">
                             <div className="gmail">
-                                <button
-                                    className="btn btn-danger p-2"
-                                    onClick={handleGoogleLogin}
-                                >
+                                <button className="btn btn-danger p-2" onClick={handleGoogleLogin}>
                                     <i className="fa-brands fa-google" /> Google
                                 </button>
                             </div>

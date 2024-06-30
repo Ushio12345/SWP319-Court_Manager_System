@@ -65,9 +65,54 @@ export default class HistoryBooking extends Component {
                     discount: 0,
                 },
             ],
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+                email: "",
+                password: "",
+                phone: "",
+                balance: 0,
+                roles: [],
+            },
         };
     }
+    componentDidMount() {
+        const user = JSON.parse(localStorage.getItem("user"));
 
+        if (user) {
+            this.setState({
+                isLoggedIn: true,
+                user: {
+                    username: user.fullName,
+                    avatar: user.imageUrl,
+                    email: user.email,
+                    phone: user.phone,
+                    balance: user.balance,
+                    roles: user.roles,
+                },
+            });
+        }
+    }
+
+    handleLogout = () => {
+        localStorage.removeItem("user");
+
+        this.setState({
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+                email: "",
+                password: "",
+                phone: "",
+                balance: 0,
+                roles: [],
+            },
+        });
+
+        window.location.href = "/";
+    };
     setCurrentTab = (tab) => {
         this.setState({ currentTab: tab });
     };
@@ -89,10 +134,11 @@ export default class HistoryBooking extends Component {
     render() {
         const { currentTab } = this.state;
         const filteredOrders = this.filterOrders(currentTab);
+        const { isLoggedIn, user, errors } = this.state;
 
         return (
             <div className="historyPage">
-                <Header />
+                <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
                 <div className="historyPage-body w-75 m-auto">
                     <div className="">
                         <div>

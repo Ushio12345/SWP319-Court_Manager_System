@@ -26,7 +26,7 @@ const OrderItem = ({ order }) => {
 
     return (
         <div className="orderItemList">
-            <div className="orderItem">
+            <div className="orderItem mt-4">
                 <div className="orderItem-header">
                     <div className="nameCourt">CLB cầu lông Phú Hữu</div>
                     <div className="status d-flex">

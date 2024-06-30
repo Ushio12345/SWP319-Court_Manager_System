@@ -4,10 +4,66 @@ import Header from "../../../components/header";
 import Footer from "../../../components/footer";
 
 export default class LienHe extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+                email: "",
+                password: "",
+                phone: "",
+                balance: 0,
+                roles: [],
+            },
+            errors: {
+                email: "",
+                password: "",
+                phone: "",
+            },
+        };
+    }
+    componentDidMount() {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user) {
+            this.setState({
+                isLoggedIn: true,
+                user: {
+                    username: user.fullName,
+                    avatar: user.imageUrl,
+                    email: user.email,
+                    phone: user.phone,
+                    balance: user.balance,
+                    roles: user.roles,
+                },
+            });
+        }
+    }
+    handleLogout = () => {
+        localStorage.removeItem("user");
+
+        this.setState({
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+                email: "",
+                password: "",
+                phone: "",
+                balance: 0,
+                roles: [],
+            },
+        });
+
+        window.location.href = "/";
+    };
     render() {
+        const { isLoggedIn, user, errors } = this.state;
         return (
             <div>
-                <Header />
+                <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
                 <div className="" style={{ paddingTop: 100 }}>
                     <section className="introduction">
                         <h4>
