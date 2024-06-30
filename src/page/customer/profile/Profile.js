@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import "./style.css";
-import HeaderLoginForm from "../../../components/header-login-form";
 import Footer from "../../../components/footer";
 import Header from "../../../components/header";
 
@@ -12,21 +11,18 @@ export default class Profile extends Component {
             user: {
                 username: "",
                 avatar: "",
-                email: "",
-                password: "",
-                phone: "",
-                balance: 0,
-                roles: [],
             },
             errors: {
-                email: "",
-                password: "",
-                phone: "",
+                username: "",
             },
         };
     }
 
     componentDidMount() {
+        this.fetchUserFromLocalStorage();
+    }
+
+    fetchUserFromLocalStorage() {
         const user = JSON.parse(localStorage.getItem("user"));
 
         if (user) {
@@ -35,10 +31,6 @@ export default class Profile extends Component {
                 user: {
                     username: user.fullName,
                     avatar: user.imageUrl,
-                    email: user.email,
-                    phone: user.phone,
-                    balance: user.balance,
-                    roles: user.roles,
                 },
             });
         }
@@ -46,37 +38,22 @@ export default class Profile extends Component {
 
     handleLogout = () => {
         localStorage.removeItem("user");
-
         this.setState({
             isLoggedIn: false,
             user: {
                 username: "",
                 avatar: "",
-                email: "",
-                password: "",
-                phone: "",
-                balance: 0,
-                roles: [],
             },
         });
-
         window.location.href = "/";
     };
 
     validateField = (name, value) => {
         let error = "";
 
-        if (name === "email") {
-            if (!value.endsWith("@gmail.com")) {
-                error = "Email phải kết thúc bằng @gmail.com";
-            }
-        } else if (name === "password") {
-            if (value.length < 8) {
-                error = "Mật khẩu phải có ít nhất 8 ký tự";
-            }
-        } else if (name === "phone") {
-            if (value.length !== 10 || !/^\d{10}$/.test(value)) {
-                error = "Số điện thoại phải có đúng 10 chữ số";
+        if (name === "username") {
+            if (value.length === 0) {
+                error = "Vui lòng nhập tên người dùng";
             }
         }
 
@@ -100,32 +77,40 @@ export default class Profile extends Component {
         this.validateField(name, value);
     };
 
-    handleBlur = (e) => {
-        const { name, value } = e.target;
-        this.validateField(name, value);
+    handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                this.setState((prevState) => ({
+                    user: {
+                        ...prevState.user,
+                        avatar: reader.result,
+                    },
+                }));
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     handleSubmit = (e) => {
         e.preventDefault();
         if (this.validateForm()) {
-            // Handle form submission
+            const { user } = this.state;
+            localStorage.setItem("user", JSON.stringify(user));
+            alert("Cập nhật thông tin thành công!");
+            this.setState({
+                user,
+            });
         }
     };
 
     validateForm = () => {
-        const { email, password, phone } = this.state.user;
+        const { username } = this.state.user;
         const errors = {};
 
-        if (!email.endsWith("@gmail.com")) {
-            errors.email = "Email phải kết thúc bằng @gmail.com";
-        }
-
-        if (password.length < 8) {
-            errors.password = "Mật khẩu phải có ít nhất 8 ký tự";
-        }
-
-        if (phone.length !== 10 || !/^\d{10}$/.test(phone)) {
-            errors.phone = "Số điện thoại phải có đúng 10 chữ số";
+        if (username.length === 0) {
+            errors.username = "Vui lòng nhập tên người dùng";
         }
 
         this.setState({ errors });
@@ -148,7 +133,7 @@ export default class Profile extends Component {
                         <div className="showAvatar text-center">
                             <img src={user.avatar} alt="User Avatar" />
                             <label className="custom-file-upload" style={{ cursor: "pointer" }}>
-                                <input type="file" />
+                                <input type="file" onChange={this.handleAvatarChange} />
                                 Chỉnh sửa
                             </label>
                         </div>
@@ -158,64 +143,15 @@ export default class Profile extends Component {
                             </label>
                             <input
                                 type="text"
-                                className="form-control"
+                                className={`form-control ${errors.username ? "is-invalid" : ""}`}
                                 id="username"
                                 name="username"
                                 value={user.username}
                                 onChange={this.handleInputChange}
                             />
+                            {errors.username && <div className="invalid-feedback">{errors.username}</div>}
                         </div>
-                        <div className="mb-2">
-                            <label htmlFor="email" className="form-label">
-                                Email:
-                            </label>
-                            <input
-                                type="email"
-                                className="form-control"
-                                id="email"
-                                name="email"
-                                value={user.email}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                            />
-                            {errors.email && <small className="text-danger">{errors.email}</small>}
-                        </div>
-                        <div className="mb-2">
-                            <label htmlFor="password" className="form-label">
-                                Mật khẩu:
-                            </label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                id="password"
-                                name="password"
-                                value={user.password}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                            />
-                            {errors.password && <small className="text-danger">{errors.password}</small>}
-                        </div>
-                        <div className="mb-2">
-                            <label htmlFor="phone" className="form-label">
-                                Số điện thoại:
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="phone"
-                                name="phone"
-                                value={user.phone}
-                                onChange={this.handleInputChange}
-                                onBlur={this.handleBlur}
-                            />
-                            {errors.phone && <small className="text-danger">{errors.phone}</small>}
-                        </div>
-                        <div className="mb-2">
-                            <label htmlFor="balance" className="form-label">
-                                Số dư giờ đã nạp
-                            </label>
-                            <input type="number" className="form-control" id="balance" name="balance" readOnly value={user.balance} />
-                        </div>
+
                         <button className="btn btn-primary m-0 p-2" type="submit">
                             Cập nhật thay đổi
                         </button>

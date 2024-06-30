@@ -77,6 +77,7 @@ const CourtList = () => {
 
     const settingForShowAllYard = {
         infinite: true,
+        dot: true,
         rows: 3,
         slidesPerRow: 1,
         slidesToShow: 4,

@@ -97,16 +97,13 @@ const Login = () => {
 
         const sendCodeToBackend = async () => {
             try {
-                const response = await fetch(
-                    "http://167.99.67.127:8080/auth/google/callback",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ code }),
-                    }
-                );
+                const response = await fetch("http://167.99.67.127:8080/auth/google/callback", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ code }),
+                });
 
                 if (!response.ok) {
                     showAlert("error", "Lỗi !", "Kết nối không ổn định. Vui lòng thử lại.", "top-end");

@@ -2,7 +2,7 @@ import axios from "axios";
 import { showConfirmAlert } from "../utils/alertUtils";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "http://167.99.67.127:8080",
 });
 
 axiosInstance.interceptors.request.use((config) => {
