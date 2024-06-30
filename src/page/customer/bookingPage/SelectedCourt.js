@@ -16,7 +16,6 @@ export default class selectedCourt extends Component {
                 this.setState({ facilities: response.data });
             })
             .catch(error => {
-                showAlert("error", "Lỗi", "Lấy dữ liệu không thành công. Vui lòng thử lại !", "top-end");
                 console.error("There was an error fetching the facilities!", error);
             });
     }

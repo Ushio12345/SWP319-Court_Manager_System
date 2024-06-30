@@ -56,8 +56,7 @@ export default function Booking() {
                 setLatestCourts(latest);
             })
             .catch((error) => {
-                showAlert("error", "Lỗi", "Lấy dữ liệu không thành công. Vui lòng thử lại !", "top-end");
-                console.error("There was an error fetching the amenities!", error);
+                console.error("There was an error fetching!", error);
                 setLatestCourts(generateDummyData(20)); // Sử dụng dữ liệu giả lập nếu có lỗi
             });
     }, []);

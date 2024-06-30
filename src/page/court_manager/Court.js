@@ -312,8 +312,6 @@ export default class extends Component {
                                 <th>Mã cơ sở</th>
                                 <th className="text-start">Tên Cơ Sở</th>
                                 <th className="text-start">Địa chỉ</th>
-                                <th>Giờ hoạt động</th>
-                                <th>Đánh giá</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -329,8 +327,6 @@ export default class extends Component {
                                         <td className="text-center">{court.courtId}</td>
                                         <td className="text-start">{court.courtName}</td>
                                         <td>{court.address}</td>
-                                        <td className="text-center">{`${court.openTime} - ${court.closeTime}`}</td>
-                                        <td className="text-center">{court.rate}/5</td>
                                         <td className="d-flex btn-action">
                                             <button
                                                 className="btn btn-info mr-2"

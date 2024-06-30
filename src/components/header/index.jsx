@@ -61,14 +61,25 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                     </Link>
                                                 </li>
                                                 <li>
-                                                    <Link to="/historyOrder" onClick={hideDropdown}>
-                                                        <i className="fa-solid fa-clock-rotate-left"></i> Lịch sử đặt hàng
-                                                    </Link>
+                                                    {isLoggedIn && (
+                                                        <Link to="/court-manager" onClick={hideDropdown}>
+                                                            <i className="fa-solid fa-shop"></i> Cơ sở của tôi
+                                                        </Link>
+                                                    )}
                                                 </li>
                                                 <li>
-                                                    <Link to="/historyOrder" onClick={hideDropdown}>
-                                                        <i className="fa-solid fa-user-minus"></i> Xóa tài khoản
-                                                    </Link>
+                                                    {isLoggedIn && (
+                                                        <Link to="/historyOrder" onClick={hideDropdown}>
+                                                            <i className="fa-solid fa-clock-rotate-left"></i> Lịch sử đặt hàng
+                                                        </Link>
+                                                    )}
+                                                </li>
+                                                <li>
+                                                    {isLoggedIn && (
+                                                        <Link to="/historyOrder" onClick={hideDropdown}>
+                                                            <i class="fa-solid fa-user-minus"></i> Xóa tài khoản
+                                                        </Link>
+                                                    )}
                                                 </li>
                                                 <li>
                                                     <button
