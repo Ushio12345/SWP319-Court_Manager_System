@@ -1,107 +1,137 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { showAlert } from "../../utils/alertUtils";
+import axiosInstance from "../../config/axiosConfig";
+import { handleTokenError } from "../../utils/tokenErrorHandle";
 
 export default class Services extends Component {
     state = {
-        Services: [],
+        services: [],
         selectedServices: [],
         selectedCourt: "",
         selectedCourtName: "",
         courts: [],
-        newCourt: {
-            court_name: "",
-            address: "",
-            open_time: "",
-            close_time: "",
-            rate: "",
-            user_id: "",
-        },
+        activityLog: [],
     };
 
     componentDidMount() {
-        this.fetchSer();
+        this.fetchServices();
         this.fetchCourts();
     }
 
     fetchCourts = () => {
-        axios
-            .get("http://localhost:3001/court")
+        axiosInstance
+            .get("/court/courts-of-owner")
             .then((res) => {
-                this.setState({ courts: res.data });
+                if (res.status === 200) {
+                    this.setState({ courts: res.data });
+                } else {
+                    this.setState({ courts: [] });
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    console.error("Response không thành công:", res.status);
+                }
             })
-            .catch((err) => {
-                console.error("Error fetching courts:", err);
-                alert("Không thể lấy dữ liệu từ API");
+            .catch((error) => {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                    handleTokenError();
+                }
+                this.handleRequestError(error);
             });
     };
 
-    fetchSer = () => {
+    fetchServices = () => {
         axios
             .get("http://localhost:3001/services")
             .then((res) => {
-                this.setState({ Services: res.data });
+                this.setState({ services: res.data });
             })
             .catch((err) => console.error("Error fetching Services:", err));
     };
 
-    handleCheckboxChange = (event) => {
-        const serviceId = event.target.id;
-        this.setState((prevState) => {
-            let selectedServices;
-            if (prevState.selectedServices.includes(serviceId)) {
-                selectedServices = prevState.selectedServices.filter((id) => id !== serviceId);
-            } else {
-                selectedServices = [...prevState.selectedServices, serviceId];
-            }
-            localStorage.setItem(`selectedServices_${prevState.selectedCourt}`, JSON.stringify(selectedServices));
-            return { selectedServices };
-        });
-    };
-
     handleCourtChange = (event) => {
-        const selectedCourtId = event.target.value;
-        const selectedCourt = this.state.courts.find((court) => court.id === selectedCourtId);
-        const selectedServices = JSON.parse(localStorage.getItem(`selectedServices_${selectedCourtId}`)) || [];
+        const courtId = event.target.value;
+        const courtName = event.target.options[event.target.selectedIndex].text;
         this.setState({
-            selectedCourt: selectedCourtId,
-            selectedCourtName: selectedCourt ? selectedCourt.court_name : "",
-            selectedServices,
+            selectedCourt: courtId,
+            selectedCourtName: courtName,
+            selectedServices: [],
         });
     };
 
-    getValueServices = () => {
-        console.log(this.state.selectedServices);
+    handleActionSelectServices = (serviceId) => {
+        const { selectedServices, selectedCourt, services, activityLog } = this.state;
+        const selectedService = services.find((service) => service.id === serviceId);
+        let updatedSelectedServices = [];
+
+        let logMessage = "";
+
+        if (selectedServices.includes(serviceId)) {
+            updatedSelectedServices = selectedServices.filter((id) => id !== serviceId);
+            logMessage = {
+                courtID: selectedCourt,
+                services: updatedSelectedServices.map((id) => services.find((service) => service.id === id)),
+            };
+            console.log("Xóa dịch vụ:", logMessage);
+        } else {
+            updatedSelectedServices = [...selectedServices, serviceId];
+            logMessage = {
+                courtID: selectedCourt,
+                services: updatedSelectedServices.map((id) => services.find((service) => service.id === id)),
+            };
+            console.log("Thêm dịch vụ:", logMessage);
+        }
+
+        const updatedLog = [...activityLog, logMessage];
+
+        this.setState({
+            selectedServices: updatedSelectedServices,
+            activityLog: updatedLog,
+        });
     };
 
-    handleSaveServices = () => {
-        const { selectedCourt, selectedServices } = this.state;
-
-        const data = {
-            court_id: selectedCourt,
-            services: selectedServices,
-        };
-
-        axios
-            .post("http://localhost:3001/services", data)
-            .then((response) => {
-                console.log("Services saved successfully:", response);
-                alert("Services saved successfully!");
-            })
-            .catch((error) => {
-                console.error("Error saving services:", error);
-                alert("Error saving services!");
-            });
+    renderServices = () => {
+        return this.state.services.map((service) => {
+            const isSelected = this.state.selectedServices.includes(service.id);
+            return (
+                <div
+                    key={service.id}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "10px",
+                        justifyContent: "space-between",
+                        backgroundColor: isSelected ? "#000" : "#f5f5f5",
+                        color: isSelected ? "#fff" : "#000",
+                        padding: "5px 0",
+                    }}
+                >
+                    <div>
+                        <p style={{ margin: "0 10px 0 0" }}>
+                            <i className={service.servicesIcon} style={{ marginRight: "20px" }} />
+                            {service.servicesName}
+                        </p>
+                    </div>
+                    <div>
+                        <button onClick={() => this.handleActionSelectServices(service.id)}>
+                            {isSelected ? <i className="fa-solid fa-minus"></i> : <i className="fa-solid fa-plus"></i>}
+                        </button>
+                    </div>
+                </div>
+            );
+        });
     };
 
-    renderSerSelectedOption = () => {
-        if (this.state.selectedServices.length === 0) {
+    renderSelectedServices = () => {
+        const { selectedServices } = this.state;
+
+        if (selectedServices.length === 0) {
             return <p>Không có dịch vụ nào được chọn.</p>;
         }
 
         return (
             <ul className="">
-                {this.state.selectedServices.map((serviceId) => {
-                    const service = this.state.Services.find((ser) => ser.id === serviceId);
+                {selectedServices.map((serviceId) => {
+                    const service = this.state.services.find((ser) => ser.id === serviceId);
                     return (
                         <div key={serviceId} className="d-flex align-items-center">
                             <i className={service?.servicesIcon}></i> <li className="ms-3">{service?.servicesName}</li>
@@ -112,58 +142,43 @@ export default class Services extends Component {
         );
     };
 
-    renderSer = () => {
-        return this.state.Services.map((ser) => (
-            <div
-                key={ser.id}
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                    justifyContent: "space-between",
-                    backgroundColor: "#f5f5f5",
-                    padding: "5px 0",
-                }}
-            >
-                <div>
-                    <p style={{ margin: "0 10px 0 0" }}>
-                        <i className={ser.servicesIcon} style={{ marginRight: "20px" }} />
-                        {ser.servicesName}
-                    </p>
-                </div>
-                <div>
-                    <input
-                        type="checkbox"
-                        className="selectedService"
-                        id={ser.id}
-                        name={ser.id}
-                        checked={this.state.selectedServices.includes(ser.id)}
-                        onChange={this.handleCheckboxChange}
-                    />
-                </div>
-            </div>
-        ));
+    handleSubmit = () => {
+        const { selectedCourt, selectedServices, services } = this.state;
+
+        // Lọc ra các dịch vụ đã chọn từ danh sách services
+        const selectedServiceDetails = selectedServices.map((serviceId) => {
+            const service = services.find((s) => s.id === serviceId);
+            return {
+                courtID: selectedCourt,
+                servicesID: service.id,
+                icon: service.servicesIcon,
+                name: service.servicesName,
+            };
+        });
+
+        console.log("Thông tin dịch vụ được chọn:", selectedServiceDetails);
+
+        // Đưa logic xử lý gửi đi hoặc lưu trữ dữ liệu ở đây
     };
 
     render() {
         return (
-            <div className="Services-for-court">
+            <div className="services-for-court">
                 <h1 className="text-center mb-5">Danh sách các tiện ích</h1>
                 <div className="form-group">
                     <select id="courtSelect" className="form-control w-25 m-auto" onChange={this.handleCourtChange}>
-                        <option value="">Chọn cơ sở</option>
                         {this.state.courts.map((court) => (
-                            <option key={court.id} value={court.id}>
-                                {court.court_name}
+                            <option key={court.courtId} value={court.courtId}>
+                                {court.courtName}
                             </option>
                         ))}
                     </select>
                 </div>
-                <div className="list-Services w-50 m-auto" style={{ fontSize: "20px" }}>
-                    {this.renderSer()}
+                <div className="list-services w-50 m-auto" style={{ fontSize: "20px" }}>
+                    {this.renderServices()}
                 </div>
                 <div className="w-25 m-auto">
-                    <button onClick={this.handleSaveServices} className="btn btn-primary mt-3">
+                    <button onClick={this.handleSubmit} className="btn btn-primary mt-3">
                         Hoàn tất
                     </button>
                 </div>
@@ -172,7 +187,7 @@ export default class Services extends Component {
                     <h5>
                         Các dịch vụ được sử dụng trong cơ sở: <strong>{this.state.selectedCourtName}</strong>
                     </h5>
-                    {this.renderSerSelectedOption()}
+                    {this.renderSelectedServices()}
                 </div>
             </div>
         );
