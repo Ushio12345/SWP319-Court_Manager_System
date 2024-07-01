@@ -38,22 +38,8 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-                <Route
-                    path="/aboutUs"
-                    element={
-
-                        <GioiThieu />
-
-                    }
-                />
-                <Route
-                    path="/contact"
-                    element={
-
-                        <LienHe />
-
-                    }
-                />
+                <Route path="/aboutUs" element={<GioiThieu />} />
+                <Route path="/contact" element={<LienHe />} />
                 <Route
                     path="/historyOrder"
                     element={

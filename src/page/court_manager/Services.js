@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import axios from "axios";
-import { showAlert } from "../../utils/alertUtils";
 import axiosInstance from "../../config/axiosConfig";
+import { showAlert } from "../../utils/alertUtils";
 import { handleTokenError } from "../../utils/tokenErrorHandle";
 
 export default class Services extends Component {
@@ -11,7 +10,7 @@ export default class Services extends Component {
         selectedCourt: "",
         selectedCourtName: "",
         courts: [],
-        activityLog: [],
+        facilityOfCourt: [],
     };
 
     componentDidMount() {
@@ -26,26 +25,29 @@ export default class Services extends Component {
                 if (res.status === 200) {
                     this.setState({ courts: res.data });
                 } else {
-                    this.setState({ courts: [] });
                     showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                }
                 this.handleRequestError(error);
             });
     };
 
     fetchServices = () => {
-        axios
-            .get("http://localhost:3001/services")
+        axiosInstance
+            .get("/facility/all")
             .then((res) => {
-                this.setState({ services: res.data });
+                if (res.status === 200) {
+                    this.setState({ services: res.data });
+                } else {
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    console.error("Response không thành công:", res.status);
+                }
             })
-            .catch((err) => console.error("Error fetching Services:", err));
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
     };
 
     handleCourtChange = (event) => {
@@ -56,64 +58,79 @@ export default class Services extends Component {
             selectedCourtName: courtName,
             selectedServices: [],
         });
+
+        this.renderServicesInCourt(courtId);
     };
 
-    handleActionSelectServices = (serviceId) => {
-        const { selectedServices, selectedCourt, services, activityLog } = this.state;
-        const selectedService = services.find((service) => service.id === serviceId);
-        let updatedSelectedServices = [];
+    handleActionSelectServices = (facilityId) => {
+        const { selectedCourt } = this.state;
+        const isFacilityInCourt = this.state.facilityOfCourt.some((facility) => facility.facilityId === facilityId);
 
-        let logMessage = "";
-
-        if (selectedServices.includes(serviceId)) {
-            updatedSelectedServices = selectedServices.filter((id) => id !== serviceId);
-            logMessage = {
-                courtID: selectedCourt,
-                services: updatedSelectedServices.map((id) => services.find((service) => service.id === id)),
-            };
-            console.log("Xóa dịch vụ:", logMessage);
+        if (isFacilityInCourt) {
+            axiosInstance
+                .delete(`/court/${selectedCourt}/deleteFacilityFromCourt/${facilityId}`)
+                .then((res) => {
+                    if (res.status === 200) {
+                        showAlert("success", "Thành công", "Đã xóa dịch vụ khỏi sân", "top-end");
+                        this.fetchServicesInCourt(selectedCourt); // Cập nhật lại danh sách dịch vụ trong sân
+                    } else {
+                        showAlert("error", "Lỗi !", "Không thể xóa dịch vụ", "top-end");
+                        console.error("Response không thành công:", res.status);
+                    }
+                })
+                .catch((error) => {
+                    this.handleRequestError(error);
+                });
         } else {
-            updatedSelectedServices = [...selectedServices, serviceId];
-            logMessage = {
-                courtID: selectedCourt,
-                services: updatedSelectedServices.map((id) => services.find((service) => service.id === id)),
-            };
-            console.log("Thêm dịch vụ:", logMessage);
+            axiosInstance
+                .post(`/court/${selectedCourt}/addFacilityToCourt/${facilityId}`)
+                .then((res) => {
+                    if (res.status === 200) {
+                        showAlert("success", "Thành công", "Đã thêm dịch vụ vào sân", "top-end");
+                        this.fetchServicesInCourt(selectedCourt); // Cập nhật lại danh sách dịch vụ trong sân
+                    } else {
+                        showAlert("error", "Lỗi !", "Không thể thêm dịch vụ", "top-end");
+                        console.error("Response không thành công:", res.status);
+                    }
+                })
+                .catch((error) => {
+                    this.handleRequestError(error);
+                });
         }
 
-        const updatedLog = [...activityLog, logMessage];
-
-        this.setState({
-            selectedServices: updatedSelectedServices,
-            activityLog: updatedLog,
-        });
+        // Update selected services state
+        this.setState((prevState) => ({
+            selectedServices: prevState.facilityOfCourt.map((facility) => facility.facilityId),
+        }));
     };
 
     renderServices = () => {
+        const { facilityOfCourt } = this.state;
         return this.state.services.map((service) => {
-            const isSelected = this.state.selectedServices.includes(service.id);
+            const isFacilityInCourt = facilityOfCourt.some((facility) => facility.facilityId === service.facilityId);
+
             return (
                 <div
-                    key={service.id}
+                    key={service.facilityId}
                     style={{
                         display: "flex",
                         alignItems: "center",
                         marginBottom: "10px",
                         justifyContent: "space-between",
-                        backgroundColor: isSelected ? "#000" : "#f5f5f5",
-                        color: isSelected ? "#fff" : "#000",
+                        backgroundColor: isFacilityInCourt ? "#000" : "#f5f5f5",
+                        color: isFacilityInCourt ? "#fff" : "#000",
                         padding: "5px 0",
                     }}
                 >
                     <div>
                         <p style={{ margin: "0 10px 0 0" }}>
-                            <i className={service.servicesIcon} style={{ marginRight: "20px" }} />
-                            {service.servicesName}
+                            <i className={service.facilityIcon} style={{ marginRight: "20px" }} />
+                            {service.facilityName}
                         </p>
                     </div>
                     <div>
-                        <button onClick={() => this.handleActionSelectServices(service.id)}>
-                            {isSelected ? <i className="fa-solid fa-minus"></i> : <i className="fa-solid fa-plus"></i>}
+                        <button onClick={() => this.handleActionSelectServices(service.facilityId)}>
+                            {isFacilityInCourt ? <i className="fa-solid fa-minus"></i> : <i className="fa-solid fa-plus"></i>}
                         </button>
                     </div>
                 </div>
@@ -121,45 +138,23 @@ export default class Services extends Component {
         });
     };
 
-    renderSelectedServices = () => {
-        const { selectedServices } = this.state;
-
-        if (selectedServices.length === 0) {
-            return <p>Không có dịch vụ nào được chọn.</p>;
-        }
-
-        return (
-            <ul className="">
-                {selectedServices.map((serviceId) => {
-                    const service = this.state.services.find((ser) => ser.id === serviceId);
-                    return (
-                        <div key={serviceId} className="d-flex align-items-center">
-                            <i className={service?.servicesIcon}></i> <li className="ms-3">{service?.servicesName}</li>
-                        </div>
-                    );
-                })}
-            </ul>
-        );
+    renderServicesInCourt = (selectedCourtId) => {
+        axiosInstance
+            .get(`/court/facilities-of-court/${selectedCourtId}`)
+            .then((res) => {
+                if (res.status === 200) {
+                    this.setState({ facilityOfCourt: res.data });
+                } else {
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    console.error("Response không thành công:", res.status);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
     };
 
-    handleSubmit = () => {
-        const { selectedCourt, selectedServices, services } = this.state;
-
-        // Lọc ra các dịch vụ đã chọn từ danh sách services
-        const selectedServiceDetails = selectedServices.map((serviceId) => {
-            const service = services.find((s) => s.id === serviceId);
-            return {
-                courtID: selectedCourt,
-                servicesID: service.id,
-                icon: service.servicesIcon,
-                name: service.servicesName,
-            };
-        });
-
-        console.log("Thông tin dịch vụ được chọn:", selectedServiceDetails);
-
-        // Đưa logic xử lý gửi đi hoặc lưu trữ dữ liệu ở đây
-    };
+    handleRequestError = (error) => {};
 
     render() {
         return (
@@ -176,18 +171,6 @@ export default class Services extends Component {
                 </div>
                 <div className="list-services w-50 m-auto" style={{ fontSize: "20px" }}>
                     {this.renderServices()}
-                </div>
-                <div className="w-25 m-auto">
-                    <button onClick={this.handleSubmit} className="btn btn-primary mt-3">
-                        Hoàn tất
-                    </button>
-                </div>
-
-                <div className="mt-3">
-                    <h5>
-                        Các dịch vụ được sử dụng trong cơ sở: <strong>{this.state.selectedCourtName}</strong>
-                    </h5>
-                    {this.renderSelectedServices()}
                 </div>
             </div>
         );
