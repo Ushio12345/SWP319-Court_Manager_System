@@ -20,8 +20,8 @@ export const showAlert = (icon, title, text, position) => {
     });
 };
 
-export const showConfirmAlert = (title, text, confirmText, position) => {
-    return Swal.fire({
+export const showConfirmAlert = async (title, text, confirmText, position) => {
+    const result = await Swal.fire({
         title: title,
         text: text,
         icon: "warning",
@@ -30,8 +30,22 @@ export const showConfirmAlert = (title, text, confirmText, position) => {
         cancelButtonColor: "#d33",
         position: position,
         confirmButtonText: confirmText
-    }).then((result) => {
-        return result; // Return the result of Swal.fire()
     });
+    return result;
+};
+
+export const showConfirmPayment = async (title, text, icon, confirmText, cancleText, position) => {
+    const result = await Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#28a745",
+        position: position,
+        confirmButtonText: confirmText,
+        cancelButtonText: cancleText,
+    });
+    return result;
 };
 

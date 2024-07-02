@@ -63,6 +63,7 @@ const Login = () => {
                 }
             })
             .catch((error) => {
+                showAlert("error", "Đăng nhập không thành công!", "Sai email hoặc mật khẩu. Vui lòng thử lại.", "top-end");
                 console.error(error);
             });
     };

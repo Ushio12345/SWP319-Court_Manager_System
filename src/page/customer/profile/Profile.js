@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./style.css";
 import Footer from "../../../components/footer";
 import Header from "../../../components/header";
+import { showAlert } from "../../../utils/alertUtils";
 
 export default class Profile extends Component {
     constructor(props) {
@@ -11,9 +12,11 @@ export default class Profile extends Component {
             user: {
                 username: "",
                 avatar: "",
+                email: ""
             },
             errors: {
                 username: "",
+                email: ""
             },
         };
     }
@@ -31,6 +34,7 @@ export default class Profile extends Component {
                 user: {
                     username: user.fullName,
                     avatar: user.imageUrl,
+                    email: user.email
                 },
             });
         }
@@ -43,6 +47,7 @@ export default class Profile extends Component {
             user: {
                 username: "",
                 avatar: "",
+                email: ""
             },
         });
         window.location.href = "/";
@@ -54,9 +59,13 @@ export default class Profile extends Component {
         if (name === "username") {
             if (value.length === 0) {
                 error = "Vui lòng nhập tên người dùng";
+            } else if (name === "email") {
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!value.match(emailPattern)) {
+                    error = "Vui lòng nhập email hợp lệ";
+                }
             }
         }
-
         this.setState((prevState) => ({
             errors: {
                 ...prevState.errors,
@@ -98,7 +107,7 @@ export default class Profile extends Component {
         if (this.validateForm()) {
             const { user } = this.state;
             localStorage.setItem("user", JSON.stringify(user));
-            alert("Cập nhật thông tin thành công!");
+            showAlert("success", "", "Cập nhật thông tin thành công", "top-end")
             this.setState({
                 user,
             });
@@ -106,11 +115,16 @@ export default class Profile extends Component {
     };
 
     validateForm = () => {
-        const { username } = this.state.user;
+        const { username, email } = this.state.user;
         const errors = {};
 
         if (username.length === 0) {
             errors.username = "Vui lòng nhập tên người dùng";
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email.match(emailPattern)) {
+            errors.email = "Vui lòng nhập email hợp lệ";
         }
 
         this.setState({ errors });
@@ -150,6 +164,20 @@ export default class Profile extends Component {
                                 onChange={this.handleInputChange}
                             />
                             {errors.username && <div className="invalid-feedback">{errors.username}</div>}
+                        </div>
+                        <div className="mb-2">
+                            <label htmlFor="email" className="form-label">
+                                Email:
+                            </label>
+                            <input
+                                type="text"
+                                className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                                id="email"
+                                name="email"
+                                value={user.email}
+                                onChange={this.handleInputChange}
+                            />
+                            {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                         </div>
 
                         <button className="btn btn-primary m-0 p-2" type="submit">
