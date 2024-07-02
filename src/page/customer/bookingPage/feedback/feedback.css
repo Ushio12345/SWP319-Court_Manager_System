@@ -61,8 +61,8 @@ img {
     text-align: center;
 }
 
-.fa-solid,
-.fas {
+.feedbackCus .fa-solid,
+.feedbackCus .fas {
     font-weight: 900;
     color: orangered;
 }

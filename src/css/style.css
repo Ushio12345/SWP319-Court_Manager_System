@@ -473,6 +473,7 @@ ul li {
 .manager .topbar .search i {
     position: absolute;
     top: 50%;
+    right: 10px;
     transform: translateY(-50%);
 }
 .manager .topbar .search input {
@@ -482,24 +483,7 @@ ul li {
     padding-left: 20px;
     height: 30px;
 }
-.manager .topbar .notification .bell-icon {
-    position: relative;
-}
-.manager .topbar .notification .bell-icon i {
-    color: rgb(246, 246, 12);
-    font-size: 20px;
-}
-.manager .topbar .notification .bell-icon .number-notification {
-    position: absolute;
-    top: -10px;
-    right: -15px;
-}
-.manager .topbar .notification .bell-icon .number-notification p {
-    color: black;
-    font-size: 12px;
-    padding: 2px 3px;
-    border-radius: 20px;
-}
+
 .manager .topbar .user {
     position: relative;
     display: flex;

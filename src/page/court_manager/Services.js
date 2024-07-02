@@ -1,178 +1,176 @@
 import React, { Component } from "react";
-import axios from "axios";
+import axiosInstance from "../../config/axiosConfig";
+import { showAlert } from "../../utils/alertUtils";
+import { handleTokenError } from "../../utils/tokenErrorHandle";
 
 export default class Services extends Component {
     state = {
-        Services: [],
+        services: [],
         selectedServices: [],
         selectedCourt: "",
         selectedCourtName: "",
         courts: [],
-        newCourt: {
-            court_name: "",
-            address: "",
-            open_time: "",
-            close_time: "",
-            rate: "",
-            user_id: "",
-        },
+        facilityOfCourt: [],
     };
 
     componentDidMount() {
-        this.fetchSer();
+        this.fetchServices();
         this.fetchCourts();
     }
 
     fetchCourts = () => {
-        axios
-            .get("http://localhost:3001/court")
+        axiosInstance
+            .get("/court/courts-of-owner")
             .then((res) => {
-                this.setState({ courts: res.data });
+                if (res.status === 200) {
+                    this.setState({ courts: res.data });
+                } else {
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    console.error("Response không thành công:", res.status);
+                }
             })
-            .catch((err) => {
-                console.error("Error fetching courts:", err);
-                alert("Không thể lấy dữ liệu từ API");
+            .catch((error) => {
+                this.handleRequestError(error);
             });
     };
 
-    fetchSer = () => {
-        axios
-            .get("http://localhost:3001/services")
+    fetchServices = () => {
+        axiosInstance
+            .get("/facility/all")
             .then((res) => {
-                this.setState({ Services: res.data });
+                if (res.status === 200) {
+                    this.setState({ services: res.data });
+                } else {
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    console.error("Response không thành công:", res.status);
+                }
             })
-            .catch((err) => console.error("Error fetching Services:", err));
-    };
-
-    handleCheckboxChange = (event) => {
-        const serviceId = event.target.id;
-        this.setState((prevState) => {
-            let selectedServices;
-            if (prevState.selectedServices.includes(serviceId)) {
-                selectedServices = prevState.selectedServices.filter((id) => id !== serviceId);
-            } else {
-                selectedServices = [...prevState.selectedServices, serviceId];
-            }
-            localStorage.setItem(`selectedServices_${prevState.selectedCourt}`, JSON.stringify(selectedServices));
-            return { selectedServices };
-        });
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
     };
 
     handleCourtChange = (event) => {
-        const selectedCourtId = event.target.value;
-        const selectedCourt = this.state.courts.find((court) => court.id === selectedCourtId);
-        const selectedServices = JSON.parse(localStorage.getItem(`selectedServices_${selectedCourtId}`)) || [];
+        const courtId = event.target.value;
+        const courtName = event.target.options[event.target.selectedIndex].text;
         this.setState({
-            selectedCourt: selectedCourtId,
-            selectedCourtName: selectedCourt ? selectedCourt.court_name : "",
-            selectedServices,
+            selectedCourt: courtId,
+            selectedCourtName: courtName,
+            selectedServices: [],
+        });
+
+        this.renderServicesInCourt(courtId);
+    };
+
+    handleActionSelectServices = (facilityId) => {
+        const { selectedCourt } = this.state;
+        const isFacilityInCourt = this.state.facilityOfCourt.some((facility) => facility.facilityId === facilityId);
+
+        if (isFacilityInCourt) {
+            axiosInstance
+                .delete(`/court/${selectedCourt}/deleteFacilityFromCourt/${facilityId}`)
+                .then((res) => {
+                    if (res.status === 200) {
+                        showAlert("success", "Thành công", "Đã xóa dịch vụ khỏi sân", "top-end");
+                        this.fetchServicesInCourt(selectedCourt); // Cập nhật lại danh sách dịch vụ trong sân
+                    } else {
+                        showAlert("error", "Lỗi !", "Không thể xóa dịch vụ", "top-end");
+                        console.error("Response không thành công:", res.status);
+                    }
+                })
+                .catch((error) => {
+                    this.handleRequestError(error);
+                });
+        } else {
+            axiosInstance
+                .post(`/court/${selectedCourt}/addFacilityToCourt/${facilityId}`)
+                .then((res) => {
+                    if (res.status === 200) {
+                        showAlert("success", "Thành công", "Đã thêm dịch vụ vào sân", "top-end");
+                        this.fetchServicesInCourt(selectedCourt); // Cập nhật lại danh sách dịch vụ trong sân
+                    } else {
+                        showAlert("error", "Lỗi !", "Không thể thêm dịch vụ", "top-end");
+                        console.error("Response không thành công:", res.status);
+                    }
+                })
+                .catch((error) => {
+                    this.handleRequestError(error);
+                });
+        }
+
+        // Update selected services state
+        this.setState((prevState) => ({
+            selectedServices: prevState.facilityOfCourt.map((facility) => facility.facilityId),
+        }));
+    };
+
+    renderServices = () => {
+        const { facilityOfCourt } = this.state;
+        return this.state.services.map((service) => {
+            const isFacilityInCourt = facilityOfCourt.some((facility) => facility.facilityId === service.facilityId);
+
+            return (
+                <div
+                    key={service.facilityId}
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "10px",
+                        justifyContent: "space-between",
+                        backgroundColor: isFacilityInCourt ? "#000" : "#f5f5f5",
+                        color: isFacilityInCourt ? "#fff" : "#000",
+                        padding: "5px 0",
+                    }}
+                >
+                    <div>
+                        <p style={{ margin: "0 10px 0 0" }}>
+                            <i className={service.facilityIcon} style={{ marginRight: "20px" }} />
+                            {service.facilityName}
+                        </p>
+                    </div>
+                    <div>
+                        <button onClick={() => this.handleActionSelectServices(service.facilityId)}>
+                            {isFacilityInCourt ? <i className="fa-solid fa-minus"></i> : <i className="fa-solid fa-plus"></i>}
+                        </button>
+                    </div>
+                </div>
+            );
         });
     };
 
-    getValueServices = () => {
-        console.log(this.state.selectedServices);
-    };
-
-    handleSaveServices = () => {
-        const { selectedCourt, selectedServices } = this.state;
-
-        const data = {
-            court_id: selectedCourt,
-            services: selectedServices,
-        };
-
-        axios
-            .post("http://localhost:3001/services", data)
-            .then((response) => {
-                console.log("Services saved successfully:", response);
-                alert("Services saved successfully!");
+    renderServicesInCourt = (selectedCourtId) => {
+        axiosInstance
+            .get(`/court/facilities-of-court/${selectedCourtId}`)
+            .then((res) => {
+                if (res.status === 200) {
+                    this.setState({ facilityOfCourt: res.data });
+                } else {
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    console.error("Response không thành công:", res.status);
+                }
             })
             .catch((error) => {
-                console.error("Error saving services:", error);
-                alert("Error saving services!");
+                this.handleRequestError(error);
             });
     };
 
-    renderSerSelectedOption = () => {
-        if (this.state.selectedServices.length === 0) {
-            return <p>Không có dịch vụ nào được chọn.</p>;
-        }
-
-        return (
-            <ul className="">
-                {this.state.selectedServices.map((serviceId) => {
-                    const service = this.state.Services.find((ser) => ser.id === serviceId);
-                    return (
-                        <div key={serviceId} className="d-flex align-items-center">
-                            <i className={service?.servicesIcon}></i> <li className="ms-3">{service?.servicesName}</li>
-                        </div>
-                    );
-                })}
-            </ul>
-        );
-    };
-
-    renderSer = () => {
-        return this.state.Services.map((ser) => (
-            <div
-                key={ser.id}
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "10px",
-                    justifyContent: "space-between",
-                    backgroundColor: "#f5f5f5",
-                    padding: "5px 0",
-                }}
-            >
-                <div>
-                    <p style={{ margin: "0 10px 0 0" }}>
-                        <i className={ser.servicesIcon} style={{ marginRight: "20px" }} />
-                        {ser.servicesName}
-                    </p>
-                </div>
-                <div>
-                    <input
-                        type="checkbox"
-                        className="selectedService"
-                        id={ser.id}
-                        name={ser.id}
-                        checked={this.state.selectedServices.includes(ser.id)}
-                        onChange={this.handleCheckboxChange}
-                    />
-                </div>
-            </div>
-        ));
-    };
+    handleRequestError = (error) => {};
 
     render() {
         return (
-            <div className="Services-for-court">
+            <div className="services-for-court">
                 <h1 className="text-center mb-5">Danh sách các tiện ích</h1>
                 <div className="form-group">
                     <select id="courtSelect" className="form-control w-25 m-auto" onChange={this.handleCourtChange}>
-                        <option value="">Chọn cơ sở</option>
                         {this.state.courts.map((court) => (
-                            <option key={court.id} value={court.id}>
-                                {court.court_name}
+                            <option key={court.courtId} value={court.courtId}>
+                                {court.courtName}
                             </option>
                         ))}
                     </select>
                 </div>
-                <div className="list-Services w-50 m-auto" style={{ fontSize: "20px" }}>
-                    {this.renderSer()}
-                </div>
-                <div className="w-25 m-auto">
-                    <button onClick={this.handleSaveServices} className="btn btn-primary mt-3">
-                        Hoàn tất
-                    </button>
-                </div>
-
-                <div className="mt-3">
-                    <h5>
-                        Các dịch vụ được sử dụng trong cơ sở: <strong>{this.state.selectedCourtName}</strong>
-                    </h5>
-                    {this.renderSerSelectedOption()}
+                <div className="list-services w-50 m-auto" style={{ fontSize: "20px" }}>
+                    {this.renderServices()}
                 </div>
             </div>
         );

@@ -146,15 +146,6 @@
           "price": "80000",
           "yard_id": [],
           "court_id": "adf0"
-        },
-        {
-          "id": "180d",
-          "slot_name": "Slot 3",
-          "start_time": "11:00",
-          "end_time": "12:00",
-          "price": "75000",
-          "yard_id": [],
-          "court_id": "adf0"
         }
       ]
     },
@@ -171,6 +162,24 @@
           "yard_id": [],
           "court_id": "fe3b",
           "id": "3"
+        },
+        {
+          "id": "2",
+          "slot_name": "Slot 2",
+          "start_time": "9:00",
+          "end_time": "10:00",
+          "price": "80000",
+          "yard_id": [],
+          "court_id": "adf0"
+        },
+        {
+          "id": "180d",
+          "slot_name": "Slot 3",
+          "start_time": "11:00",
+          "end_time": "12:00",
+          "price": "75000",
+          "yard_id": [],
+          "court_id": "adf0"
         }
       ]
     }
@@ -205,37 +214,6 @@
       "servicesName": "Có điều hòa mát lạnh",
       "servicesIcon": "fa-solid fa-snowflake",
       "id": "7739"
-    },
-    {
-      "id": "fe61",
-      "court_id": "adf0",
-      "services": [
-        "6355",
-        "7739",
-        "8d33"
-      ]
-    },
-    {
-      "id": "c212",
-      "court_id": "fe3b",
-      "services": [
-        "6355",
-        "3e46",
-        "6ab5",
-        "bb88",
-        "8d33",
-        "7739"
-      ]
-    },
-    {
-      "id": "6bc4",
-      "court_id": "f766",
-      "services": [
-        "6355",
-        "3e46",
-        "6ab5",
-        "7739"
-      ]
     }
   ],
   "order": [

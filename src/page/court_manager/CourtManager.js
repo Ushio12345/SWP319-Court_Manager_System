@@ -70,7 +70,6 @@ export default class CourtManager extends Component {
         window.location.href = "/";
     };
 
-
     render() {
         const { isLoggedIn, user, courts, selectedCourtId } = this.state;
         return (
@@ -85,31 +84,11 @@ export default class CourtManager extends Component {
                                 <p>ForBaD</p>
                             </div>
                         </div>
-                        <div className="select-branch">
-                            <select id="" onChange={this.handleCourtChange}>
-                                <option value={""} className="text-center">
-                                    ---Chọn cơ sở---
-                                </option>
-                                {courts.map((court) => (
-                                    <option value={court.id} key={court.id}>
-                                        {court.court_name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
                         <div className="search">
                             <input type="text" placeholder="Tìm kiếm tại đây." id="search" />
                             <label htmlFor="search">
                                 <i className="fa-solid fa-magnifying-glass" />
                             </label>
-                        </div>
-                        <div className="notification">
-                            <div className="bell-icon">
-                                <i className="fa-solid fa-bell" />
-                                <div className="number-notification">
-                                    <p>0</p>
-                                </div>
-                            </div>
                         </div>
                         <div className="login">
                             <a href="updateProfile.html" className="user">
@@ -258,7 +237,7 @@ export default class CourtManager extends Component {
                                     <Services />
                                 </div>
                                 <div className="tab-pane fade" id="dsSlot" role="tabpanel">
-                                    <Slot fetchCourts={this.fetchCourts} selectedCourtId={selectedCourtId} />                          
+                                    <Slot fetchCourts={this.fetchCourts} selectedCourtId={selectedCourtId} />
                                 </div>
                             </div>
                         </div>
