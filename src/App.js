@@ -16,6 +16,7 @@ import HistoryBooking from "./page/customer/historyBooking/HistoryBooking";
 import Rule from "./page/customer/rules/Rule";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./page/customer/profile/Profile";
+import AdminPage from "./page/admin/adminPage/AdminPage";
 
 function App() {
     return (
@@ -30,11 +31,20 @@ function App() {
                 <Route path="/verify-token" element={<TokenResetPassword />} />
                 <Route path="/reset-password" element={<InputNewPassword />} />
                 <Route path="/bookingPage" element={<Booking />} />
+
                 <Route
                     path="/detailBooking"
                     element={
                         <ProtectedRoute>
                             <DetailBooking />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute>
+                            <AdminPage />
                         </ProtectedRoute>
                     }
                 />

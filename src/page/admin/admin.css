@@ -1,0 +1,14 @@
+.sidebar-item ul li button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+}
+/* admin.css */
+.admin .nav-item.active .nav-link {
+    background-color: #f3f4f6;
+    font-weight: bold;
+    color: #333;
+    border-left: 3px solid #2563eb;
+    width: 100%;
+}

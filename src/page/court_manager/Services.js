@@ -70,6 +70,9 @@ export default class Services extends Component {
             axiosInstance
                 .delete(`/court/${selectedCourt}/deleteFacilityFromCourt/${facilityId}`)
                 .then((res) => {
+                    {
+                        this.renderServicesInCourt();
+                    }
                     if (res.status === 200) {
                         showAlert("success", "Thành công", "Đã xóa dịch vụ khỏi sân", "top-end");
                         this.fetchServicesInCourt(selectedCourt); // Cập nhật lại danh sách dịch vụ trong sân
@@ -85,6 +88,9 @@ export default class Services extends Component {
             axiosInstance
                 .post(`/court/${selectedCourt}/addFacilityToCourt/${facilityId}`)
                 .then((res) => {
+                    {
+                        this.renderServicesInCourt();
+                    }
                     if (res.status === 200) {
                         showAlert("success", "Thành công", "Đã thêm dịch vụ vào sân", "top-end");
                         this.fetchServicesInCourt(selectedCourt); // Cập nhật lại danh sách dịch vụ trong sân
@@ -161,9 +167,9 @@ export default class Services extends Component {
             <div className="services-for-court">
                 <h1 className="text-center mb-5">Danh sách các tiện ích</h1>
                 <div className="form-group">
-                    <select id="courtSelect" className="form-control w-25 m-auto" onChange={this.handleCourtChange}>
+                    <select id="courtSelect" className="form-control w-50 m-auto" onChange={this.handleCourtChange}>
                         {this.state.courts.map((court) => (
-                            <option key={court.courtId} value={court.courtId}>
+                            <option key={court.courtId} value={court.courtId} className="">
                                 {court.courtName}
                             </option>
                         ))}
