@@ -1,11 +1,161 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../../../components/header";
 import Footer from "../../../../components/footer";
 import "./index.css";
+import axiosInstance from "../../../../config/axiosConfig";
+import { showConfirmAlert, showConfirmPayment } from "../../../../utils/alertUtils";
+import axios from "axios";
 const DetailBooking = () => {
+    const [booking, setBooking] = useState(null);
+    const [bookingDetailsList, setBookingDetailsList] = useState([]);
+    const [paymentUrl, setPaymentUrl] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [user, setUser] = useState({
+        username: "",
+        avatar: "",
+        roles: [],
+    });
+
+    const goBack = () => {
+        window.history.back();
+    };
+
+    const handlePaymentSuccess = async () => {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+        const paymentId = urlParams.get('paymentId');
+        const PayerID = urlParams.get('PayerID');
+        const bookingData = JSON.parse(localStorage.getItem("booking"));
+
+        if (!paymentId || !PayerID) {
+            throw new Error('Missing paymentId or PayerID');
+        }
+
+        const response = await axiosInstance.get(`/paypal/success?paymentId=${paymentId}&PayerID=${PayerID}`);
+            if (response.data.message === 'Payment successful') {
+                const bookingResponse = await axiosInstance.post('/booking/success', bookingData);
+                if (bookingResponse.data.message === 'Đã đặt lịch thành công.') {
+                    showConfirmPayment('Thông báo', 'Thanh toán và đặt lịch thành công !', 'success', 'Xem trạng thái đơn hàng', 'Trở về trang chủ', 'center')
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/historyOrder";
+                            } else if (result.dismiss) {
+                                window.location.href = "/";
+                            }
+                        });
+                } else {
+                    handlePaymentCanceled();
+                }
+            } else {
+                throw new Error('Payment failed');
+            }
+        } catch (error) {
+            console.error('Failed to process payment success:', error);
+        }
+    };
+
+    const handlePaymentCanceled = () => {
+        showConfirmPayment('Thông báo', 'Thanh toán thất bại !', 'error', 'Trở về trang đặt hàng', 'Trở về trang chủ', 'center')
+            .then((result) => {
+                if (result.isConfirmed) {
+                    window.history.back();
+                } else if (result.dismiss) {
+                    window.location.href = "/";
+                }
+            })
+    };
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user) {
+            setIsLoggedIn(true);
+            setUser({
+                username: user.fullName,
+                avatar: user.imageUrl,
+                roles: user.roles,
+            });
+        }
+
+        const bookingData = JSON.parse(localStorage.getItem("booking"));
+        setBooking(bookingData);
+        setBookingDetailsList(bookingData.bookingDetails);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('paymentId') && urlParams.has('PayerID')) {
+            handlePaymentSuccess();
+        } else if (urlParams.has('cancel')) {
+            handlePaymentCanceled();
+        }
+    }, []);
+
+    if (!booking) {
+        return <div>Loading...</div>; // Hoặc một component loading tùy thuộc vào thiết kế của bạn
+    }
+
+    const getExchangeRate = async () => {
+        const API_KEY = 'a2ebea95ae9c3ce5ae387b15';
+        const BASE_URL = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`;
+    
+        try {
+            const response = await axios.get(BASE_URL);
+            if (response.status === 200) {
+                const exchangeRates = response.data.conversion_rates;
+                // Lấy tỷ giá VND
+                const exchangeRateVND = exchangeRates.VND;
+                return exchangeRateVND;
+            } else {
+                console.error('Failed to fetch exchange rates:', response.statusText);
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching exchange rates:', error);
+            return null;
+        }
+    };
+
+    const initiatePayment = async () => {
+        try {
+            // Lấy tỷ giá từ VND sang USD
+            const exchangeRate = await getExchangeRate();
+            if (!exchangeRate) {
+                throw new Error('Failed to get exchange rate');
+            }
+
+            const totalPriceUSD = booking.totalPrice / exchangeRate;
+
+            const response = await axiosInstance.post('http://localhost:8080/paypal/create-payment', {
+                total: totalPriceUSD,
+                currency: 'USD',
+                description: 'Payment via PayPal',
+                cancelUrl: 'http://localhost:3000/detailBooking',
+                successUrl: 'http://localhost:3000/detailBooking'
+            });
+            setPaymentUrl(response.data);
+            window.location.href = response.data;
+        } catch (error) {
+            console.error('Failed to initiate payment:', error);
+            handlePaymentCanceled();
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+
+        setIsLoggedIn(false);
+        setUser({
+            username: "",
+            avatar: "",
+            roles: [],
+        });
+
+        window.location.href = "/";
+    };
+
     return (
+
         <div>
-            <Header />
+            <Header isLoggedIn={isLoggedIn} user={user} handleLogout={handleLogout} />
             <div className="fromOrder container">
                 <div className="detailOrder row">
                     <div className="col-lg-7 info-order ">
@@ -15,25 +165,25 @@ const DetailBooking = () => {
                                 Ngày tạo đơn:
                             </label>
                             <div className="col-lg-7 d-flex " style={{ alignItems: "center" }}>
-                                <div className="create-day me-4">30/06/2024</div> <div className="create-time">12:02</div>
+                                <div className="create-day me-4">{booking.bookingDate}</div>
                             </div>
                         </div>
                         <div className="mb-1">
                             <div className="id-order d-flex">
                                 <label htmlFor="" className="col-lg-5 col-form-label">
-                                    Mã đơn hàng
+                                    Mã đơn hàng:
                                 </label>
                                 <p className="col-lg-7 ms-2" style={{ display: "flex", alignItems: "center" }}>
-                                    ABC123
+                                    {booking.bookingId}
                                 </p>
                             </div>
                         </div>
                         <div className="mb-1 row ">
                             <label htmlFor="nameYard" className="col-lg-5 col-form-label">
-                                Họ và tên:
+                                Khách hàng:
                             </label>
                             <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
-                                <p className="">Nguyễn Xuân Hợp</p>
+                                <p className="">{booking.customer.fullName}</p>
                             </div>
                         </div>
 
@@ -42,7 +192,7 @@ const DetailBooking = () => {
                                 Email:
                             </label>
                             <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
-                                <p className="">abc123@gmail.com</p>
+                                <p className="">{booking.customer.email}</p>
                             </div>
                         </div>
 
@@ -51,7 +201,7 @@ const DetailBooking = () => {
                                 Dạng lịch:
                             </label>
                             <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
-                                <p>Lịch đơn</p>
+                                <p>{booking.bookingType}</p>
                             </div>
                         </div>
 
@@ -60,19 +210,22 @@ const DetailBooking = () => {
                                 <thead>
                                     <tr>
                                         <th>Slot</th>
-                                        <th>Sân</th>
                                         <th>Ngày check-in</th>
+                                        <th>Sân</th>
                                         <th>Giá tiền</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {/* Example row, replace with dynamic data */}
-                                    <tr>
-                                        <td>10:00 - 11:00</td>
-                                        <td>Sân A</td>
-                                        <td>01/07/2024</td>
-                                        <td>200,000 VND</td>
-                                    </tr>
+                                    {bookingDetailsList
+                                        .sort((a, b) => a.yardSchedule.slot.slotName.localeCompare(b.yardSchedule.slot.slotName))
+                                        .map((bookingDetail, index) => (
+                                            <tr key={index}>
+                                                <td>{bookingDetail.yardSchedule.slot.slotName}</td>
+                                                <td>{bookingDetail.date}</td>
+                                                <td>{bookingDetail.yardSchedule.yard.yardName}</td>
+                                                <td>{bookingDetail.yardSchedule.slot.price} VND</td>
+                                            </tr>
+                                        ))}
                                 </tbody>
                             </table>
                         </div>
@@ -84,7 +237,9 @@ const DetailBooking = () => {
                                 <i class="fa-solid fa-money-bill"></i> Tổng tiền:
                             </label>
                             <div className="col-lg-6 " style={{ display: "flex", alignItems: "center" }}>
-                                <strong style={{ fontSize: "22px", color: "orangered", display: "flex", alignItems: "center" }}>75.000VNĐ</strong>
+                                <strong style={{ fontSize: "22px", color: "orangered", display: "flex", alignItems: "center" }}>
+                                    {booking.totalPrice} VNĐ
+                                </strong>
                             </div>
                         </div>
                         <div className="mb-1 row ">
@@ -95,10 +250,10 @@ const DetailBooking = () => {
                                 <input type="radio"></input>
                                 <label className="d-flex ms-3" style={{ display: "flex", alignItems: "center" }}>
                                     <i class="fa-brands fa-paypal"></i>
-                                    <p>paypal</p>
+                                    <p>Paypal</p>
                                 </label>
                             </div>
-                            <button className="btn btn-primary m-0 p-2" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <button className="btn btn-primary m-0 p-2" style={{ display: "flex", alignItems: "center", justifyContent: "center" }} onClick={initiatePayment}>
                                 Xác nhận
                             </button>
                         </div>
@@ -107,7 +262,7 @@ const DetailBooking = () => {
             </div>
 
             <div className="button-function d-flex w-50 m-auto pb-4">
-                <button className="btn btn-success py-2 w-50 m-auto">Trở về trang đặt sân</button>
+                <button className="btn btn-success py-2 w-50 m-auto" onClick={goBack} >Trở về trang đặt sân</button>
             </div>
             <Footer />
         </div>

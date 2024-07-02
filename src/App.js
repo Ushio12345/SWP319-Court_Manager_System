@@ -25,7 +25,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/role-selector" element={<RoleSelector />} />
-                <Route path="/court_manager" element={<CourtManager />} />
+                <Route path="/court-manager" element={<CourtManager />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/verify-token" element={<TokenResetPassword />} />
                 <Route path="/reset-password" element={<InputNewPassword />} />
@@ -65,9 +65,9 @@ function App() {
                 <Route
                     path="/rules"
                     element={
-                        <ProtectedRoute>
+      
                             <Rule />
-                        </ProtectedRoute>
+
                     }
                 />
                 <Route
