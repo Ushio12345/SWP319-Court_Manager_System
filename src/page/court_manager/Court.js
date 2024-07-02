@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { showAlert, showConfirmAlert } from '../../utils/alertUtils';
+import { showAlert, showConfirmAlert } from "../../utils/alertUtils";
 import axiosInstance from "../../config/axiosConfig";
 import { handleTokenError } from "../../utils/tokenErrorHandle";
 
@@ -17,10 +17,10 @@ export default class extends Component {
             closeTime: "",
             rate: "",
             imageUrl: "",
-            beginDate: ""
+            beginDate: "",
         },
-        isDetailView: false
-    }
+        isDetailView: false,
+    };
 
     componentDidMount() {
         this.fetchCourts();
@@ -34,12 +34,12 @@ export default class extends Component {
                     this.setState({ courts: res.data });
                 } else {
                     this.setState({ courts: [] });
-                    showAlert('error', 'Lỗi !', 'Không lấy được dữ liệu', 'top-end');
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
                     handleTokenError();
                 }
                 this.handleRequestError(error);
@@ -55,8 +55,8 @@ export default class extends Component {
         this.setState((prevState) => ({
             newCourt: {
                 ...prevState.newCourt,
-                [name]: value
-            }
+                [name]: value,
+            },
         }));
     };
 
@@ -65,30 +65,28 @@ export default class extends Component {
         this.setState((prevState) => ({
             newCourt: {
                 ...prevState.newCourt,
-                imageUrl: file
-            }
+                imageUrl: file,
+            },
         }));
     };
-
-
 
     handleAddCourt = () => {
         const { newCourt } = this.state;
 
         let formData = new FormData();
-        formData.append('courtName', newCourt.courtName);
-        formData.append('address', newCourt.address);
-        formData.append('openTime', newCourt.openTime);
-        formData.append('closeTime', newCourt.closeTime);
+        formData.append("courtName", newCourt.courtName);
+        formData.append("address", newCourt.address);
+        formData.append("openTime", newCourt.openTime);
+        formData.append("closeTime", newCourt.closeTime);
         if (newCourt.imageUrl) {
-            formData.append('imageUrl', newCourt.imageUrl);
+            formData.append("imageUrl", newCourt.imageUrl);
         }
 
         axiosInstance
             .post("/court/add", formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                }
+                    "Content-Type": "multipart/form-data",
+                },
             })
             .then((res) => {
                 if (res.status === 200) {
@@ -101,71 +99,77 @@ export default class extends Component {
                             openTime: "",
                             closeTime: "",
                             rate: "",
-                            imageUrl: ""
+                            imageUrl: "",
                         },
                     });
-                    showAlert('success', '', 'Thêm cơ sở thành công', 'top-end');
+                    showAlert("success", "", "Thêm cơ sở thành công", "top-end");
                 } else {
-                    showAlert('error', 'Lỗi !', 'Thêm cơ sở không thành công', 'top-end');
+                    showAlert("error", "Lỗi !", "Thêm cơ sở không thành công", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
                     handleTokenError();
                 } else {
-                    showAlert('error', 'Lỗi !', 'Thêm cơ sở không thành công', 'top-end');
+                    showAlert("error", "Lỗi !", "Thêm cơ sở không thành công", "top-end");
                 }
                 this.handleRequestError(error);
             });
     };
 
-
-
     handleDeleteCourt = (courtId) => {
-        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa toàn bộ dữ liệu của cơ sở này bao gồm cả nhân viên, đơn hàng,...", 'Xóa', 'center')
-            .then((result) => {
-                if (result.isConfirmed) {
-                    axiosInstance.delete(`/court/delete?courtId=${courtId}`)
-                        .then((res) => {
-                            if (res.status === 200) {
-                                this.fetchCourts();
-                                showAlert('success', '', 'Đã xóa cơ sở thành công', 'top-end');
-                            } else {
-                                showAlert('error', '', 'Xóa cơ sở không thành công', 'top-end');
-                            }
-                        })
-                        .catch((error) => {
-                            if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
-                                handleTokenError();
-                            } else {
-                                showAlert('error', '', 'Xóa cơ sở không thành công', 'top-end');
-                            }
-                            console.error("Response không thành công:", error);
-                        });
-                }
-            });
+        showConfirmAlert(
+            "Xác nhận xóa",
+            "Bạn có chắc chắn muốn xóa toàn bộ dữ liệu của cơ sở này bao gồm cả nhân viên, đơn hàng,...",
+            "Xóa",
+            "center"
+        ).then((result) => {
+            if (result.isConfirmed) {
+                axiosInstance
+                    .delete(`/court/delete?courtId=${courtId}`)
+                    .then((res) => {
+                        if (res.status === 200) {
+                            this.fetchCourts();
+                            showAlert("success", "", "Đã xóa cơ sở thành công", "top-end");
+                        } else {
+                            showAlert("error", "", "Xóa cơ sở không thành công", "top-end");
+                        }
+                    })
+                    .catch((error) => {
+                        if (
+                            error.response &&
+                            error.response.status === 401 &&
+                            error.response.data.message === "Token không hợp lệ hoặc đã hết hạn."
+                        ) {
+                            handleTokenError();
+                        } else {
+                            showAlert("error", "", "Xóa cơ sở không thành công", "top-end");
+                        }
+                        console.error("Response không thành công:", error);
+                    });
+            }
+        });
     };
-
 
     handleUpdateCourt = () => {
         const { newCourt } = this.state;
 
         let formData = new FormData();
-        formData.append('courtId', newCourt.courtId); // Thêm courtId vào formData
-        formData.append('courtName', newCourt.courtName);
-        formData.append('address', newCourt.address);
-        formData.append('openTime', newCourt.openTime);
-        formData.append('closeTime', newCourt.closeTime);
+        formData.append("courtId", newCourt.courtId); // Thêm courtId vào formData
+        formData.append("courtName", newCourt.courtName);
+        formData.append("address", newCourt.address);
+        formData.append("openTime", newCourt.openTime);
+        formData.append("closeTime", newCourt.closeTime);
         if (newCourt.imageUrl && newCourt.imageUrl instanceof File) {
-            formData.append('imageUrl', newCourt.imageUrl);
+            formData.append("imageUrl", newCourt.imageUrl);
         }
 
         axiosInstance
             .put(`/court/update`, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                }
+                    "Content-Type": "multipart/form-data",
+                },
             })
             .then((res) => {
                 if (res.status === 200) {
@@ -178,20 +182,20 @@ export default class extends Component {
                             openTime: "",
                             closeTime: "",
                             rate: "",
-                            imageUrl: ""
+                            imageUrl: "",
                         },
                     });
-                    showAlert('success', '', 'Cập nhật cơ sở thành công', 'top-end');
+                    showAlert("success", "", "Cập nhật cơ sở thành công", "top-end");
                 } else {
-                    showAlert('error', 'Lỗi !', 'Cập nhật cơ sở không thành công', 'top-end');
+                    showAlert("error", "Lỗi !", "Cập nhật cơ sở không thành công", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
                     handleTokenError();
                 } else {
-                    showAlert('error', 'Lỗi !', 'Cập nhật cơ sở không thành công', 'top-end');
+                    showAlert("error", "Lỗi !", "Cập nhật cơ sở không thành công", "top-end");
                 }
                 this.handleRequestError(error);
             });
@@ -202,9 +206,9 @@ export default class extends Component {
         const stars = [];
         for (let i = 1; i <= totalStars; i++) {
             if (i <= rate) {
-                stars.push(<span key={i} className="fa fa-star checked" style={{ color: '#ffc107' }}></span>);
+                stars.push(<span key={i} className="fa fa-star checked" style={{ color: "#ffc107" }}></span>);
             } else {
-                stars.push(<span key={i} className="fa fa-star" style={{ color: '#000000' }}></span>);
+                stars.push(<span key={i} className="fa fa-star" style={{ color: "#000000" }}></span>);
             }
         }
         return stars;
@@ -244,9 +248,7 @@ export default class extends Component {
                                         <p>
                                             <strong>Ngày bắt đầu hoạt động:</strong> {this.state.newCourt.beginDate}
                                         </p>
-                                        <div>
-                                            {this.renderStars(this.state.newCourt.rate)}
-                                        </div>
+                                        <div>{this.renderStars(this.state.newCourt.rate)}</div>
                                     </div>
                                 </div>
                             </div>
@@ -275,7 +277,7 @@ export default class extends Component {
                                         address: "",
                                         openTime: "",
                                         closeTime: "",
-                                        imageUrl: ""
+                                        imageUrl: "",
                                     },
                                     isDetailView: false,
                                 })
@@ -305,55 +307,58 @@ export default class extends Component {
 
                 <div className="clear-fix" />
                 <div className="tblCoSo" id="tblCoSo">
-                    <table className="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Mã cơ sở</th>
-                                <th className="text-start">Tên Cơ Sở</th>
-                                <th className="text-start">Địa chỉ</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.courts.length === 0 ? (
+                    <div className="overflow-x-auto">
+                        <table className="table table-hover" style={{ minWidth: "1000px" }}>
+                            <thead>
                                 <tr>
-                                    <td colSpan="7" className="text-center">Danh sách cơ sở trống</td>
+                                    <th>STT</th>
+                                    <th>Mã cơ sở</th>
+                                    <th className="text-start">Tên Cơ Sở</th>
+                                    <th className="text-start ">Địa chỉ</th>
+                                    <th>Thao tác</th>
                                 </tr>
-                            ) : (
-                                this.state.courts.map((court, index) => (
-                                    <tr className="" key={court.courtId}>
-                                        <td className="text-center">{index + 1}</td>
-                                        <td className="text-center">{court.courtId}</td>
-                                        <td className="text-start">{court.courtName}</td>
-                                        <td>{court.address}</td>
-                                        <td className="d-flex btn-action">
-                                            <button
-                                                className="btn btn-info mr-2"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#detailModal"
-                                                onClick={() => this.setState({ newCourt: court, isDetailView: true })}
-                                            >
-                                                <i className="fa fa-info-circle"></i>
-                                            </button>
-                                            <button
-                                                className="btn btn-warning mr-2"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#updateCourt"
-                                                onClick={() => this.setState({ newCourt: court, isDetailView: false })}
-                                            >
-                                                <i className="fa fa-pen-to-square"></i>
-                                            </button>
-                                            <button className="btn btn-danger" onClick={() => this.handleDeleteCourt(court.courtId)}>
-                                                <i className="fa fa-trash"></i>
-                                            </button>
+                            </thead>
+                            <tbody>
+                                {this.state.courts.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="7" className="text-center">
+                                            Danh sách cơ sở trống
                                         </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-
-                    </table>
+                                ) : (
+                                    this.state.courts.map((court, index) => (
+                                        <tr className="" key={court.courtId}>
+                                            <td className="text-center">{index + 1}</td>
+                                            <td className="text-center">{court.courtId}</td>
+                                            <td className="text-start">{court.courtName}</td>
+                                            <td>{court.address}</td>
+                                            <td className="d-flex btn-action">
+                                                <button
+                                                    className="btn btn-info mr-2 p-2"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#detailModal"
+                                                    onClick={() => this.setState({ newCourt: court, isDetailView: true })}
+                                                >
+                                                    <i className="fa fa-info-circle"></i>
+                                                </button>
+                                                <button
+                                                    className="btn btn-warning mr-2 p-2"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#updateCourt"
+                                                    onClick={() => this.setState({ newCourt: court, isDetailView: false })}
+                                                >
+                                                    <i className="fa fa-pen-to-square "></i>
+                                                </button>
+                                                <button className="btn btn-danger p-2" onClick={() => this.handleDeleteCourt(court.courtId)}>
+                                                    <i className="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <br />
 

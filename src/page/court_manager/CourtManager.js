@@ -85,10 +85,10 @@ export default class CourtManager extends Component {
                             </div>
                         </div>
                         <div className="search">
-                            <input type="text" placeholder="Tìm kiếm tại đây." id="search" />
-                            <label htmlFor="search">
+                            {/* <input type="text" placeholder="Tìm kiếm tại đây." id="search" /> */}
+                            {/* <label htmlFor="search">
                                 <i className="fa-solid fa-magnifying-glass" />
-                            </label>
+                            </label> */}
                         </div>
                         <div className="login">
                             <a href="updateProfile.html" className="user">

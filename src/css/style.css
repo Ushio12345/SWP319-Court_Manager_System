@@ -448,8 +448,10 @@ ul li {
     padding: 0 30px;
     width: 100%;
     box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
+    background-color: rgba(39, 38, 38, 0.9058823529);
 
     height: 60px;
+    position: fixed;
 }
 
 .manager .topbar .logo {
@@ -464,6 +466,7 @@ ul li {
 .manager .topbar .logo .nameapp p {
     margin: 0;
     font-weight: 700;
+    color: white;
 }
 .manager .topbar .search {
     position: relative;
@@ -552,7 +555,7 @@ ul li {
     height: 500px;
 }
 .manager .body-manager .manager-left {
-    padding: 20px 0;
+    padding: 80px 0;
     width: 20%;
     background-color: black;
 }
@@ -609,6 +612,7 @@ ul li {
 }
 .manager .body-manager .manager-left .list-option ul li a span {
     color: white;
+    font-size: 13px;
 }
 .manager .body-manager .manager-left .list-option ul li .nav-link.active {
     border-top-left-radius: 20px;
@@ -673,6 +677,7 @@ ul li {
     display: flex;
     align-items: center;
     order: 2;
+    color: white;
 }
 
 .logout {
@@ -822,6 +827,7 @@ ul li {
 }
 .footer-Manager p {
     margin: 0;
+    color: white;
 }
 .form-group {
     margin-bottom: 20px;
@@ -836,9 +842,10 @@ thead {
 
 .topbar,
 .footer-Manager {
-    background-color: #f5f5f5;
+    background-color: #183135;
+
     box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
-    color: black !important;
+    background-color: rgba(70, 69, 69, 0.79);
 }
 .body-manager {
     background-color: rgb(255, 251, 251);

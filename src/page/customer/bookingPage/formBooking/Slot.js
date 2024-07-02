@@ -132,8 +132,8 @@ export default class Slot extends Component {
                 );
                 this.setState({ bookingDetailsList: updatedBookingDetailsList });
             } else {
-                newSelectedSlots[dayKey].push(slot);
-                const slotDetail = slots.find((s) => s.slotId === slot);
+                newSelectedSlots[dayKey].push(slots);
+                const slotDetail = slots.find((s) => s.slotId === slots);
 
                 const formattedDate = dayKey.split(" ")[0];
                 const newBookingDetail = {
@@ -189,7 +189,6 @@ export default class Slot extends Component {
         axiosInstance
             .post(`/booking/${bookingType}`, this.state.bookingDetailsList)
             .then((response) => {
-
                 localStorage.setItem("booking", JSON.stringify(response.data));
                 window.location.href = "/detailBooking";
             })
@@ -197,7 +196,6 @@ export default class Slot extends Component {
                 console.error("There was an error fetching the slots!", error);
             });
     };
-
 
     handleYardChange = (event) => {
         this.setState({ selectedYard: event.target.value });
@@ -213,8 +211,6 @@ export default class Slot extends Component {
 
         return bookedSlots[formattedDayKey].some((slot) => slot.slotId === slotId);
     };
-
-
 
     render() {
         const { court } = this.props;
@@ -328,34 +324,37 @@ export default class Slot extends Component {
                                 role="tabpanel"
                                 aria-labelledby="lichdon"
                             >
-                                <table className="table table-borderless">
-                                    <thead>
-                                        <tr>
-                                            <th>Slot</th>
-                                            {daysOfWeek.map((day, index) => (
-                                                <th key={index}>{day}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.state.slots.map((slot, slotIndex) => (
-                                            <tr key={slot.slotId}>
-                                                <td>{slot.slotName}</td>
-                                                {daysOfWeek.map((_, dayIndex) => (
-                                                    <td key={dayIndex} className="slot-times-column">
-                                                        <div
-                                                            className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""}`}
-                                                            onClick={() => this.handleSlotSelection(slot.slotId, dayIndex)}
-                                                        >
-                                                            {`${slot.startTime} - ${slot.endTime}`}
-                                                        </div>
-                                                    </td>
+                                <div style={{ overflowX: "auto" }}>
+                                    <table className="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th>Slot</th>
+                                                {daysOfWeek.map((day, index) => (
+                                                    <th key={index}>{day}</th>
                                                 ))}
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {this.state.slots.map((slot, slotIndex) => (
+                                                <tr key={slot.slotId}>
+                                                    <td>{slot.slotName}</td>
+                                                    {daysOfWeek.map((_, dayIndex) => (
+                                                        <td key={dayIndex} className="slot-times-column">
+                                                            <div
+                                                                className={`slot-time ${
+                                                                    selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""}`}
+                                                                onClick={() => this.handleSlotSelection(slot.slotId, dayIndex)}
+                                                            >
+                                                                {`${slot.startTime} - ${slot.endTime}`}
+                                                            </div>
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div
                                 className={`tab-pane fade ${selectedTab === "codinh" ? "show active" : ""}`}
@@ -379,8 +378,9 @@ export default class Slot extends Component {
                                                 {daysOfWeek.map((_, dayIndex) => (
                                                     <td key={dayIndex} className="slot-times-column">
                                                         <div
-                                                            className={`slot-time ${selectedSlots[this.state.daysOfWeek[dayIndex]]?.includes(slot) ? "selected" : ""
-                                                                }`}
+                                                            className={`slot-time ${
+                                                                selectedSlots[this.state.daysOfWeek[dayIndex]]?.includes(slot) ? "selected" : ""
+                                                            }`}
                                                             onClick={() => this.handleSlotSelection(slot, dayIndex)}
                                                         >
                                                             {slotTimes[slot]}
@@ -414,8 +414,9 @@ export default class Slot extends Component {
                                                 {daysOfWeek.map((_, dayIndex) => (
                                                     <td key={dayIndex} className="slot-times-column">
                                                         <div
-                                                            className={`slot-time ${selectedSlots[this.state.daysOfWeek[dayIndex]]?.includes(slot) ? "selected" : ""
-                                                                }`}
+                                                            className={`slot-time ${
+                                                                selectedSlots[this.state.daysOfWeek[dayIndex]]?.includes(slot) ? "selected" : ""
+                                                            }`}
                                                             onClick={() => this.handleSlotSelection(slot, dayIndex)}
                                                         >
                                                             {slotTimes[slot]}

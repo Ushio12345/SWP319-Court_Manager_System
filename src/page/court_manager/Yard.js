@@ -1,302 +1,289 @@
 import React, { Component } from "react";
-import axios from "axios";
+import { showAlert } from "../../utils/alertUtils";
+import axiosInstance from "../../config/axiosConfig";
+import { handleTokenError } from "../../utils/tokenErrorHandle";
+import "./manager.css";
 
 export default class Yard extends Component {
     state = {
-        yards: [],
-        yardOb: {
-            yard_name: "",
-            court_id: "",
-            slots: [],
-        },
         courts: [],
+        yards: [],
         slots: [],
-        selectedSlotId: "",
-        selectedCourtId: this.props.selectedCourtId,
+        newYard: {
+            yardId: "",
+            yardName: "",
+        },
+        selectedCourt: "",
+        selectedCourtName: "",
+        selectedYard: "",
+        slotInYard: [],
+        showModal: false,
     };
 
     componentDidMount() {
         this.fetchCourts();
-        this.fetchYards();
-        this.fetchSlots();
+        this.fetchSlotOfCourt();
     }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.selectedCourtId !== this.props.selectedCourtId) {
-            this.setState({ selectedCourtId: this.props.selectedCourtId }, () => {
-                this.fetchYards();
-                this.fetchSlots();
-            });
-        }
-    }
-
-    fetchSlots = () => {
-        const { selectedCourtId } = this.state;
-        axios
-            .get(`http://localhost:3001/slot?court_id=${selectedCourtId}`)
-            .then((res) => {
-                this.setState({ slots: res.data });
-            })
-            .catch((err) => {
-                alert("Không thể lấy dữ liệu từ API");
-            });
-    };
 
     fetchCourts = () => {
-        axios
-            .get("http://localhost:3001/court")
+        axiosInstance
+            .get("/court/courts-of-owner")
             .then((res) => {
-                this.setState({ courts: res.data });
+                if (res.status === 200) {
+                    this.setState({ courts: res.data });
+                } else {
+                    this.handleRequestError(res);
+                }
             })
-            .catch((err) => {
-                console.error("Error fetching courts:", err);
-                alert("Không thể lấy dữ liệu từ API");
+            .catch((error) => {
+                this.handleRequestError(error);
             });
     };
 
-    fetchYards = () => {
-        const { selectedCourtId } = this.state;
-        axios
-            .get(`http://localhost:3001/yard?court_id=${selectedCourtId}`)
+    fetchSlotOfCourt = () => {
+        axiosInstance
+            .get("/time-slot/findAllSlot")
             .then((res) => {
-                this.setState({ yards: res.data });
+                if (res.status === 200) {
+                    this.setState({ slots: res.data });
+                } else {
+                    this.setState({ slots: [] });
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    console.error("Response không thành công:", res.status);
+                }
             })
-            .catch((err) => {
-                console.error("Error fetching yards:", err);
-                alert("Không thể lấy dữ liệu từ API");
+            .catch((error) => {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                    handleTokenError();
+                }
+                this.handleRequestError(error);
             });
     };
 
-    handleInputChange = (e) => {
-        const { name, value } = e.target;
-        this.setState((prevState) => ({
-            yardOb: {
-                ...prevState.yardOb,
-                [name]: value,
-            },
-        }));
-    };
-
-    handleAddYard = (e) => {
-        e.preventDefault();
-        const { yardOb, selectedCourtId } = this.state;
-        yardOb.court_id = selectedCourtId;
-        axios
-            .post("http://localhost:3001/yard", yardOb)
+    fetchYardWithCourtID = (selectedCourt) => {
+        axiosInstance
+            .get(`/yard/findAllYard?courtId=${selectedCourt}`)
             .then((res) => {
-                this.fetchYards(); // Refresh the list of yards
-                this.setState({
-                    yardOb: { yard_name: "", court_id: "", slots: [] }, // Reset the form
-                });
+                if (res.status === 200) {
+                    this.setState({ yards: res.data });
+                } else {
+                    this.handleRequestError(res);
+                }
             })
-            .catch((err) => {
-                console.error("Error adding yard:", err);
-                alert("Không thể thêm sân mới");
+            .catch((error) => {
+                this.handleRequestError(error);
             });
     };
 
-    handleSelectChange = (e) => {
-        this.setState({ selectedSlotId: e.target.value });
+    fetchSlotWithYard = (yardId) => {
+        axiosInstance
+            .get(`/yard-schedule/getAllByYardId/${yardId}`)
+            .then((res) => {
+                if (res.status === 200) {
+                    this.setState({ slotInYard: res.data });
+                } else {
+                    this.handleRequestError(res);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
     };
 
-    handleAddSlotToYard = (yardId) => {
-        const { selectedSlotId, yards, slots } = this.state;
-        if (!selectedSlotId) {
-            alert("Vui lòng chọn slot");
+    handleCourtChange = (event) => {
+        const courtId = event.target.value;
+        const courtName = event.target.options[event.target.selectedIndex].text;
+        this.setState({
+            selectedCourt: courtId,
+            selectedCourtName: courtName,
+        });
+
+        this.fetchYardWithCourtID(courtId);
+    };
+
+    handleYardClick = (yardId) => {
+        this.setState({ selectedYard: yardId }, () => {
+            this.fetchSlotWithYard(yardId);
+        });
+    };
+
+    handleAddSlot = (slotId) => {
+        const { selectedYard } = this.state;
+
+        if (!selectedYard) {
+            showAlert("error", "Lỗi!", "Vui lòng chọn một sân trước khi thêm slot.", "top-end");
             return;
         }
 
-        const yardIndex = yards.findIndex((yard) => yard.id === yardId);
-        if (yardIndex !== -1) {
-            const yard = yards[yardIndex];
-            const selectedSlot = slots.find((slot) => slot.id === selectedSlotId);
-            if (selectedSlot && !yard.slots.some((slot) => slot.id === selectedSlotId)) {
-                yard.slots.push(selectedSlot);
-                const updatedYards = [...yards];
-                updatedYards[yardIndex] = yard;
-                this.setState({ yards: updatedYards }, () => {
-                    // Lưu slots của yard vào API
-                    axios
-                        .put(`http://localhost:3001/yard/${yardId}`, yard)
-                        .then((res) => {
-                            alert("Slot đã được thêm thành công vào sân và lưu vào API");
-                        })
-                        .catch((err) => {
-                            console.error("Error updating yard slots in API:", err);
-                            alert("Không thể lưu slot vào API");
-                        });
-                });
-            } else {
-                alert("Slot đã tồn tại trong sân");
-            }
-        } else {
-            alert("Không tìm thấy sân để thêm slot");
-        }
-    };
-
-    handleDeleteYard = (yardId) => {
-        const confirmation = window.confirm("Bạn có chắc chắn muốn xóa sân này?");
-        if (confirmation) {
-            axios
-                .delete(`http://localhost:3001/yard/${yardId}`)
-                .then((res) => {
-                    this.fetchYards(); // Refresh the list of yards
-                })
-                .catch((err) => {
-                    console.error("Error deleting yard:", err);
-                    alert("Không thể xóa sân");
-                });
-        }
-    };
-
-    handleDeleteSlot = (yardId, slotId) => {
-        const { yards } = this.state;
-        const yardIndex = yards.findIndex((yard) => yard.id === yardId);
-        if (yardIndex !== -1) {
-            const yard = yards[yardIndex];
-            yard.slots = yard.slots.filter((slot) => slot.id !== slotId);
-            this.setState({ yards }, () => {
-                // Lưu slots của yard vào API
-                axios
-                    .put(`http://localhost:3001/yard/${yardId}`, yard)
-                    .then((res) => {
-                        alert("Slot đã được xóa khỏi sân và lưu vào API");
-                    })
-                    .catch((err) => {
-                        console.error("Error updating yard slots in API:", err);
-                        alert("Không thể lưu slot vào API");
-                    });
+        axiosInstance
+            .post(`/yard-schedule/${selectedYard}/timeSlot/${slotId}`)
+            .then((res) => {
+                if (res.status === 200) {
+                    showAlert("success", "Thành công!", "Đã thêm slot vào sân.", "top-end");
+                    this.fetchSlotWithYard(selectedYard);
+                } else {
+                    this.handleRequestError(res);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
             });
+    };
+    deleteSlotForYard = (slotId) => {
+        const { selectedYard } = this.state;
+
+        if (!selectedYard) {
+            showAlert("error", "Lỗi!", "Vui lòng chọn một sân trước khi xóa slot.", "top-end");
+            return;
         }
+
+        axiosInstance
+            .delete(`/yard-schedule/${selectedYard}/deleteSlotFromYard/${slotId}`)
+            .then((res) => {
+                if (res.status === 200) {
+                    showAlert("success", "Thành công!", "Đã xóa slot khỏi sân.", "top-end");
+                    this.fetchSlotWithYard(selectedYard);
+                } else {
+                    this.handleRequestError(res);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
     };
 
-    renderNameYard = () => {
-        const { yards } = this.state;
-        return yards.map((yard, index) => (
-            <li className="nav-item" role="presentation" key={yard.id}>
-                <button
-                    className={`nav-link ${index === 0 ? "active" : ""}`}
-                    id={`yard-tab-${yard.id}`}
-                    data-bs-toggle="tab"
-                    data-bs-target={`#yard-${yard.id}`}
-                    type="button"
-                    role="tab"
-                    aria-controls={`yard-${yard.id}`}
-                    aria-selected={index === 0}
-                >
-                    {yard.yard_name}
-                </button>
-            </li>
-        ));
+    toggleModal = () => {
+        this.setState((prevState) => ({
+            showModal: !prevState.showModal,
+        }));
     };
 
-    renderNameSlot = () => {
-        return this.state.slots.map((slot) => (
-            <option key={slot.id} value={slot.id}>
-                {slot.slot_name}
+    handleRequestError = (error) => {
+        let errorMessage = "Có lỗi xảy ra khi lấy dữ liệu";
+        if (error.response) {
+            if (error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                handleTokenError();
+                errorMessage = "Token không hợp lệ hoặc đã hết hạn.";
+            } else {
+                errorMessage = error.response.data.message || errorMessage;
+            }
+        }
+        showAlert("error", "Lỗi !", errorMessage, "top-end");
+        console.error("Request error:", error);
+    };
+
+    renderCourtOption = () => {
+        return this.state.courts.map((court) => (
+            <option key={court.courtId} value={court.courtId}>
+                {court.courtName}
             </option>
         ));
     };
 
-    renderTableSlotForYard = () => {
-        const { yards } = this.state;
-
-        return yards.map((yard, index) => (
-            <div
-                key={yard.id}
-                className={`tab-pane fade ${index === 0 ? "show active" : ""}`}
-                id={`yard-${yard.id}`}
-                role="tabpanel"
-                aria-labelledby={`yard-tab-${yard.id}`}
+    renderYardWithCourt = () => {
+        return this.state.yards.map((yard) => (
+            <button
+                key={yard.yardId}
+                className={`yardBtn btn m-2 p-2 ${this.state.selectedYard === yard.yardId ? "active" : ""}`}
+                onClick={() => this.handleYardClick(yard.yardId)}
             >
-                <div className="addSlot d-flex" style={{ alignItems: "center" }}>
-                    <select onChange={this.handleSelectChange} className="my-3" style={{ border: "1px solid black", height: "40px" }}>
-                        <option value="" className="">
-                            Chọn slot
-                        </option>
-                        {this.renderNameSlot()}
-                    </select>
-                    <button
-                        className="btn btn-success mx-2"
-                        style={{ border: "1px solid black", height: "40px", width: "200px" }}
-                        onClick={() => this.handleAddSlotToYard(yard.id)}
-                    >
-                        Thêm slot cho sân
-                    </button>
-                    <button
-                        className="btn btn-danger "
-                        style={{ border: "1px solid black", height: "40px", width: "200px" }}
-                        onClick={() => this.handleDeleteYard(yard.id)}
-                    >
-                        Xóa sân
-                    </button>
-                </div>
-                <table className="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th colSpan={5}>Danh sách slot trong sân</th>
-                        </tr>
-                        <tr>
-                            <th>STT</th>
-                            <th>Tên Slot</th>
-                            <th>Thời gian</th>
-                            <th>Giá tiền</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>{this.renderSlots(yard)}</tbody>
-                </table>
-            </div>
+                {yard.yardName}
+            </button>
         ));
     };
 
-    renderSlots = (yard) => {
-        return yard.slots.map((slot, index) => (
-            <tr key={slot.id}>
-                <td className="text-center">{index + 1}</td>
-                <td className="text-center">{slot.slot_name}</td>
+    renderSlotInYard = () => {
+        return this.state.slotInYard.map((slot, index) => (
+            <tr key={slot.slotId}>
+                <td>{index + 1}</td>
+                <td>{slot.slotName}</td>
                 <td className="text-center">
-                    {slot.start_time} - {slot.end_time}
+                    {slot.startTime} - {slot.endTime}
                 </td>
                 <td className="text-center">{slot.price}</td>
                 <td className="text-center">
-                    <button className="btn btn-danger w-50" onClick={() => this.handleDeleteSlot(yard.id, slot.id)}>
-                        <i className="fa fa-trash"></i>
+                    <button className="btn btn-danger" onClick={() => this.deleteSlotForYard(slot.slotId)}>
+                        <i className="fa fa-trash" />
                     </button>
                 </td>
             </tr>
         ));
     };
 
+    renderSlotYardHaveNot = () => {
+        const { slots, slotInYard } = this.state;
+        const slotInYardIds = slotInYard.map((slot) => slot.slotId);
+
+        return slots
+            .filter((slot) => !slotInYardIds.includes(slot.slotId))
+            .map((slot) => (
+                <div key={slot.slotId} className="d-flex align-items-center justify-content-between p-2">
+                    <div>
+                        {slot.slotName}: {slot.startTime} - {slot.endTime}
+                    </div>
+                    <button className="btn btn-primary w-25" onClick={() => this.handleAddSlot(slot.slotId)}>
+                        <i className="fa fa-plus"></i>
+                    </button>
+                </div>
+            ));
+    };
+
     render() {
-        const { yardOb } = this.state;
         return (
-            <div>
-                <div className="w-50 m-auto">
-                    <form onSubmit={this.handleAddYard}>
-                        <div className="form-group">
-                            <label htmlFor="yard_name">Tên sân:</label>
+            <div className="yardManager">
+                <div>
+                    <div className="flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
+                        <div className="select-court d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
+                            <label className="me-3">Chọn cơ sở: </label>
+                            <select className="" style={{ height: 40 }} onChange={this.handleCourtChange}>
+                                {this.renderCourtOption()}
+                            </select>
+                        </div>
+                        <div className="input-group w-50">
                             <input
                                 type="text"
                                 className="form-control"
-                                id="yard_name"
-                                name="yard_name"
-                                value={yardOb.yard_name}
-                                onChange={this.handleInputChange}
-                                required
+                                placeholder="Nhập từ khóa"
+                                aria-label="Recipient's username"
+                                aria-describedby="basic-addon2"
                             />
+                            <div className="input-group-append">
+                                <span className="input-group-text" id="basic-addon2">
+                                    <i className="fa fa-search" />
+                                </span>
+                            </div>
                         </div>
-                        <button type="submit" className="btn btn-primary">
-                            Thêm sân
-                        </button>
-                    </form>
+                    </div>
+
+                    <div className="yardWithCourtID grid grid-cols-6 gap-1 mt-4">{this.renderYardWithCourt()}</div>
+                    <button className="btn btn-primary p-0 my-2 w-25 p-1" data-bs-toggle="modal" data-bs-target="#modalDsSlot">
+                        <i className="fa-solid fa-plus"></i> Thêm slot
+                    </button>
+                    <table className="table table-hover mt-4">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Tên slot</th>
+                                <th className="text-center">Thời gian</th>
+                                <th className="text-center">Giá tiền/Slot</th>
+                                <th className="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>{this.renderSlotInYard()}</tbody>
+                    </table>
                 </div>
-                <div>
-                    <ul className="nav nav-tabs" id="myTab" role="tablist">
-                        {this.renderNameYard()}
-                    </ul>
-                    <div className="tab-content" id="myTabContent">
-                        {this.renderTableSlotForYard()}
+
+                <div className="modal fade" id="modalDsSlot" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLabel">
+                                    Danh sách slot
+                                </h5>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">{this.renderSlotYardHaveNot()}</div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -27,12 +27,12 @@ export default class Slot extends Component {
                     this.setState({ slots: res.data });
                 } else {
                     this.setState({ slots: [] });
-                    showAlert('error', 'Lỗi !', 'Không lấy được dữ liệu', 'top-end');
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
                     handleTokenError();
                 }
                 this.handleRequestError(error);
@@ -50,8 +50,8 @@ export default class Slot extends Component {
         axiosInstance
             .post("time-slot/createSlot", slotData, {
                 headers: {
-                    'Content-Type': 'application/json',
-                }
+                    "Content-Type": "application/json",
+                },
             })
             .then((res) => {
                 if (res.status === 200) {
@@ -65,18 +65,18 @@ export default class Slot extends Component {
                             price: "",
                         },
                     });
-                    showAlert('success', '', 'Thêm slot thành công', 'top-end');
+                    showAlert("success", "", "Thêm slot thành công", "top-end");
                 } else {
-                    showAlert('error', 'Lỗi !', 'Thêm slot không thành công', 'top-end');
+                    showAlert("error", "Lỗi !", "Thêm slot không thành công", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
                 if (error.response && error.response.status === 401) {
-                    if (error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                    if (error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
                         handleTokenError();
-                    } else if (error.response.data.message === 'Slot với tên này đã có trong danh sách.') {
-                        showAlert('error', 'Lỗi!', 'Slot với tên này đã có trong danh sách.', 'top-end');
+                    } else if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
+                        showAlert("error", "Lỗi!", "Slot với tên này đã có trong danh sách.", "top-end");
                     }
                 }
                 this.handleRequestError(error);
@@ -87,8 +87,8 @@ export default class Slot extends Component {
         axiosInstance
             .put("time-slot/updateSlot", this.state.slot, {
                 headers: {
-                    'Content-Type': 'application/json',
-                }
+                    "Content-Type": "application/json",
+                },
             })
             .then((res) => {
                 if (res.status === 200) {
@@ -102,18 +102,18 @@ export default class Slot extends Component {
                             price: "",
                         },
                     });
-                    showAlert('success', '', 'Chỉnh sửa slot thành công', 'top-end');
+                    showAlert("success", "", "Chỉnh sửa slot thành công", "top-end");
                 } else {
-                    showAlert('error', 'Lỗi !', 'Chỉnh sửa slot không thành công', 'top-end');
+                    showAlert("error", "Lỗi !", "Chỉnh sửa slot không thành công", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
                 if (error.response && error.response.status === 401) {
-                    if (error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
+                    if (error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
                         handleTokenError();
-                    } else if (error.response.data.message === 'Slot với tên này đã có trong danh sách.') {
-                        showAlert('error', 'Lỗi!', 'Slot với tên này đã có trong danh sách.', 'top-end');
+                    } else if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
+                        showAlert("error", "Lỗi!", "Slot với tên này đã có trong danh sách.", "top-end");
                     }
                 }
                 this.handleRequestError(error);
@@ -121,28 +121,32 @@ export default class Slot extends Component {
     };
 
     handleDeleteSlot = (slotId) => {
-        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa slot này không ?", 'Xóa', 'center')
-            .then((result) => {
-                if (result.isConfirmed) {
-                    axiosInstance.delete(`/time-slot/deleteSlot/${slotId}`)
-                        .then((res) => {
-                            if (res.status === 200) {
-                                this.fetchSlot();
-                                showAlert('success', '', 'Đã xóa slot thành công', 'top-end');
-                            } else {
-                                showAlert('error', '', 'Xóa slot không thành công', 'top-end');
-                            }
-                        })
-                        .catch((error) => {
-                            if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
-                                handleTokenError();
-                            } else {
-                                showAlert('error', '', 'Xóa slot không thành công', 'top-end');
-                            }
-                            console.error("Response không thành công:", error);
-                        });
-                }
-            });
+        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa slot này không ?", "Xóa", "center").then((result) => {
+            if (result.isConfirmed) {
+                axiosInstance
+                    .delete(`/time-slot/deleteSlot/${slotId}`)
+                    .then((res) => {
+                        if (res.status === 200) {
+                            this.fetchSlot();
+                            showAlert("success", "", "Đã xóa slot thành công", "top-end");
+                        } else {
+                            showAlert("error", "", "Xóa slot không thành công", "top-end");
+                        }
+                    })
+                    .catch((error) => {
+                        if (
+                            error.response &&
+                            error.response.status === 401 &&
+                            error.response.data.message === "Token không hợp lệ hoặc đã hết hạn."
+                        ) {
+                            handleTokenError();
+                        } else {
+                            showAlert("error", "", "Xóa slot không thành công", "top-end");
+                        }
+                        console.error("Response không thành công:", error);
+                    });
+            }
+        });
     };
 
     handleInputChange = (event) => {
@@ -176,7 +180,7 @@ export default class Slot extends Component {
                                         startTime: "",
                                         endTime: "",
                                         price: "",
-                                    }
+                                    },
                                 })
                             }
                         >
@@ -186,7 +190,7 @@ export default class Slot extends Component {
                     </div>
                 </div>
 
-                <table className="table table-hover">
+                <table className="table table-hover mt-2">
                     <thead>
                         <tr>
                             <th>STT</th>
@@ -200,7 +204,9 @@ export default class Slot extends Component {
                     <tbody>
                         {this.state.slots.length === 0 ? (
                             <tr>
-                                <td colSpan="7" className="text-center">Danh sách slot trống</td>
+                                <td colSpan="7" className="text-center">
+                                    Danh sách slot trống
+                                </td>
                             </tr>
                         ) : (
                             this.state.slots.map((slot, index) => (
@@ -228,7 +234,6 @@ export default class Slot extends Component {
                         )}
                     </tbody>
                 </table>
-
 
                 {/* Modal Thêm Mới Slot */}
                 <div className="modal fade" id="addNewSlot" tabIndex="-1" aria-labelledby="addSlotLabel" aria-hidden="true">

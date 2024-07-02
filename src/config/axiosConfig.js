@@ -2,29 +2,30 @@ import axios from "axios";
 import { showConfirmAlert } from "../utils/alertUtils";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "http://167.99.67.127:8080/",
 });
 
-axiosInstance.interceptors.request.use((config) => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = user ? user.accessToken : null;
+axiosInstance.interceptors.request.use(
+    (config) => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const token = user ? user.accessToken : null;
 
-    if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
+        if (token) {
+            config.headers["Authorization"] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => {
+        if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+            showConfirmAlert("Phiên đăng nhập đã hết hạn.", "Vui lòng đăng nhập lại để tiếp tục.", "Đăng nhập lại.", "top").then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem("jwtToken");
+                    window.location.href = "/login";
+                }
+            });
+        }
+        return Promise.reject(error);
     }
-    return config;
-},
-(error) => {
-    if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-        showConfirmAlert("Phiên đăng nhập đã hết hạn.", "Vui lòng đăng nhập lại để tiếp tục.", "Đăng nhập lại.", "top").then((result) => {
-            if (result.isConfirmed) {
-                localStorage.removeItem("jwtToken");
-                window.location.href = "/login";
-            }
-        });
-    }
-    return Promise.reject(error);
-}
 );
 
 axiosInstance.interceptors.response.use(

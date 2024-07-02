@@ -70,12 +70,11 @@ export default class Services extends Component {
             axiosInstance
                 .delete(`/court/${selectedCourt}/deleteFacilityFromCourt/${facilityId}`)
                 .then((res) => {
-                    {
-                        this.renderServicesInCourt();
-                    }
                     if (res.status === 200) {
                         showAlert("success", "Thành công", "Đã xóa dịch vụ khỏi sân", "top-end");
-                        this.fetchServicesInCourt(selectedCourt); // Cập nhật lại danh sách dịch vụ trong sân
+                        this.setState((prevState) => ({
+                            facilityOfCourt: prevState.facilityOfCourt.filter((facility) => facility.facilityId !== facilityId),
+                        }));
                     } else {
                         showAlert("error", "Lỗi !", "Không thể xóa dịch vụ", "top-end");
                         console.error("Response không thành công:", res.status);
@@ -88,12 +87,9 @@ export default class Services extends Component {
             axiosInstance
                 .post(`/court/${selectedCourt}/addFacilityToCourt/${facilityId}`)
                 .then((res) => {
-                    {
-                        this.renderServicesInCourt();
-                    }
                     if (res.status === 200) {
                         showAlert("success", "Thành công", "Đã thêm dịch vụ vào sân", "top-end");
-                        this.fetchServicesInCourt(selectedCourt); // Cập nhật lại danh sách dịch vụ trong sân
+                        this.renderServicesInCourt(selectedCourt);
                     } else {
                         showAlert("error", "Lỗi !", "Không thể thêm dịch vụ", "top-end");
                         console.error("Response không thành công:", res.status);
@@ -160,7 +156,19 @@ export default class Services extends Component {
             });
     };
 
-    handleRequestError = (error) => {};
+    handleRequestError = (error) => {
+        let errorMessage = "Có lỗi xảy ra khi lấy dữ liệu";
+        if (error.response) {
+            if (error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                handleTokenError();
+                errorMessage = "Token không hợp lệ hoặc đã hết hạn.";
+            } else {
+                errorMessage = error.response.data.message || errorMessage;
+            }
+        }
+        showAlert("error", "Lỗi !", errorMessage, "top-end");
+        console.error("Request error:", error);
+    };
 
     render() {
         return (
