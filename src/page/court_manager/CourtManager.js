@@ -11,6 +11,7 @@ import Services from "./Services";
 import Order from "./Order";
 import Slot from "./Slot";
 import axiosInstance from "../../config/axiosConfig";
+import Dashboard from "./Dashboard";
 
 export default class CourtManager extends Component {
     constructor(props) {
@@ -169,47 +170,8 @@ export default class CourtManager extends Component {
                         <div className="manager-right">
                             <div className="tab-content">
                                 <div className="tab-pane fade show active" id="dsDashboard" role="tabpanel">
-                                    <div className="dash-num grid grid-cols-4 gap-4">
-                                        <div className="dash-num-item">
-                                            <div className="dash-num-item-left">
-                                                <h3>100</h3>
-                                                <p>Lượt truy cập mỗi ngày</p>
-                                            </div>
-                                            <div className="dash-num-item-icon">
-                                                <i className="fa-regular fa-eye" />
-                                            </div>
-                                        </div>
-                                        <div className="dash-num-item">
-                                            <div className="dash-num-item-left">
-                                                <h3>20</h3>
-                                                <p>Chi nhánh</p>
-                                            </div>
-                                            <div className="dash-num-item-icon">
-                                                <i className="fa-solid fa-house" />
-                                            </div>
-                                        </div>
-                                        <div className="dash-num-item">
-                                            <div className="dash-num-item-left">
-                                                <h3>30</h3>
-                                                <p>Đơn / ngày</p>
-                                            </div>
-                                            <div className="dash-num-item-icon">
-                                                <i className="fa-solid fa-file-invoice" />
-                                            </div>
-                                        </div>
-                                        <div className="dash-num-item">
-                                            <div className="dash-num-item-left">
-                                                <h3>10 tr</h3>
-                                                <p>Doanh thu / ngày</p>
-                                            </div>
-                                            <div className="dash-num-item-icon" style={{ color: "black" }}>
-                                                <i className="fa-solid fa-money-bill" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="char">
-                                        <canvas id="chardoanhthuthang" width="vw-100" height />
-                                    </div>
+                                    {" "}
+                                    <Dashboard />
                                 </div>
 
                                 {/* ----------------------Coso------------------------------------- */}

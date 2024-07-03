@@ -151,6 +151,31 @@ export default class Yard extends Component {
                 this.handleRequestError(error);
             });
     };
+    handleAddYard = () => {
+        const newYardName = this.state.newYard.yardName.trim();
+
+        if (!newYardName) {
+            showAlert("error", "Lỗi!", "Vui lòng nhập tên sân cần thêm.", "top-end");
+            return;
+        }
+
+        const { selectedCourt } = this.state;
+
+        axiosInstance
+            .post("/yard/createyard", { courtId: selectedCourt, yardName: newYardName })
+            .then((res) => {
+                if (res.status === 200) {
+                    showAlert("success", "Thành công!", "Đã thêm sân mới.", "top-end");
+                    // Optionally update state or fetch data
+                    this.fetchYardWithCourtID(selectedCourt); // Refresh yards after addition
+                } else {
+                    this.handleRequestError(res);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
+    };
 
     toggleModal = () => {
         this.setState((prevState) => ({
@@ -239,6 +264,7 @@ export default class Yard extends Component {
                                 {this.renderCourtOption()}
                             </select>
                         </div>
+
                         <div className="input-group w-50">
                             <input
                                 type="text"
@@ -256,9 +282,30 @@ export default class Yard extends Component {
                     </div>
 
                     <div className="yardWithCourtID grid grid-cols-6 gap-1 mt-4">{this.renderYardWithCourt()}</div>
-                    <button className="btn btn-primary p-0 my-2 w-25 p-1" data-bs-toggle="modal" data-bs-target="#modalDsSlot">
-                        <i className="fa-solid fa-plus"></i> Thêm slot
-                    </button>
+                    <div className="d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
+                        <button className="btn btn-primary w-25" data-bs-toggle="modal" data-bs-target="#modalDsSlot">
+                            <i className="fa-solid fa-plus"></i> Thêm slot
+                        </button>
+                        <div className="d-flex w-50">
+                            <input
+                                className=" bg-light "
+                                style={{
+                                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                                    alignItems: "center",
+                                    fontSize: 12,
+                                    width: "300px",
+                                    justifyContent: "end",
+                                }}
+                                type="text"
+                                placeholder="Nhập tên sân cần thêm"
+                                value={this.state.newYard.yardName}
+                                onChange={(e) => this.setState({ newYard: { ...this.state.newYard, yardName: e.target.value } })}
+                            />
+                            <button type="button" className="m-0 bg-gray-200 p-2" onClick={this.handleAddYard}>
+                                Thêm sân
+                            </button>
+                        </div>
+                    </div>
                     <table className="table table-hover mt-4">
                         <thead>
                             <tr>
