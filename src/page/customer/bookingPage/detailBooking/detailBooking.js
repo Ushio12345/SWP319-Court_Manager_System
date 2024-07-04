@@ -33,7 +33,7 @@ const DetailBooking = () => {
 
         const response = await axiosInstance.get(`/paypal/success?paymentId=${paymentId}&PayerID=${PayerID}`);
             if (response.data.message === 'Payment successful') {
-                const bookingResponse = await axiosInstance.post('/booking/success', bookingData);
+                const bookingResponse = await axiosInstance.post(`/booking/success/${paymentId}`, bookingData);
                 if (bookingResponse.data.message === 'Đã đặt lịch thành công.') {
                     showConfirmPayment('Thông báo', 'Thanh toán và đặt lịch thành công !', 'success', 'Xem trạng thái đơn hàng', 'Trở về trang chủ', 'center')
                         .then((result) => {
@@ -124,7 +124,7 @@ const DetailBooking = () => {
 
             const totalPriceUSD = booking.totalPrice / exchangeRate;
 
-            const response = await axiosInstance.post('http://localhost:8080/paypal/create-payment', {
+            const response = await axiosInstance.post('/paypal/create-payment', {
                 total: totalPriceUSD,
                 currency: 'USD',
                 description: 'Payment via PayPal',
