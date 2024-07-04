@@ -104,3 +104,21 @@
 .feedback-section .btn {
     margin-top: 10px;
 }
+
+
+.no-bookings {
+    text-align: center;
+    margin-top: 20px;
+    color: #999;
+}
+
+.no-bookings p {
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
+.loading-icon {
+    text-align: center;
+    margin-top: 20px;
+    color: #999;
+}

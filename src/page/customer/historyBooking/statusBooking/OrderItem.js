@@ -1,12 +1,31 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Rating from "react-rating-stars-component";
+import axiosInstance from "../../../../config/axiosConfig";
+import { alert, showConfirmPayment } from "../../../../utils/alertUtils";
 
-const OrderItem = ({ order }) => {
+const OrderItem = ({ booking, onBookingCancel }) => {
     const [showModal, setShowModal] = useState(false);
     const [rating, setRating] = useState(0);
     const [feedback, setFeedback] = useState("");
+    const [court, setCourt] = useState(null);
+
+    const fetchCourt = useCallback(async (yardId) => {
+        try {
+            const response = await axiosInstance.get(`/yard/${yardId}/court`);
+            setCourt(response.data);
+        } catch (error) {
+            console.error("There was an error!", error);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (booking?.bookingDetails?.length > 0) {
+            const yardId = booking.bookingDetails[0].yardSchedule.yard.yardId;
+            fetchCourt(yardId);
+        }
+    }, [booking, fetchCourt]);
 
     const handleRatingChange = (newRating) => {
         setRating(newRating);
@@ -17,54 +36,74 @@ const OrderItem = ({ order }) => {
     };
 
     const handleSubmitFeedback = () => {
-        // Handle the submission of the feedback and rating
         console.log("Rating:", rating);
         console.log("Feedback:", feedback);
-        // Close the modal or perform further actions like submitting to backend
         setShowModal(false);
     };
+
+    const handleCancelBooking = async (bookingId) => {
+        try {
+            // const response = await axiosInstance.post(`/paypal/refund?paymentId=${booking.payment.paymentId}&amount=${booking.payment.paymentAmount}`);
+
+            // if (response.data.message === 'Refund successful') {
+            showConfirmPayment('Thông báo', 'Bạn có chắc chắn muốn hủy đơn hàng ?', 'warning', 'Chắc chắn rồi', 'Trở lại', 'center')
+                .then(async (result) => {
+                    if (result.isConfirmed) {
+                        const cancelResponse = await axiosInstance.post(`/booking/${bookingId}/cancel`);
+                        if (cancelResponse.data.message === 'Đã hủy đơn hàng thành công.') {
+                            alert('success', 'Thông báo', 'Hủy đơn hàng thành công !', 'center')
+                            onBookingCancel();
+                        } else {
+                            alert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'center')
+                        }
+                        // } else {
+                        //     alert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'center')
+                        // }
+                    } 
+                })
+
+        } catch (error) {
+            console.error('Failed to cancel booking:', error);
+        }
+    };
+
+    if (!court) {
+        return <div>Đang tải...</div>; // Or a loading component based on your design
+    }
 
     return (
         <div className="orderItemList">
             <div className="orderItem mt-4">
                 <div className="orderItem-header">
-                    <div className="nameCourt">CLB cầu lông Phú Hữu</div>
+                    <div className="nameCourt"><h5>{court.courtName}</h5></div>
                     <div className="status d-flex">
-                        <i className="fa-solid fa-stopwatch"></i> Chờ xác nhận
+                        <i className="fa-solid fa-stopwatch"></i> {booking.statusEnum}
                     </div>
                 </div>
                 <div className="orderItem-body">
                     <div className="infor-court py-3">
                         <div className="img-court w-48">
-                            <img
-                                className=""
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgRFbFD3VDKW4AakR-qEkIAjLp7iSKtMEBig&s"
-                                alt="court"
-                            />
+                            <img src={court.image} alt="court" />
                         </div>
                         <div className="order-detail ms-3">
-                            <p>Thời gian đặt đơn: 26/06/2024 - 16:52</p>
-                            <h4>[Sân 1] - Slot 1: 7:30 - 8:30</h4>
-                            <p className="booking-type">Dạng lịch: Lịch đơn</p>
+                            <p><b>Thời gian đặt đơn:</b> {booking.bookingDate}</p>
+                            <p className="booking-type"><b>Dạng lịch:</b> {booking.bookingType}</p>
                             <p>
-                                Hình thức thanh toán: <i className="fa-brands fa-paypal"></i>
+                                <b>Hình thức thanh toán:</b> <i className="fa-brands fa-paypal"></i>
                                 <span> PayPal</span>
                             </p>
-                            <p>Mã check-in: AJ128</p>
                         </div>
                     </div>
-                    <div className="price">75000 &#8363;</div>
                 </div>
                 <div className="orderItem-footer">
-                    <div className="discount">
-                        Giảm giá: <span>0%</span>
-                    </div>
                     <div className="total-price">
-                        Tổng tiền: <span>75000 &#8363;</span>
+                        <b>Tổng tiền:</b> <span>{booking.totalPrice} &#8363;</span>
                     </div>
                 </div>
                 <div className="orderItem-btn w-50 m-auto">
-                    <button className="btn">Hủy đơn</button>
+                    {booking.statusEnum !== "Đã hủy" && (
+                        <button className="btn" onClick={() => handleCancelBooking(booking.bookingId)}>Hủy đơn</button>
+                    )}
                     <button className="btn" onClick={() => setShowModal(true)}>
                         Chi tiết đơn
                     </button>
@@ -75,22 +114,29 @@ const OrderItem = ({ order }) => {
                         <Modal.Title>Chi tiết đơn</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {/* Nội dung chi tiết đơn */}
-                        <p>Chi tiết đơn đặt sân...</p>
-                        {order.status === "completed" && (
-                            <div className="feedback-section">
-                                <h5>Đánh giá của bạn</h5>
-                                <Rating count={5} value={rating} onChange={handleRatingChange} size={24} activeColor="#ffd700" />
-                                <textarea
-                                    className="feedback-input"
-                                    placeholder="Nhập nội dung đánh giá của bạn"
-                                    value={feedback}
-                                    onChange={handleFeedbackChange}
-                                />
-                                <button className="btn btn-success m-0 p-2" onClick={handleSubmitFeedback}>
-                                    Gửi đánh giá
-                                </button>
-                            </div>
+                        {booking.statusEnum && (
+                            <table className="table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th>Slot</th>
+                                        <th>Ngày check-in</th>
+                                        <th>Sân</th>
+                                        <th>Giá tiền (VND)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {booking.bookingDetails
+                                        .sort((a, b) => a.yardSchedule.slot.slotName.localeCompare(b.yardSchedule.slot.slotName))
+                                        .map((bookingDetail, index) => (
+                                            <tr key={index}>
+                                                <td>{bookingDetail.yardSchedule.slot.slotName}</td>
+                                                <td>{bookingDetail.date}</td>
+                                                <td>{bookingDetail.yardSchedule.yard.yardName}</td>
+                                                <td>{bookingDetail.yardSchedule.slot.price}</td>
+                                            </tr>
+                                        ))}
+                                </tbody>
+                            </table>
                         )}
                     </Modal.Body>
                     <Modal.Footer>

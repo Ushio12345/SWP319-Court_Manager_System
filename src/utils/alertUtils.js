@@ -49,3 +49,15 @@ export const showConfirmPayment = async (title, text, icon, confirmText, cancleT
     return result;
 };
 
+export const alert = (icon, title, text, position) => {
+    Swal.fire({
+        icon: icon,
+        title: title,
+        text: text,
+        showConfirmButton: true,
+        position: position,
+        customClass: {
+            popup: icon, 
+        }
+    });
+};
