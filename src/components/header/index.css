@@ -24,6 +24,7 @@
 .header .header-top .header-top-right .login .user-info a {
     padding: 10px 15px;
     margin: 0 10px;
+    font-size: 15px;
 }
 .header .header-top .header-top-right .login .user {
     width: 90px;
