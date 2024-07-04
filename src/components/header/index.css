@@ -26,10 +26,11 @@
     margin: 0 10px;
 }
 .header .header-top .header-top-right .login .user {
-    width: 90px;
+    width: 70%;
     border-radius: 50%;
     display: flex;
     align-items: center;
+    justify-content: end;
 }
 .header .header-top .header-top-right .login .user img {
     border-radius: 50%;
@@ -141,15 +142,20 @@
 .user-name {
     margin-top: 30px;
 }
-.user-info {
+.header-top-right .user-info {
     position: relative;
     cursor: pointer;
+    width: 100%;
+    margin-left: 0;
+    display: flex;
+    justify-content: end;
 }
+
 .user-infor-dropdown {
     position: absolute;
     top: 120%;
     right: 0;
-    background-color: #eeeded;
+    background-color: aliceblue;
 }
 .user-infor-dropdown ul li i {
     margin-right: 10px;
@@ -164,6 +170,7 @@
     width: 250px;
     color: black;
 }
+
 .user-infor-dropdown li:hover {
     background-color: #1f1f6a;
 }

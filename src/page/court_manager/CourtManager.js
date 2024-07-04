@@ -24,6 +24,7 @@ export default class CourtManager extends Component {
             },
             courts: [],
             selectedCourtId: "",
+            dropdownVisible: false,
         };
     }
 
@@ -71,8 +72,14 @@ export default class CourtManager extends Component {
         window.location.href = "/";
     };
 
+    toggleDropdown = () => {
+        this.setState((prevState) => ({
+            dropdownVisible: !prevState.dropdownVisible,
+        }));
+    };
+
     render() {
-        const { isLoggedIn, user, courts, selectedCourtId } = this.state;
+        const { isLoggedIn, user, courts, selectedCourtId, dropdownVisible } = this.state;
         return (
             <div>
                 <section className="manager">
@@ -91,11 +98,27 @@ export default class CourtManager extends Component {
                                 <i className="fa-solid fa-magnifying-glass" />
                             </label> */}
                         </div>
-                        <div className="login">
-                            <a href="updateProfile.html" className="user">
-                                <img src={user.avatar} alt="User Avatar" />
-                            </a>
+                        <div className="login" onClick={this.toggleDropdown}>
+                            <img src={user.avatar} alt="User Avatar" style={{ width: 50, borderRadius: "50%" }} />
                             <p className="user-name">Xin chào, {user.username}</p>
+                            {dropdownVisible && (
+                                <div className="dropdownItem">
+                                    <div className="user-infor-dropdown">
+                                        <ul className="p-0 m-0">
+                                            <li>
+                                                <a href="/profile">
+                                                    <i className="fa-solid fa-user"></i> Hồ sơ
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onClick={this.handleLogout}>
+                                                    <i className="fas fa-sign-out-alt"></i> Đăng xuất
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="body-manager">
@@ -158,11 +181,11 @@ export default class CourtManager extends Component {
                                             <span className="title">Quản lý tiện ích sân</span>
                                         </a>
                                     </li>
-                                    <a className="w-75 logout m-auto " onClick={this.handleLogout}>
+                                    <a className="w-75 logout m-auto " href="/">
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
                                         </span>
-                                        <span className="title">Đăng xuất</span>
+                                        <span className="title">Trở về trang chủ</span>
                                     </a>
                                 </ul>
                             </div>

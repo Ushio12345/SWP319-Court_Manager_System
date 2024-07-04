@@ -13,6 +13,8 @@ export default class Slot extends Component {
             endTime: "",
             price: "",
         },
+        currentPage: 1,
+        slotsPerPage: 5,
     };
 
     componentDidMount() {
@@ -163,7 +165,25 @@ export default class Slot extends Component {
         console.error("Lỗi từ server:", error.response.data);
     };
 
+    // Xử lý thay đổi trang
+    handlePageChange = (event) => {
+        this.setState({ currentPage: Number(event.target.id) });
+    };
+
     render() {
+        const { slots, currentPage, slotsPerPage } = this.state;
+
+        // Tính toán các slot hiện tại
+        const indexOfLastSlot = currentPage * slotsPerPage;
+        const indexOfFirstSlot = indexOfLastSlot - slotsPerPage;
+        const currentSlots = slots.slice(indexOfFirstSlot, indexOfLastSlot);
+
+        // Tạo các nút phân trang
+        const pageNumbers = [];
+        for (let i = 1; i <= Math.ceil(slots.length / slotsPerPage); i++) {
+            pageNumbers.push(i);
+        }
+
         return (
             <div>
                 <div className="row">
@@ -202,15 +222,15 @@ export default class Slot extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.slots.length === 0 ? (
+                        {currentSlots.length === 0 ? (
                             <tr>
                                 <td colSpan="7" className="text-center">
                                     Danh sách slot trống
                                 </td>
                             </tr>
                         ) : (
-                            this.state.slots.map((slot, index) => (
-                                <tr className="" key={slot.courtId}>
+                            currentSlots.map((slot, index) => (
+                                <tr className="" key={slot.slotId}>
                                     <td className="text-center">{index + 1}</td>
                                     <td className="text-center">{slot.slotId}</td>
                                     <td className="text-center">{slot.slotName}</td>
@@ -234,6 +254,19 @@ export default class Slot extends Component {
                         )}
                     </tbody>
                 </table>
+
+                {/* Nút phân trang */}
+                <nav>
+                    <ul className="pagination">
+                        {pageNumbers.map((number) => (
+                            <li key={number} className="page-item">
+                                <button onClick={this.handlePageChange} id={number} className="page-link">
+                                    {number}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
 
                 {/* Modal Thêm Mới Slot */}
                 <div className="modal fade" id="addNewSlot" tabIndex="-1" aria-labelledby="addSlotLabel" aria-hidden="true">
