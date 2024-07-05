@@ -218,7 +218,7 @@ export default class extends Component {
         return (
             <div>
                 {/* Modal Chi Tiết */}
-                <div className="modal fade" id="detailModal" tabIndex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+                <div className="modal fade my-5" id="detailModal" tabIndex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
                     <div className="modal-dialog modal-lg">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -262,7 +262,7 @@ export default class extends Component {
                 </div>
                 {/* Kết thúc Modal Chi Tiết */}
 
-                <div className="row">
+                <div className="row my-3">
                     <div className="col-md-8">
                         <button
                             id="btnThemCoSo"
@@ -287,7 +287,7 @@ export default class extends Component {
                             Thêm Mới
                         </button>
                     </div>
-                    <div className="col-md-4">
+                    {/* <div className="col-md-4">
                         <div className="input-group mb-3">
                             <input
                                 type="text"
@@ -302,7 +302,7 @@ export default class extends Component {
                                 </span>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="clear-fix" />
@@ -364,7 +364,7 @@ export default class extends Component {
 
                 {/* Modal Thêm Mới/Cập Nhật */}
                 <div className="modal fade" id="addNewCourt" tabIndex="-1" aria-labelledby="addStaffLabel" aria-hidden="true">
-                    <div className="modal-dialog">
+                    <div className="modal-dialog" style={{ marginTop: 65 }}>
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h4 className="text-center">Điền thông tin cơ sở</h4>
@@ -450,7 +450,7 @@ export default class extends Component {
                 </div>
 
                 <div className="modal fade" id="updateCourt" tabIndex="-1" aria-labelledby="addStaffLabel" aria-hidden="true">
-                    <div className="modal-dialog">
+                    <div className="modal-dialog" style={{ marginTop: 65 }}>
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h4>Cập nhật thông tin</h4>

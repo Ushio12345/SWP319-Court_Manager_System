@@ -4,6 +4,7 @@ import axiosInstance from "../../config/axiosConfig";
 
 import { handleTokenError } from "../../utils/tokenErrorHandle";
 import "./manager.css";
+import { event } from "jquery";
 
 export default class Yard extends Component {
     state = {
@@ -22,6 +23,7 @@ export default class Yard extends Component {
         isEditing: false,
         currentPage: 1,
         itemsPerPage: 5,
+        searchSlot: "",
     };
     componentDidMount() {
         this.fetchCourts();
@@ -91,7 +93,15 @@ export default class Yard extends Component {
             .get(`/yard-schedule/getAllByYardId/${yardId}`)
             .then((res) => {
                 if (res.status === 200) {
-                    this.setState({ slotInYard: res.data });
+                    const filteredSlots = res.data.filter((slot) => {
+                        const keyword = this.state.searchSlot.toLowerCase();
+                        return (
+                            slot.slotName.toLowerCase().includes(keyword) ||
+                            slot.startTime.toLowerCase().includes(keyword) ||
+                            slot.endTime.toLowerCase().includes(keyword)
+                        );
+                    });
+                    this.setState({ slotInYard: filteredSlots });
                 } else {
                     this.handleRequestError(res);
                 }
@@ -209,6 +219,12 @@ export default class Yard extends Component {
             .catch((error) => {
                 this.handleRequestError(error);
             });
+    };
+    handleSearchSlotWithNameOrTime = (e) => {
+        const searchSlot = e.target.value;
+        this.setState({ searchSlot }, () => {
+            this.fetchSlotWithYard(this.state.selectedYard);
+        });
     };
     deleteSlotForYard = (slotId) => {
         const { selectedYard } = this.state;
@@ -379,8 +395,8 @@ export default class Yard extends Component {
             .then((res) => {
                 if (res.status === 200) {
                     showAlert("success", "Thành công!", "Đã cập nhật sân.", "top-end");
-                    this.fetchYardWithCourtID(this.state.selectedCourt); // Refresh yards after update
-                    this.toggleModal(); // Close modal after successful edit
+                    this.fetchYardWithCourtID(this.state.selectedCourt);
+                    this.toggleModal();
                 } else {
                     this.handleRequestError(res);
                 }
@@ -393,12 +409,10 @@ export default class Yard extends Component {
     handleDeleteYard = (yardId) => {
         showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa sân này không?", "Xóa", "center").then((result) => {
             if (result.isConfirmed) {
-                // Lấy token từ localStorage hoặc bất kỳ nơi nào bạn lưu trữ
                 let token = localStorage.getItem("token");
-
                 const deleteYard = () => {
                     axiosInstance
-                        .delete(`/yard/deleteyard/${yardId}`, {
+                        .delete(`/yard/delete/${yardId}`, {
                             headers: {
                                 Authorization: `Bearer ${token}`,
                             },
@@ -424,6 +438,9 @@ export default class Yard extends Component {
                             console.error("Response không thành công:", error);
                         });
                 };
+
+                // Call deleteYard function after confirmation
+                deleteYard();
             }
         });
     };
@@ -471,6 +488,8 @@ export default class Yard extends Component {
                                 placeholder="Nhập từ khóa"
                                 aria-label="Recipient's username"
                                 aria-describedby="basic-addon2"
+                                value={this.state.searchSlot}
+                                onChange={this.handleSearchSlotWithNameOrTime}
                             />
                             <div className="input-group-append">
                                 <span className="input-group-text" id="basic-addon2">
@@ -541,7 +560,7 @@ export default class Yard extends Component {
                 </div>
 
                 <div className="modal fade" id="modalDsSlot" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div className="modal-dialog">
+                    <div className="modal-dialog" style={{ marginTop: 65 }}>
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title" id="exampleModalLabel">

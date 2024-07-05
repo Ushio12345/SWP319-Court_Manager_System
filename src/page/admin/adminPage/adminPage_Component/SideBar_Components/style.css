@@ -3,3 +3,6 @@
     background-color: white;
     margin: 0 auto;
 }
+.court_manager table {
+    min-width: 1400px;
+}

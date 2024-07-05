@@ -13,7 +13,7 @@ export default class ServicesManager extends Component {
         super(props);
         this.state = {
             services: [],
-            modalMode: "", // 'add' or 'edit'
+            modalMode: "",
             currentService: { facilityIcon: "", facilityName: "", facilityId: "" },
         };
     }
@@ -109,8 +109,10 @@ export default class ServicesManager extends Component {
     };
 
     handleUpdateServices = () => {
+        const { currentService } = this.state; // Corrected access to currentService in state
+
         axiosInstance
-            .put("/facility/update", this.state.ser, {
+            .put("/facility/update", currentService, {
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -119,15 +121,16 @@ export default class ServicesManager extends Component {
                 if (res.status === 200) {
                     this.fetchAllServices();
                     this.setState({
-                        ser: {
+                        currentService: {
+                            // Corrected state update to currentService
                             facilityId: "",
                             facilityIcon: "",
                             facilityName: "",
                         },
                     });
-                    showAlert("success", "", "Chỉnh sửa ser thành công", "top-end");
+                    showAlert("success", "", "Chỉnh sửa dịch vụ thành công", "top-end"); // Updated success message
                 } else {
-                    showAlert("error", "Lỗi !", "Chỉnh sửa ser không thành công", "top-end");
+                    showAlert("error", "Lỗi !", "Chỉnh sửa dịch vụ không thành công", "top-end"); // Updated error message
                     console.error("Response không thành công:", res.status);
                 }
             })

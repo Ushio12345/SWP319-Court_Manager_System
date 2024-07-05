@@ -186,7 +186,7 @@ export default class Slot extends Component {
 
         return (
             <div>
-                <div className="row">
+                <div className="row py-5">
                     <div className="col-md-8">
                         <button
                             id="btnThemSlot"
@@ -256,8 +256,8 @@ export default class Slot extends Component {
                 </table>
 
                 {/* Nút phân trang */}
-                <nav>
-                    <ul className="pagination">
+                <nav className="">
+                    <ul className="pagination ">
                         {pageNumbers.map((number) => (
                             <li key={number} className="page-item">
                                 <button onClick={this.handlePageChange} id={number} className="page-link">
@@ -335,7 +335,7 @@ export default class Slot extends Component {
                 </div>
 
                 {/* Update modal */}
-                <div className="modal fade" id="updateSlot" tabIndex="-1" aria-labelledby="updateSlotLabel" aria-hidden="true">
+                <div className="modal fade my-5" id="updateSlot" tabIndex="-1" aria-labelledby="updateSlotLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
