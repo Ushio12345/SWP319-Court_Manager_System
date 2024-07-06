@@ -115,10 +115,10 @@ export default function Booking() {
             <SelectCourt court={court} />
             <section className="form-booking">
                 <div className="booking row">
-                    <div className="col-lg-4">
+                    {/* <div className="col-lg-4">
                         <NapGio />
-                    </div>
-                    <div className="col-lg-8">
+                    </div> */}
+                    <div className="col-lg-12">
                         <Slot court={court} />
                     </div>
                 </div>

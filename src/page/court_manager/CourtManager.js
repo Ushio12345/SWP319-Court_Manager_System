@@ -106,6 +106,11 @@ export default class CourtManager extends Component {
                                 <div className="dropdownItem">
                                     <div className="user-infor-dropdown">
                                         <ul className="p-0 m-0">
+                                        <li>
+                                                <a href="/">
+                                                    <i className="fa-solid fa-user"></i> Trang chủ
+                                                </a>
+                                            </li>
                                             <li>
                                                 <a href="/profile">
                                                     <i className="fa-solid fa-user"></i> Hồ sơ

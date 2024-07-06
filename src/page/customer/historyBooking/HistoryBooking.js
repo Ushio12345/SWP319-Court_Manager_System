@@ -79,7 +79,8 @@ export default class HistoryBooking extends Component {
     };
 
     filterBookings = (status) => {
-        return this.state.bookings.filter(booking => booking.statusEnum === status);
+        const filteredBookings = this.state.bookings.filter(booking => booking.statusEnum === status);
+        return filteredBookings;
     }
 
     render() {
@@ -119,7 +120,7 @@ export default class HistoryBooking extends Component {
                         {["showProcessingOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => {
                             const filteredBookings = this.filterBookings(
                                 tab === "showProcessingOrder" ? "Đang chờ xử lý" :
-                                tab === "showCompleteOrder" ? "Đã check-in" :
+                                tab === "showCompleteOrder" ? "Đã hoàn thành" :
                                 "Đã hủy"
                             );
                             return (
@@ -131,9 +132,11 @@ export default class HistoryBooking extends Component {
                                     aria-labelledby={`${tab}-tab`}
                                 >
                                     {filteredBookings.length > 0 ? (
-                                        filteredBookings.map((booking) => (
-                                            <OrderItem key={booking.bookingId} booking={booking} onBookingCancel={this.fetchBookings} />
-                                        ))
+                                        filteredBookings.map((booking) => {                                         
+                                            return (
+                                                <OrderItem key={booking.bookingId} booking={booking} onBookingCancel={this.fetchBookings} />
+                                            );
+                                        })
                                     ) : (
                                         <div className="no-bookings">
                                             <FontAwesomeIcon icon={faInbox} size="3x" />

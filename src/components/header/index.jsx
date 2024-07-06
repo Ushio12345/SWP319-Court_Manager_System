@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./index.css";
 import "../../App.css";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import forbad_logo from "../../assets/images/forbad_logo.png";
 import { NavLink } from "react-router-dom";
+import axiosInstance from "../../config/axiosConfig";
 
 const Header = ({ isLoggedIn, user, handleLogout }) => {
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [showTermsModal, setShowTermsModal] = useState(false);
 
     const toggleDropdown = () => {
         setDropdownVisible(!dropdownVisible);
@@ -16,6 +20,33 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
 
     const hideDropdown = () => {
         setDropdownVisible(false);
+    };
+
+    const handleShowTermsModal = () => {
+        setShowTermsModal(true);
+    };
+
+    const handleCloseTermsModal = () => {
+        setShowTermsModal(false);
+    };
+
+    const handleAcceptTerms = async () => {
+        try {
+            const response = await axiosInstance.put('/member/update-role', { userId: user.userId, role: 'manager' });
+            if (response.status === 200) {
+                const data = response.data;
+
+                localStorage.setItem("user", JSON.stringify(data));
+
+                handleCloseTermsModal();
+                window.location.href = "/court-manager"
+            } else {
+                // Handle non-200 responses if necessary
+                console.error('Failed to update role:', response.status);
+            }
+        } catch (error) {
+            console.error('Failed to update role:', error);
+        }
     };
 
     return (
@@ -46,10 +77,10 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                             {isLoggedIn ? (
                                 <div className="user-info" onClick={toggleDropdown}>
                                     <div className="user d-flex">
-                                        <img src={user.avatar} alt="User Avatar" />
                                         <div className="user-name">
                                             <p>{user.username}</p>
                                         </div>
+                                        <img src={user.avatar} alt="User Avatar" />
                                     </div>
 
                                     {dropdownVisible && (
@@ -61,11 +92,15 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                     </Link>
                                                 </li>
                                                 <li>
-                                                    {isLoggedIn && (
+                                                    {isLoggedIn && user.roles.includes('manager') ? (
                                                         <Link to="/court-manager" onClick={hideDropdown}>
                                                             <i className="fa-solid fa-shop"></i> Cơ sở của tôi
                                                         </Link>
-                                                    )}
+                                                    ) :
+                                                        (<Link onClick={() => { hideDropdown(); handleShowTermsModal(); }}>
+                                                            <i className="fa-solid fa-shop"></i> Đăng ký kinh doanh
+                                                        </Link>)
+                                                    }
                                                 </li>
                                                 <li>
                                                     {isLoggedIn && (
@@ -76,22 +111,10 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                 </li>
                                                 <li>
                                                     {isLoggedIn && (
-                                                        <Link to="/historyOrder" onClick={hideDropdown}>
-                                                            <i class="fa-solid fa-user-minus"></i> Xóa tài khoản
+                                                        <Link onClick={handleLogout}>
+                                                            <i className="fa-solid fa-sign-out"></i> Đăng xuất
                                                         </Link>
                                                     )}
-                                                </li>
-                                                <li>
-                                                    <button
-                                                        className="btn-logout d-flex p-2"
-                                                        style={{ alignItems: "center", justifyContent: "center" }}
-                                                        onClick={() => {
-                                                            hideDropdown();
-                                                            handleLogout();
-                                                        }}
-                                                    >
-                                                        Đăng xuất
-                                                    </button>
                                                 </li>
                                             </ul>
                                         </div>
@@ -111,6 +134,23 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                     </div>
                 </div>
             </section>
+
+            <Modal show={showTermsModal} onHide={handleCloseTermsModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Điều khoản và Điều kiện</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Đây là nội dung điều khoản và điều kiện của bạn...</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseTermsModal}>
+                        Đóng
+                    </Button>
+                    <Button variant="primary" onClick={handleAcceptTerms}>
+                        Chấp nhận và tiếp tục
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

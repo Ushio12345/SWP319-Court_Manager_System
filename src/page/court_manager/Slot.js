@@ -217,7 +217,6 @@ export default class Slot extends Component {
                             <th>Mã slot</th>
                             <th>Tên</th>
                             <th>Thời gian</th>
-                            <th>Giá tiền (VND)</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
@@ -235,7 +234,6 @@ export default class Slot extends Component {
                                     <td className="text-center">{slot.slotId}</td>
                                     <td className="text-center">{slot.slotName}</td>
                                     <td className="text-center">{`${slot.startTime} - ${slot.endTime}`}</td>
-                                    <td className="text-center">{slot.price}</td>
                                     <td className="d-flex btn-action">
                                         <button
                                             className="btn btn-warning mr-2"
@@ -309,18 +307,7 @@ export default class Slot extends Component {
                                         value={this.state.slot.endTime}
                                         onChange={this.handleInputChange}
                                     />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="price">Giá (Đơn vị: VND)</label>
-                                    <input
-                                        id="price"
-                                        name="price"
-                                        className="form-control"
-                                        placeholder="Nhập giá"
-                                        value={this.state.slot.price}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
+                                </div>                        
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-primary" onClick={this.handleAddSlot}>
@@ -373,17 +360,6 @@ export default class Slot extends Component {
                                         className="form-control"
                                         placeholder="Nhập giờ kết thúc"
                                         value={this.state.slot.endTime}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="price">Giá (Đơn vị: VND)</label>
-                                    <input
-                                        id="price"
-                                        name="price"
-                                        className="form-control"
-                                        placeholder="Nhập giá"
-                                        value={this.state.slot.price}
                                         onChange={this.handleInputChange}
                                     />
                                 </div>
