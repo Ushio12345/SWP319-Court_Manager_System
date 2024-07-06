@@ -71,40 +71,6 @@ export default class Staff extends Component {
         }));
     };
 
-    // handleAddStaff = (court_id, staff_id) => {
-    //     const staffToAdd = { ...this.state.newStaff, court_id: this.state.selectedCourt };
-    //     let token = localStorage.getItem("token");
-    //     axiosInstance
-    //         .post(`/court/${court_id}/add-staff/${staff_id}`, staffToAdd,{
-    //             headers: { Authorization: `Bearer ${token}`},
-    //         })
-    //         .then((res) => {
-    //             if(res.status===200){
-    //             this.fetchStaffWithCourtID(court_id);
-    //             this.setState({
-    //                 newStaff: {
-    //                     userId:"",
-    //                     staff_id: "",
-    //                 },
-    //                 showAlert: true,
-    //                 alertMessage: "Thêm nhân viên thành công!",
-    //                 alertType: "success",
-    //             });
-    //             }
-    //             else{
-    //                 showAlert('error', 'Lỗi !', 'Thêm Staff không thành công', 'top-end');
-    //                 console.error("Response không thành công:", res.status);
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             if (error.response && error.response.status === 401 && error.response.data.message === 'Token không hợp lệ hoặc đã hết hạn.') {
-    //                 handleTokenError();
-    //             } else {
-    //                 showAlert('error', 'Lỗi !', 'Thêm Staff không thành công', 'top-end');
-    //             }
-    //             this.handleRequestError(error);
-    //         });
-    // };
 
     handleAddStaff = (staff_id) => {
         const { newStaff, selectedCourt } = this.state;
@@ -153,24 +119,6 @@ export default class Staff extends Component {
             });
     };
 
-    // handleDeleteStaff = (staff_id) => {
-    //     const {selectedCourt} = this.state;
-    //     if (window.confirm("Bạn có muốn xóa nhân viên này không?")) {
-    //         axiosInstance
-    //             .delete(`/court/${selectedCourt}/deleteStaffFromCourt/${staff_id}`)
-    //             .then(() => {
-    //                 this.fetchStaffWithCourtID(selectedCourt);
-    //                 this.setState({
-    //                     showAlert: true,
-    //                     alertMessage: "Xóa Staff thành công!",
-    //                     alertType: "success",
-    //                 });
-    //             })
-    //             .catch((err) => {
-    //                 alert("Có lỗi trong quá trình xóa Staff. Thử lại sau!", err);
-    //             });
-    //     }
-    // };
 
     handleDeleteStaff = (staff_id) => {
         showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa Staff này không?", "Xóa", "center").then((result) => {
@@ -408,86 +356,6 @@ export default class Staff extends Component {
                         </div>
                     </div>
                 </div>
-
-                {/* Update Staff Modal */}
-                {/*<div className="modal fade" id="updateStaff" tabIndex="-1" aria-labelledby="addStaffLabel" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h4 className="modal-title">Cập nhật thông tin nhân viên</h4>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="full_name">Tên nhân viên</label>
-                                    <input
-                                        id="full_name"
-                                        name="full_name"
-                                        className="form-control"
-                                        placeholder="Nhập vào tên nhân viên"
-                                        value={this.state.newStaff.full_name}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="phone_number">Điện thoại</label>
-                                    <input
-                                        id="phone_number"
-                                        name="phone_number"
-                                        className="form-control"
-                                        placeholder="Nhập số điện thoại"
-                                        value={this.state.newStaff.phone_number}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="email">Email</label>
-                                    <input
-                                        id="email"
-                                        name="email"
-                                        className="form-control"
-                                        placeholder="Nhập địa chỉ email"
-                                        type="email"
-                                        value={this.state.newStaff.email}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="court_id_update">Cơ sở làm việc</label>
-                                    <select
-                                        id="court_id_update"
-                                        name="court_id"
-                                        className="form-control"
-                                        value={this.state.newStaff.court_id}
-                                        onChange={this.handleInputChange}
-                                    >
-                                        <option value="">Chọn cơ sở làm việc</option>
-                                        {this.state.courts.map((court) => (
-                                            <option key={court.id} value={court.id}>
-                                                {court.court_name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                {!this.state.isDetailView && (
-                                    <div className="d-flex w-100">
-                                        <button type="button" className="btn btn-success" onClick={this.handleUpdateStaff}>
-                                            Cập nhật
-                                        </button>
-                                    </div>
-                                )}
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                                    Đóng
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>*/}
             </div>
         );
     }
