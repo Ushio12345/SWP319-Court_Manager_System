@@ -249,7 +249,7 @@ export default class Staff extends Component {
                                     <td className="text-center">{staff.email}</td>
                                     <td className="text-center">{staff.fullName}</td>
                                     <td className="text-center">
-                                        <img src={this.state.staff.profileAvatar} alt="Hình ảnh Staff" className="img-fluid" />
+                                        <img src={this.state.newStaff.profileAvatar} alt="Hình ảnh Staff" className="img-fluid" />
                                     </td>
                                     <td className="text-center">{staff.role}</td>
                                     <td className="d-flex">
