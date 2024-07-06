@@ -33,7 +33,7 @@ const CardYard = ({ court }) => {
                 {court.imageUrl && <img src={court.imageUrl} alt="Ảnh Sân" />} {/* Kiểm tra imageUrl trước khi sử dụng */}
             </div>
             <div className="card-yard-content">
-                <h6>
+                <h6 style={{fontSize: '16px'}}>
                     <b>{court.courtName}</b>
                 </h6>
                 <p>

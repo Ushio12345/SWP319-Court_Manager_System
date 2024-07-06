@@ -11,41 +11,15 @@ const OrderItem = ({ booking, onBookingCancel }) => {
     const [feedback, setFeedback] = useState("");
     const [court, setCourt] = useState(null);
 
-    const fetchCourt = useCallback(async (yardId) => {
-        try {
-            const response = await axiosInstance.get(`/yard/${yardId}/court`);
-            setCourt(response.data);
-        } catch (error) {
-            console.error("There was an error!", error);
-        }
-    }, []);
-
     useEffect(() => {
         if (booking?.bookingDetails?.length > 0) {
-            const yardId = booking.bookingDetails[0].yardSchedule.yard.yardId;
-            fetchCourt(yardId);
+            setCourt(booking.court);   
         }
-    }, [booking, fetchCourt]);
-
-    const handleRatingChange = (newRating) => {
-        setRating(newRating);
-    };
-
-    const handleFeedbackChange = (event) => {
-        setFeedback(event.target.value);
-    };
-
-    const handleSubmitFeedback = () => {
-        console.log("Rating:", rating);
-        console.log("Feedback:", feedback);
-        setShowModal(false);
-    };
+    }, [booking]);
 
     const handleCancelBooking = async (bookingId) => {
         try {
-            // const response = await axiosInstance.post(`/paypal/refund?paymentId=${booking.payment.paymentId}&amount=${booking.payment.paymentAmount}`);
-
-            // if (response.data.message === 'Refund successful') {
+        
             showConfirmPayment('Thông báo', 'Bạn có chắc chắn muốn hủy đơn hàng ?', 'warning', 'Chắc chắn rồi', 'Trở lại', 'center')
                 .then(async (result) => {
                     if (result.isConfirmed) {
@@ -56,9 +30,6 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                         } else {
                             alert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'center')
                         }
-                        // } else {
-                        //     alert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'center')
-                        // }
                     } 
                 })
 
@@ -68,7 +39,7 @@ const OrderItem = ({ booking, onBookingCancel }) => {
     };
 
     if (!court) {
-        return <div>Đang tải...</div>; // Or a loading component based on your design
+        return <div>Đang tải...</div>; 
     }
 
     return (
@@ -83,7 +54,7 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                 <div className="orderItem-body">
                     <div className="infor-court py-3">
                         <div className="img-court w-48">
-                            <img src={court.image} alt="court" />
+                            <img src={court.imageUrl} alt="court" />
                         </div>
                         <div className="order-detail ms-3">
                             <p><b>Thời gian đặt đơn:</b> {booking.bookingDate}</p>
@@ -114,7 +85,7 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                         <Modal.Title>Chi tiết đơn</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {booking.statusEnum && (
+                        {booking.statusEnum && booking.bookingDetails.length > 0 && (
                             <table className="table table-borderless">
                                 <thead>
                                     <tr>
