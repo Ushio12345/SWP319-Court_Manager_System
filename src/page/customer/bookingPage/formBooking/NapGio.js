@@ -93,7 +93,7 @@ const NapGio = ({ priceList, courtId }) => {
                         </div>
                         <div className="input-group-item">
                             <label htmlFor="price">Số tiền:</label>
-                            <div className="input-text" style={{ color: priceColor }}><b>{totalPrice.toLocaleString()} VND</b></div>
+                            <div className="input-text" style={{ color: priceColor }}><b>{totalPrice.toLocaleString('vi-VN')} VND</b></div>
                         </div>
                     </div>
                 </div>

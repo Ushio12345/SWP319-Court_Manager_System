@@ -1,0 +1,19 @@
+.status-chua-xu-ly {
+    background-color: #ffc107; /* Màu vàng */
+    color: #000; /* Màu chữ đen */
+}
+
+.status-chua-check-in {
+    background-color: #17a2b8; /* Màu xanh da trời */
+    color: #fff; /* Màu chữ trắng */
+}
+
+.status-da-hoan-thanh {
+    background-color: #28a745; /* Màu xanh lá cây */
+    color: #fff; /* Màu chữ trắng */
+}
+
+.status-da-huy {
+    background-color: #dc3545; /* Màu đỏ */
+    color: #fff; /* Màu chữ trắng */
+}
