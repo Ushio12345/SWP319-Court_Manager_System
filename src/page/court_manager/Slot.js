@@ -13,6 +13,8 @@ export default class Slot extends Component {
             endTime: "",
             price: "",
         },
+        currentPage: 1,
+        slotsPerPage: 5,
     };
 
     componentDidMount() {
@@ -163,10 +165,28 @@ export default class Slot extends Component {
         console.error("Lỗi từ server:", error.response.data);
     };
 
+    // Xử lý thay đổi trang
+    handlePageChange = (event) => {
+        this.setState({ currentPage: Number(event.target.id) });
+    };
+
     render() {
+        const { slots, currentPage, slotsPerPage } = this.state;
+
+        // Tính toán các slot hiện tại
+        const indexOfLastSlot = currentPage * slotsPerPage;
+        const indexOfFirstSlot = indexOfLastSlot - slotsPerPage;
+        const currentSlots = slots.slice(indexOfFirstSlot, indexOfLastSlot);
+
+        // Tạo các nút phân trang
+        const pageNumbers = [];
+        for (let i = 1; i <= Math.ceil(slots.length / slotsPerPage); i++) {
+            pageNumbers.push(i);
+        }
+
         return (
             <div>
-                <div className="row">
+                <div className="row py-5">
                     <div className="col-md-8">
                         <button
                             id="btnThemSlot"
@@ -197,25 +217,23 @@ export default class Slot extends Component {
                             <th>Mã slot</th>
                             <th>Tên</th>
                             <th>Thời gian</th>
-                            <th>Giá tiền (VND)</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.slots.length === 0 ? (
+                        {currentSlots.length === 0 ? (
                             <tr>
                                 <td colSpan="7" className="text-center">
                                     Danh sách slot trống
                                 </td>
                             </tr>
                         ) : (
-                            this.state.slots.map((slot, index) => (
-                                <tr className="" key={slot.courtId}>
+                            currentSlots.map((slot, index) => (
+                                <tr className="" key={slot.slotId}>
                                     <td className="text-center">{index + 1}</td>
                                     <td className="text-center">{slot.slotId}</td>
                                     <td className="text-center">{slot.slotName}</td>
                                     <td className="text-center">{`${slot.startTime} - ${slot.endTime}`}</td>
-                                    <td className="text-center">{slot.price}</td>
                                     <td className="d-flex btn-action">
                                         <button
                                             className="btn btn-warning mr-2"
@@ -234,6 +252,19 @@ export default class Slot extends Component {
                         )}
                     </tbody>
                 </table>
+
+                {/* Nút phân trang */}
+                <nav className="">
+                    <ul className="pagination ">
+                        {pageNumbers.map((number) => (
+                            <li key={number} className="page-item">
+                                <button onClick={this.handlePageChange} id={number} className="page-link">
+                                    {number}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
 
                 {/* Modal Thêm Mới Slot */}
                 <div className="modal fade" id="addNewSlot" tabIndex="-1" aria-labelledby="addSlotLabel" aria-hidden="true">
@@ -276,18 +307,7 @@ export default class Slot extends Component {
                                         value={this.state.slot.endTime}
                                         onChange={this.handleInputChange}
                                     />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="price">Giá (Đơn vị: VND)</label>
-                                    <input
-                                        id="price"
-                                        name="price"
-                                        className="form-control"
-                                        placeholder="Nhập giá"
-                                        value={this.state.slot.price}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
+                                </div>                        
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-primary" onClick={this.handleAddSlot}>
@@ -302,7 +322,7 @@ export default class Slot extends Component {
                 </div>
 
                 {/* Update modal */}
-                <div className="modal fade" id="updateSlot" tabIndex="-1" aria-labelledby="updateSlotLabel" aria-hidden="true">
+                <div className="modal fade my-5" id="updateSlot" tabIndex="-1" aria-labelledby="updateSlotLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -340,17 +360,6 @@ export default class Slot extends Component {
                                         className="form-control"
                                         placeholder="Nhập giờ kết thúc"
                                         value={this.state.slot.endTime}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="price">Giá (Đơn vị: VND)</label>
-                                    <input
-                                        id="price"
-                                        name="price"
-                                        className="form-control"
-                                        placeholder="Nhập giá"
-                                        value={this.state.slot.price}
                                         onChange={this.handleInputChange}
                                     />
                                 </div>

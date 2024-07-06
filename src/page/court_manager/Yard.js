@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-import { showAlert } from "../../utils/alertUtils";
+import { showAlert, showConfirmAlert } from "../../utils/alertUtils";
 import axiosInstance from "../../config/axiosConfig";
+
 import { handleTokenError } from "../../utils/tokenErrorHandle";
 import "./manager.css";
+import { event } from "jquery";
 
 export default class Yard extends Component {
     state = {
@@ -18,8 +20,11 @@ export default class Yard extends Component {
         selectedYard: "",
         slotInYard: [],
         showModal: false,
+        isEditing: false,
+        currentPage: 1,
+        itemsPerPage: 5,
+        searchSlot: "",
     };
-
     componentDidMount() {
         this.fetchCourts();
         this.fetchSlotOfCourt();
@@ -30,7 +35,10 @@ export default class Yard extends Component {
             .get("/court/courts-of-owner")
             .then((res) => {
                 if (res.status === 200) {
-                    this.setState({ courts: res.data });
+                    const firstCourt = res.data[0];
+                    this.setState({ courts: res.data, selectedCourt: firstCourt.courtId, selectedCourtName: firstCourt.courtName }, () => {
+                        this.fetchYardWithCourtID(firstCourt.courtId);
+                    });
                 } else {
                     this.handleRequestError(res);
                 }
@@ -65,7 +73,12 @@ export default class Yard extends Component {
             .get(`/yard/findAllYard?courtId=${selectedCourt}`)
             .then((res) => {
                 if (res.status === 200) {
-                    this.setState({ yards: res.data });
+                    const firstYard = res.data[0];
+                    this.setState({ yards: res.data, selectedYard: firstYard ? firstYard.yardId : "" }, () => {
+                        if (firstYard) {
+                            this.fetchSlotWithYard(firstYard.yardId);
+                        }
+                    });
                 } else {
                     this.handleRequestError(res);
                 }
@@ -80,7 +93,15 @@ export default class Yard extends Component {
             .get(`/yard-schedule/getAllByYardId/${yardId}`)
             .then((res) => {
                 if (res.status === 200) {
-                    this.setState({ slotInYard: res.data });
+                    const filteredSlots = res.data.filter((slot) => {
+                        const keyword = this.state.searchSlot.toLowerCase();
+                        return (
+                            slot.slotName.toLowerCase().includes(keyword) ||
+                            slot.startTime.toLowerCase().includes(keyword) ||
+                            slot.endTime.toLowerCase().includes(keyword)
+                        );
+                    });
+                    this.setState({ slotInYard: filteredSlots });
                 } else {
                     this.handleRequestError(res);
                 }
@@ -129,6 +150,82 @@ export default class Yard extends Component {
                 this.handleRequestError(error);
             });
     };
+    handleAddYard = () => {
+        const newYardName = this.state.newYard.yardName.trim();
+
+        if (!newYardName) {
+            showAlert("error", "Lỗi!", "Vui lòng nhập tên sân cần thêm.", "top-end");
+            return;
+        }
+
+        const { selectedCourt } = this.state;
+
+        axiosInstance
+            .post("/yard/createyard", { courtId: selectedCourt, yardName: newYardName })
+            .then((res) => {
+                if (res.status === 200) {
+                    showAlert("success", "Thành công!", "Đã thêm sân mới.", "top-end");
+                    this.fetchYardWithCourtID(selectedCourt); // Refresh yards after addition
+                    this.setState({ newYard: { yardId: "", yardName: "" } }); // Clear input after addition
+                } else {
+                    this.handleRequestError(res);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
+    };
+
+    handleEditYard = () => {
+        const { newYard } = this.state;
+        if (!newYard.yardId || !newYard.yardName.trim()) {
+            showAlert("error", "Lỗi!", "Vui lòng chọn sân và nhập tên sân mới.", "top-end");
+            return;
+        }
+
+        axiosInstance
+            .put(`/yard/updateyard`, { yardId: newYard.yardId, yardName: newYard.yardName })
+            .then((res) => {
+                if (res.status === 200) {
+                    showAlert("success", "Thành công!", "Đã cập nhật sân.", "top-end");
+                    this.fetchYardWithCourtID(this.state.selectedCourt); // Refresh yards after update
+                    this.setState({ newYard: { yardId: "", yardName: "" }, isEditing: false }); // Clear input after update
+                } else {
+                    this.handleRequestError(res);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
+    };
+    handleEditYard = () => {
+        const { newYard } = this.state;
+        if (!newYard.yardId || !newYard.yardName.trim()) {
+            showAlert("error", "Lỗi!", "Vui lòng chọn sân và nhập tên sân mới.", "top-end");
+            return;
+        }
+
+        axiosInstance
+            .put(`/yard/updateyard`, { yardId: newYard.yardId, yardName: newYard.yardName })
+            .then((res) => {
+                if (res.status === 200) {
+                    showAlert("success", "Thành công!", "Đã cập nhật sân.", "top-end");
+                    this.fetchYardWithCourtID(this.state.selectedCourt); // Refresh yards after update
+                    this.setState({ newYard: { yardId: "", yardName: "" }, isEditing: false }); // Clear input after update
+                } else {
+                    this.handleRequestError(res);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
+    };
+    handleSearchSlotWithNameOrTime = (e) => {
+        const searchSlot = e.target.value;
+        this.setState({ searchSlot }, () => {
+            this.fetchSlotWithYard(this.state.selectedYard);
+        });
+    };
     deleteSlotForYard = (slotId) => {
         const { selectedYard } = this.state;
 
@@ -139,6 +236,7 @@ export default class Yard extends Component {
 
         axiosInstance
             .delete(`/yard-schedule/${selectedYard}/deleteSlotFromYard/${slotId}`)
+
             .then((res) => {
                 if (res.status === 200) {
                     showAlert("success", "Thành công!", "Đã xóa slot khỏi sân.", "top-end");
@@ -166,8 +264,8 @@ export default class Yard extends Component {
             .then((res) => {
                 if (res.status === 200) {
                     showAlert("success", "Thành công!", "Đã thêm sân mới.", "top-end");
-                    // Optionally update state or fetch data
-                    this.fetchYardWithCourtID(selectedCourt); // Refresh yards after addition
+
+                    this.fetchYardWithCourtID(selectedCourt);
                 } else {
                     this.handleRequestError(res);
                 }
@@ -207,32 +305,64 @@ export default class Yard extends Component {
 
     renderYardWithCourt = () => {
         return this.state.yards.map((yard) => (
-            <button
-                key={yard.yardId}
-                className={`yardBtn btn m-2 p-2 ${this.state.selectedYard === yard.yardId ? "active" : ""}`}
-                onClick={() => this.handleYardClick(yard.yardId)}
-            >
-                {yard.yardName}
-            </button>
+            <div key={yard.yardId} className="d-flex align-items-center">
+                <button
+                    className={`yardBtn btn m-2 p-2 ${this.state.selectedYard === yard.yardId ? "active" : ""}`}
+                    onClick={() => this.handleYardClick(yard.yardId)}
+                >
+                    {yard.yardName}
+                </button>
+            </div>
         ));
     };
 
+    handlePageChange = (pageNumber) => {
+        this.setState({ currentPage: pageNumber });
+    };
+
     renderSlotInYard = () => {
-        return this.state.slotInYard.map((slot, index) => (
-            <tr key={slot.slotId}>
-                <td>{index + 1}</td>
-                <td>{slot.slotName}</td>
+        const { slotInYard, currentPage, itemsPerPage } = this.state;
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        const currentSlots = slotInYard.slice(indexOfFirstItem, indexOfLastItem);
+
+        return currentSlots.map((slot, index) => (
+            <tr key={slot.id}>
+                <td className="text-center">{index + 1}</td>
+                <td className="text-center">{slot.slotName}</td>
                 <td className="text-center">
                     {slot.startTime} - {slot.endTime}
                 </td>
                 <td className="text-center">{slot.price}</td>
                 <td className="text-center">
-                    <button className="btn btn-danger" onClick={() => this.deleteSlotForYard(slot.slotId)}>
-                        <i className="fa fa-trash" />
+                    <button className="btn btn-danger" onClick={() => this.deleteSlotForYard(slot.id)}>
+                        Xóa
                     </button>
                 </td>
             </tr>
         ));
+    };
+
+    renderPagination = () => {
+        const { slotInYard, currentPage, itemsPerPage } = this.state;
+        const pageNumbers = [];
+        for (let i = 1; i <= Math.ceil(slotInYard.length / itemsPerPage); i++) {
+            pageNumbers.push(i);
+        }
+
+        return (
+            <nav>
+                <ul className="pagination">
+                    {pageNumbers.map((number) => (
+                        <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
+                            <a onClick={() => this.handlePageChange(number)} className="page-link">
+                                {number}
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+        );
     };
 
     renderSlotYardHaveNot = () => {
@@ -253,7 +383,93 @@ export default class Yard extends Component {
             ));
     };
 
+    handleEditYard = () => {
+        const { selectedYard, newYard } = this.state;
+        if (!selectedYard || !newYard.yardName.trim()) {
+            showAlert("error", "Lỗi!", "Vui lòng chọn sân và nhập tên sân mới.", "top-end");
+            return;
+        }
+
+        axiosInstance
+            .put(`/yard/updateyard`, { yardId: selectedYard, yardName: newYard.yardName })
+            .then((res) => {
+                if (res.status === 200) {
+                    showAlert("success", "Thành công!", "Đã cập nhật sân.", "top-end");
+                    this.fetchYardWithCourtID(this.state.selectedCourt);
+                    this.toggleModal();
+                } else {
+                    this.handleRequestError(res);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
+    };
+
+    handleDeleteYard = (yardId) => {
+        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa sân này không?", "Xóa", "center").then((result) => {
+            if (result.isConfirmed) {
+                let token = localStorage.getItem("token");
+                const deleteYard = () => {
+                    axiosInstance
+                        .delete(`/yard/delete/${yardId}`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        })
+                        .then((res) => {
+                            if (res.status === 200) {
+                                this.fetchYardWithCourtID(this.state.selectedCourt);
+                                showAlert("success", "", "Đã xóa sân thành công", "top-end");
+                            } else {
+                                showAlert("error", "", "Xóa sân không thành công", "top-end");
+                            }
+                        })
+                        .catch((error) => {
+                            if (
+                                error.response &&
+                                error.response.status === 401 &&
+                                error.response.data.message === "Token không hợp lệ hoặc đã hết hạn."
+                            ) {
+                                handleTokenError();
+                            } else {
+                                showAlert("error", "", "Xóa sân không thành công", "top-end");
+                            }
+                            console.error("Response không thành công:", error);
+                        });
+                };
+
+                // Call deleteYard function after confirmation
+                deleteYard();
+            }
+        });
+    };
+
+    handleEditYard = () => {
+        const { selectedYard, newYard } = this.state;
+        if (!selectedYard || !newYard.yardName.trim()) {
+            showAlert("error", "Lỗi!", "Vui lòng chọn sân và nhập tên sân mới.", "top-end");
+            return;
+        }
+
+        axiosInstance
+            .put(`/yard/updateyard`, { yardId: selectedYard, yardName: newYard.yardName })
+            .then((res) => {
+                if (res.status === 200) {
+                    showAlert("success", "Thành công!", "Đã cập nhật sân.", "top-end");
+                    this.fetchYardWithCourtID(this.state.selectedCourt);
+                    this.setState({ newYard: { yardId: "", yardName: "" }, isEditing: false });
+                } else {
+                    this.handleRequestError(res);
+                }
+            })
+            .catch((error) => {
+                this.handleRequestError(error);
+            });
+    };
+
     render() {
+        const { selectedYard } = this.state;
         return (
             <div className="yardManager">
                 <div>
@@ -272,6 +488,8 @@ export default class Yard extends Component {
                                 placeholder="Nhập từ khóa"
                                 aria-label="Recipient's username"
                                 aria-describedby="basic-addon2"
+                                value={this.state.searchSlot}
+                                onChange={this.handleSearchSlotWithNameOrTime}
                             />
                             <div className="input-group-append">
                                 <span className="input-group-text" id="basic-addon2">
@@ -286,14 +504,14 @@ export default class Yard extends Component {
                         <button className="btn btn-primary w-25" data-bs-toggle="modal" data-bs-target="#modalDsSlot">
                             <i className="fa-solid fa-plus"></i> Thêm slot
                         </button>
-                        <div className="d-flex w-50">
+                        <div className="w-50 input-group d-flex">
                             <input
-                                className=" bg-light "
+                                className=" bg-light form-control "
                                 style={{
                                     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
                                     alignItems: "center",
                                     fontSize: 12,
-                                    width: "300px",
+
                                     justifyContent: "end",
                                 }}
                                 type="text"
@@ -301,27 +519,48 @@ export default class Yard extends Component {
                                 value={this.state.newYard.yardName}
                                 onChange={(e) => this.setState({ newYard: { ...this.state.newYard, yardName: e.target.value } })}
                             />
-                            <button type="button" className="m-0 bg-gray-200 p-2" onClick={this.handleAddYard}>
+                            <button type="button" className=" btn btn-outline-primary w-25 m-0" onClick={this.handleAddYard}>
                                 Thêm sân
+                            </button>
+                            <button class="btn btn-outline-success w-25 m-0 p-0 " type="button " onClick={this.handleEditYard}>
+                                Chỉnh sửa
                             </button>
                         </div>
                     </div>
-                    <table className="table table-hover mt-4">
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Tên slot</th>
-                                <th className="text-center">Thời gian</th>
-                                <th className="text-center">Giá tiền/Slot</th>
-                                <th className="text-center">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>{this.renderSlotInYard()}</tbody>
-                    </table>
+                    {selectedYard && (
+                        <div>
+                            <table className="table table-hover mt-4">
+                                <thead>
+                                    <tr>
+                                        <th colSpan={5}>Thông tin các slot trong sân ID: {selectedYard} </th>
+                                    </tr>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên slot</th>
+                                        <th className="text-center">Thời gian</th>
+                                        <th className="text-center">Giá tiền/Slot</th>
+                                        <th className="text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>{this.renderSlotInYard()}</tbody>
+                            </table>
+                            {this.renderPagination()}
+                            <div className="d-flex">
+                                <button className="btn btn-danger w-25" onClick={() => this.handleDeleteYard(this.state.selectedYard)}>
+                                    Xóa sân
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    {!selectedYard && (
+                        <div className="mt-4">
+                            <p>Chưa có sân được chọn hoặc không có sân nào trong cơ sở này.</p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="modal fade" id="modalDsSlot" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div className="modal-dialog">
+                    <div className="modal-dialog" style={{ marginTop: 65 }}>
                         <div className="modal-content">
                             <div className="modal-header">
                                 <h5 className="modal-title" id="exampleModalLabel">

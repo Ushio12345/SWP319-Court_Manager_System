@@ -449,7 +449,7 @@ ul li {
     width: 100%;
     box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
     background-color: rgba(39, 38, 38, 0.9058823529);
-
+    z-index: 9999;
     height: 60px;
     position: fixed;
 }
@@ -991,4 +991,43 @@ form h1 {
 }
 .slick-next::before {
     margin-left: 50px;
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+}
+
+/* .pagination li {
+    margin: 0 4px;
+    display: inline-block;
+} */
+
+/* .pagination li a,
+.pagination li span {
+    color: #333;
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    transition: background-color 0.3s ease;
+} */
+
+/* .pagination li a:hover,
+.pagination li span.current {
+    background-color: #f0f0f0;
+} */
+.page-item button {
+    padding: 10px;
+}
+.page-item button.active {
+    padding: 10px;
+    background-color: #1f1f6a;
+}
+.pagination .disabled {
+    pointer-events: none;
+    opacity: 0.6;
+    background-color: grey;
 }
