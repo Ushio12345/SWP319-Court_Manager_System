@@ -17,7 +17,7 @@ import Rule from "./page/customer/rules/Rule";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./page/customer/profile/Profile";
 import AdminPage from "./page/admin/adminPage/AdminPage";
-
+import StaffPage from "./page/staff/StaffPage";
 function App() {
     return (
         <Router>
@@ -48,6 +48,14 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
+                <Route
+                    path="/staff"
+                    element={
+                        <ProtectedRoute>
+                            <StaffPage />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path="/aboutUs" element={<GioiThieu />} />
                 <Route path="/contact" element={<LienHe />} />
                 <Route
@@ -58,14 +66,7 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-                <Route
-                    path="/rules"
-                    element={
-      
-                            <Rule />
-
-                    }
-                />
+                <Route path="/rules" element={<Rule />} />
                 <Route
                     path="/profile"
                     element={

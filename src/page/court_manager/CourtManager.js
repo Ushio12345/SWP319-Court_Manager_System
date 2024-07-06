@@ -12,6 +12,7 @@ import Order from "./Order";
 import Slot from "./Slot";
 import axiosInstance from "../../config/axiosConfig";
 import Dashboard from "./Dashboard";
+import PriceBoardManager from "./PriceBoardManager";
 
 export default class CourtManager extends Component {
     constructor(props) {
@@ -181,6 +182,14 @@ export default class CourtManager extends Component {
                                             <span className="title">Quản lý tiện ích sân</span>
                                         </a>
                                     </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#dsPrice" data-bs-toggle="tab">
+                                            <span className="icon">
+                                                <i class="fa-solid fa-money-bill"></i>
+                                            </span>
+                                            <span className="title">Quản lý bảng giá</span>
+                                        </a>
+                                    </li>
                                     <a className="w-75 logout m-auto " href="/">
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
@@ -223,6 +232,9 @@ export default class CourtManager extends Component {
                                 </div>
                                 <div className="tab-pane fade" id="dsSlot" role="tabpanel">
                                     <Slot fetchCourts={this.fetchCourts} selectedCourtId={selectedCourtId} />
+                                </div>
+                                <div className="tab-pane fade" id="dsPrice" role="tabpanel">
+                                    <PriceBoardManager fetchCourts={this.fetchCourts} selectedCourtId={selectedCourtId} />
                                 </div>
                             </div>
                         </div>

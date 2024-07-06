@@ -312,6 +312,7 @@ export default class Yard extends Component {
                 >
                     {yard.yardName}
                 </button>
+                <div className="d-flex"></div>
             </div>
         ));
     };
@@ -333,7 +334,7 @@ export default class Yard extends Component {
                 <td className="text-center">
                     {slot.startTime} - {slot.endTime}
                 </td>
-                <td className="text-center">{slot.price}</td>
+
                 <td className="text-center">
                     <button className="btn btn-danger" onClick={() => this.deleteSlotForYard(slot.id)}>
                         Xóa
@@ -499,8 +500,7 @@ export default class Yard extends Component {
                         </div>
                     </div>
 
-                    <div className="yardWithCourtID grid grid-cols-6 gap-1 mt-4">{this.renderYardWithCourt()}</div>
-                    <div className="d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
+                    <div className="d-flex my-4" style={{ alignItems: "center", justifyContent: "space-between" }}>
                         <button className="btn btn-primary w-25" data-bs-toggle="modal" data-bs-target="#modalDsSlot">
                             <i className="fa-solid fa-plus"></i> Thêm slot
                         </button>
@@ -528,28 +528,31 @@ export default class Yard extends Component {
                         </div>
                     </div>
                     {selectedYard && (
-                        <div>
-                            <table className="table table-hover mt-4">
-                                <thead>
-                                    <tr>
-                                        <th colSpan={5}>Thông tin các slot trong sân ID: {selectedYard} </th>
-                                    </tr>
-                                    <tr>
-                                        <th>STT</th>
-                                        <th>Tên slot</th>
-                                        <th className="text-center">Thời gian</th>
-                                        <th className="text-center">Giá tiền/Slot</th>
-                                        <th className="text-center">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody>{this.renderSlotInYard()}</tbody>
-                            </table>
-                            {this.renderPagination()}
-                            <div className="d-flex">
-                                <button className="btn btn-danger w-25" onClick={() => this.handleDeleteYard(this.state.selectedYard)}>
+                        <div className="row">
+                            <div className="yardWithCourtID col-lg-3 ">
+                                {this.renderYardWithCourt()}
+                                <button className="btn btn-danger w-100 " onClick={() => this.handleDeleteYard(this.state.selectedYard)}>
                                     Xóa sân
                                 </button>
                             </div>
+                            <div className="col-lg-9">
+                                <table className="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th colSpan={5}>Thông tin các slot trong sân ID: {selectedYard} </th>
+                                        </tr>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Tên slot</th>
+                                            <th className="text-center">Thời gian</th>
+
+                                            <th className="text-center">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>{this.renderSlotInYard()}</tbody>
+                                </table>
+                            </div>
+                            {this.renderPagination()}
                         </div>
                     )}
                     {!selectedYard && (
