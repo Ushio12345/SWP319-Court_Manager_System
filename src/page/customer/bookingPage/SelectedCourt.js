@@ -70,9 +70,6 @@ export default class selectedCourt extends Component {
                             <p>
                                 Giờ hoạt động: <span>{court.openTime} - {court.closeTime}</span>
                             </p>
-                            <p>
-                                Giá tiền/giờ: <span>50.000 - 75.000</span>
-                            </p>
                             <div className="yard-service row">
                                 <h4>Dịch vụ tiện ích</h4>
                                 {facilities.length > 0 ? (

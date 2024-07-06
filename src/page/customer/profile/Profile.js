@@ -14,9 +14,11 @@ export default class Profile extends Component {
                 avatar: "",
                 email: ""
             },
+            password: "",
             errors: {
                 username: "",
-                email: ""
+                email: "",
+                password: ""
             },
         };
     }
@@ -63,6 +65,10 @@ export default class Profile extends Component {
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!value.match(emailPattern)) {
                     error = "Vui lòng nhập email hợp lệ";
+                }
+            } else if (name === "password") {
+                if (value.length < 8) {
+                    error = "Mật khẩu phải có ít nhất 8 ký tự";
                 }
             }
         }
@@ -116,6 +122,7 @@ export default class Profile extends Component {
 
     validateForm = () => {
         const { username, email } = this.state.user;
+        const password = this.state;
         const errors = {};
 
         if (username.length === 0) {
@@ -125,6 +132,10 @@ export default class Profile extends Component {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email.match(emailPattern)) {
             errors.email = "Vui lòng nhập email hợp lệ";
+        }
+
+        if (password.length < 6) {
+            errors.password = "Mật khẩu phải có ít nhất 6 ký tự";
         }
 
         this.setState({ errors });
@@ -176,10 +187,40 @@ export default class Profile extends Component {
                                 name="email"
                                 value={user.email}
                                 onChange={this.handleInputChange}
+                                readOnly
                             />
                             {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                         </div>
-
+                        <div className="mb-2 d-flex align-items-center">
+                            <div className="flex-grow-1">
+                                <label htmlFor="password" className="form-label">
+                                    Mật khẩu:
+                                </label>
+                                <input
+                                    type="password"
+                                    className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                                    id="password"
+                                    name="password"
+                                    value="********"
+                                    onChange={this.handleInputChange}
+                                />
+                                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                            </div>
+                            {/* <div className="flex-grow-1">
+                                <label htmlFor="password" className="form-label">
+                                    Mật khẩu:
+                                </label>
+                                <input
+                                    type=""
+                                    className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                                    id="password"
+                                    name="password"
+                                    value="********"
+                                    onChange={this.handleInputChange}
+                                />
+                                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                            </div> */}
+                        </div>
                         <button className="btn btn-primary m-0 p-2" type="submit">
                             Cập nhật thay đổi
                         </button>

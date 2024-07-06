@@ -16,6 +16,8 @@ const DetailBooking = () => {
         roles: [],
     });
 
+    const [isPaypalSelected, setIsPaypalSelected] = useState(false);
+
     const goBack = () => {
         window.history.back();
     };
@@ -23,15 +25,15 @@ const DetailBooking = () => {
     const handlePaymentSuccess = async () => {
         try {
             const urlParams = new URLSearchParams(window.location.search);
-        const paymentId = urlParams.get('paymentId');
-        const PayerID = urlParams.get('PayerID');
-        const bookingData = JSON.parse(localStorage.getItem("booking"));
+            const paymentId = urlParams.get('paymentId');
+            const PayerID = urlParams.get('PayerID');
+            const bookingData = JSON.parse(localStorage.getItem("booking"));
 
-        if (!paymentId || !PayerID) {
-            throw new Error('Missing paymentId or PayerID');
-        }
+            if (!paymentId || !PayerID) {
+                throw new Error('Missing paymentId or PayerID');
+            }
 
-        const response = await axiosInstance.get(`/paypal/success?paymentId=${paymentId}&PayerID=${PayerID}`);
+            const response = await axiosInstance.get(`/paypal/success?paymentId=${paymentId}&PayerID=${PayerID}`);
             if (response.data.message === 'Payment successful') {
                 const bookingResponse = await axiosInstance.post(`/booking/success/${paymentId}`, bookingData);
                 if (bookingResponse.data.message === 'Đã đặt lịch thành công.') {
@@ -90,13 +92,13 @@ const DetailBooking = () => {
     }, []);
 
     if (!booking) {
-        return <div>Loading...</div>; // Hoặc một component loading tùy thuộc vào thiết kế của bạn
+        return <div>Loading...</div>;
     }
 
     const getExchangeRate = async () => {
         const API_KEY = 'a2ebea95ae9c3ce5ae387b15';
         const BASE_URL = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`;
-    
+
         try {
             const response = await axios.get(BASE_URL);
             if (response.status === 200) {
@@ -204,31 +206,51 @@ const DetailBooking = () => {
                                 <p>{booking.bookingType}</p>
                             </div>
                         </div>
-
-                        <div className="mb-1 infoOfBooking mt-3 py-2">
-                            <table className="table table-borderless">
-                                <thead>
-                                    <tr>
-                                        <th>Slot</th>
-                                        <th>Ngày check-in</th>
-                                        <th>Sân</th>
-                                        <th>Giá tiền</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {bookingDetailsList
-                                        .sort((a, b) => a.yardSchedule.slot.slotName.localeCompare(b.yardSchedule.slot.slotName))
-                                        .map((bookingDetail, index) => (
-                                            <tr key={index}>
-                                                <td>{bookingDetail.yardSchedule.slot.slotName}</td>
-                                                <td>{bookingDetail.date}</td>
-                                                <td>{bookingDetail.yardSchedule.yard.yardName}</td>
-                                                <td>{bookingDetail.yardSchedule.slot.price} VND</td>
-                                            </tr>
-                                        ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        {booking.bookingType !== "Lịch linh hoạt" ? (
+                            <div className="mb-1 infoOfBooking mt-3 py-2">
+                                <table className="table table-borderless">
+                                    <thead>
+                                        <tr>
+                                            <th>Slot</th>
+                                            <th>Ngày check-in</th>
+                                            <th>Sân</th>
+                                            <th>Giá tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {bookingDetailsList
+                                            .sort((a, b) => a.yardSchedule.slot.slotName.localeCompare(b.yardSchedule.slot.slotName))
+                                            .map((bookingDetail, index) => (
+                                                <tr key={index}>
+                                                    <td>{bookingDetail.yardSchedule.slot.slotName}</td>
+                                                    <td>{bookingDetail.date}</td>
+                                                    <td>{bookingDetail.yardSchedule.yard.yardName}</td>
+                                                    <td>{bookingDetail.yardSchedule.slot.price} VND</td>
+                                                </tr>
+                                            ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <>
+                            <div className="mb-1 row ">
+                                <label htmlFor="" className="col-lg-5 col-form-label">
+                                    Tổng số giờ đăng ký:
+                                </label>
+                                <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
+                                    <p>{booking.flexibleBooking.availableHours}</p>
+                                </div>
+                            </div>
+                            <div className="mb-1 row ">
+                                <label htmlFor="" className="col-lg-5 col-form-label">
+                                    Ngày hết hạn:
+                                </label>
+                                <div className="col-lg-7 " style={{ display: "flex", alignItems: "center" }}>
+                                    <p>{booking.flexibleBooking.expirationDate}</p>
+                                </div>
+                            </div>
+                            </>
+                        )}
                     </div>
                     <div className="col-lg-4 info-customer">
                         <h4>Thanh toán</h4>
@@ -247,13 +269,16 @@ const DetailBooking = () => {
                                 Thanh toán bằng
                             </label>
                             <div className="col-lg-6 pay mb-5" style={{ display: "flex", alignItems: "center" }}>
-                                <input type="radio"></input>
+                                <input type="radio" onChange={() => setIsPaypalSelected(true)}></input>
                                 <label className="d-flex ms-3" style={{ display: "flex", alignItems: "center" }}>
                                     <i class="fa-brands fa-paypal"></i>
                                     <p>Paypal</p>
                                 </label>
                             </div>
-                            <button className="btn btn-primary m-0 p-2" style={{ display: "flex", alignItems: "center", justifyContent: "center" }} onClick={initiatePayment}>
+                            <button className="btn btn-primary m-0 p-2"
+                                style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                                onClick={initiatePayment} disabled={!isPaypalSelected}
+                            >
                                 Xác nhận
                             </button>
                         </div>

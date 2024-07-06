@@ -118,14 +118,6 @@ const CourtList = () => {
 
     return (
         <section className="yard">
-            <h1 className="m-4">CÁC SÂN CẦU LÔNG ĐƯỢC YÊU THÍCH</h1>
-            <div className="container w-4/5">
-                <Slider {...settings} className="list-yard favorite-yard">
-                    {courts.slice(0, 10).map((court) => (
-                        <CardYard key={court.courtId} court={court} />
-                    ))}
-                </Slider>
-            </div>
             <h1 className="m-4">CÁC SÂN CẦU LÔNG MỚI</h1>
             <div className="container w-4/5">
                 <Slider {...settings} className="list-yard showNewYard">
