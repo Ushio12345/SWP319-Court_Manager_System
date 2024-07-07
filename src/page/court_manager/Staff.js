@@ -145,7 +145,7 @@ export default class Staff extends Component {
                     })
                     .catch((error) => {
                         handleTokenError(error);
-                        showAlert("error", "", "Có lỗi trong quá trình xóa", "center");
+                        showAlert("error", "", "Không thể xóa được sân", "center");
                     });
             }
         });
