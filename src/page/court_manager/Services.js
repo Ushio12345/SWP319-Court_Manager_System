@@ -13,7 +13,7 @@ export default class Services extends Component {
         facilityOfCourt: [],
     };
 
-    componentDidMount() {   
+    componentDidMount() {
         this.fetchServices();
         this.fetchCourts();
     }
@@ -126,7 +126,7 @@ export default class Services extends Component {
                     key={service.facilityId}
                     style={{
                         display: "flex",
-                        alignItems: "center",
+                        alignItems: "top-end",
                         marginBottom: "10px",
                         justifyContent: "space-between",
                         backgroundColor: isFacilityInCourt ? "#000" : "#f5f5f5",
@@ -183,7 +183,7 @@ export default class Services extends Component {
     render() {
         return (
             <div className="services-for-court">
-                <h1 className="text-center mb-5">Danh sách các tiện ích</h1>
+                <h1 className="text-top-end mb-5">Danh sách các tiện ích</h1>
                 <div className="form-group">
                     <select id="courtSelect" className="form-control w-50 m-auto" onChange={this.handleCourtChange}>
                         {this.state.courts.map((court) => (

@@ -449,7 +449,7 @@ ul li {
     width: 100%;
     box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
     background-color: rgba(39, 38, 38, 0.9058823529);
-    z-index: 9999;
+    z-index: 5;
     height: 60px;
     position: fixed;
 }

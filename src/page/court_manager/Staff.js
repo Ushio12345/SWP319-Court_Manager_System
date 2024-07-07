@@ -46,7 +46,7 @@ export default class Staff extends Component {
                     this.setState({ staffs: res.data });
                 } else {
                     this.setState({ staffs: [] });
-                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "center");
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
@@ -65,7 +65,7 @@ export default class Staff extends Component {
                     this.setState({ courts: res.data });
                 } else {
                     this.setState({ courts: [] });
-                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "center");
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
@@ -84,7 +84,7 @@ export default class Staff extends Component {
                     this.setState({ staffs: res.data });
                 } else {
                     this.setState({ staffs: [] });
-                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "center");
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
                     console.error("Response không thành công:", res.status);
                 }
             })
@@ -110,7 +110,7 @@ export default class Staff extends Component {
         axiosInstance
             .post("/auth/signup", this.state.newStaff)
             .then((response) => {
-                showAlert("success", "", "Tài khoản nhân viên được thêm thành công", "center");
+                showAlert("success", "", "Tài khoản nhân viên được thêm thành công", "top-end");
                 this.setState({
                     staffs: [...this.state.staffs, response.data],
                     newStaff: {
@@ -124,28 +124,28 @@ export default class Staff extends Component {
             })
             .catch((error) => {
                 handleTokenError(error);
-                showAlert("error", "Lỗi !", "Tạo tài khoản không thành công", "center");
+                showAlert("error", "Lỗi !", "Tạo tài khoản không thành công", "top-end");
             });
     };
 
     deleteStaff = (staffId) => {
-        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa nhân viên này không?", "Xóa", "center").then((result) => {
+        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa nhân viên này không?", "Xóa", "top-end").then((result) => {
             if (result.isConfirmed) {
                 axiosInstance
                     .delete(`/court/${this.state.selectedCourtId}/deleteStaffFromCourt/${staffId}`)
                     .then((res) => {
                         this.fetchAllStaff();
                         if (res.status === 200) {
-                            showAlert("success", "", "Đã xóa nhân viên thành công", "center");
+                            showAlert("success", "", "Đã xóa nhân viên thành công", "top-end");
                             this.fetchAllStaff();
                         } else {
-                            showAlert("error", "Lỗi !", "Xóa nhân viên không thành công", "center");
+                            showAlert("error", "Lỗi !", "Xóa nhân viên không thành công", "top-end");
                             console.error("Response không thành công:", res.status);
                         }
                     })
                     .catch((error) => {
                         handleTokenError(error);
-                        showAlert("error", "", "Không thể xóa được sân", "center");
+                        showAlert("error", "", "Không thể xóa được sân", "top-end");
                     });
             }
         });
@@ -156,7 +156,7 @@ export default class Staff extends Component {
         axiosInstance
             .post(`/court/${courtId}/add-staff/${selectedStaffId}`)
             .then((res) => {
-                showAlert("success", "", "Cập nhật sân làm việc cho nhân viên này thành công", "center");
+                showAlert("success", "", "Cập nhật sân làm việc cho nhân viên này thành công", "top-end");
                 const updatedStaffs = this.state.staffs.map((staff) => {
                     if (staff.userId === selectedStaffId) {
                         return { ...staff, courtId: courtId };
@@ -166,7 +166,7 @@ export default class Staff extends Component {
                 this.setState({ staffs: updatedStaffs, selectedStaffId: null });
             })
             .catch((error) => {
-                showAlert("error", "", "Nhân viên đã tồn tại", "center-enđ");
+                showAlert("error", "", "Nhân viên đã tồn tại", "top-end");
             });
     };
 
@@ -196,14 +196,14 @@ export default class Staff extends Component {
         return currentStaffs.map((staff, index) => {
             return (
                 <tr key={staff.userId}>
-                    <td className="text-center">{indexOfFirstItem + index + 1}</td>
+                    <td className="text-top-end">{indexOfFirstItem + index + 1}</td>
                     <td>
                         <img className="" src={staff.profileAvatar} style={{ width: 50, height: 50 }} alt="Avatar" />
                     </td>
-                    <td className="text-center">{staff.userId}</td>
+                    <td className="text-top-end">{staff.userId}</td>
                     <td>{staff.fullName}</td>
                     <td>{staff.email}</td>
-                    <td className="d-flex align-items-center justify-between">
+                    <td className="d-flex align-items-top-end justify-between">
                         <button
                             type="button"
                             className="btn btn-primary"
@@ -248,7 +248,7 @@ export default class Staff extends Component {
         return (
             <div className="staffManager py-4">
                 <div>
-                    <div className="d-flex align-items-center justify-between">
+                    <div className="d-flex align-items-top-end justify-between">
                         <select onChange={this.handleCourtChange} value={selectedCourtId} className="form-select w-50">
                             <option value="">Tất cả cơ sở</option>
                             {this.state.courts.map((court) => (
@@ -257,7 +257,7 @@ export default class Staff extends Component {
                                 </option>
                             ))}
                         </select>
-                        <div className="w-50 d-flex align-items-center justify-end" style={{ height: "100%" }}>
+                        <div className="w-50 d-flex align-items-top-end justify-end" style={{ height: "100%" }}>
                             <label for="" class="form-label"></label>
                             <input
                                 type="text"
@@ -290,7 +290,7 @@ export default class Staff extends Component {
 
                     {/* modal add nhan vien mới */}
                     <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div className="modal-dialog modal-dialog-centered">
+                        <div class="modal-dialog modal-dialog-centered">
                             <div className="modal-content">
                                 <div className="modal-header">
                                     <h5 className="modal-title" id="exampleModalLabel">
@@ -361,7 +361,7 @@ export default class Staff extends Component {
 
                     {/* modal chọn sân */}
                     <div className="modal fade" id="modalSelectCourt" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div className="modal-dialog modal-dialog-centered">
+                        <div class="modal-dialog modal-dialog-centered">
                             <div className="modal-content">
                                 <div className="modal-header">
                                     <h5 className="modal-title" id="exampleModalLabel">
@@ -373,7 +373,7 @@ export default class Staff extends Component {
                                     {this.state.courts.map((court) => (
                                         <div
                                             key={court.courtId}
-                                            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10 }}
+                                            style={{ display: "flex", alignItems: "top-end", justifyContent: "space-between", marginTop: 10 }}
                                         >
                                             <>{court.courtName}</>
                                             <button
