@@ -1,9 +1,11 @@
 import React, { Component } from "react";
-import logoImg from "../../assets/images/forbad_logo.png";
-import UserDropdown from "./UserDropdown";
-import SideBar from "./staffPageComponents/SideBar";
+import "../../css/style.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import CheckInPage from "./staffPageComponents/CheckInPage";
 
-export default class AdminPage extends Component {
+
+export default class StaffPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -11,8 +13,11 @@ export default class AdminPage extends Component {
             user: {
                 username: "",
                 avatar: "",
-                email: "",
+                userId: "",
             },
+            courts: [],
+            selectedCourtId: "",
+            dropdownVisible: false,
         };
     }
 
@@ -29,10 +34,16 @@ export default class AdminPage extends Component {
                 user: {
                     username: user.fullName,
                     avatar: user.imageUrl,
-                    email: user.email,
+                    userId: user.userId,
                 },
             });
+        } else {
+            window.location.href = "/login"; // Chuyển hướng đến trang đăng nhập nếu không đăng nhập
         }
+    };
+
+    handleCourtChange = (event) => {
+        this.setState({ selectedCourtId: event.target.value });
     };
 
     handleLogout = () => {
@@ -44,84 +55,97 @@ export default class AdminPage extends Component {
                 avatar: "",
             },
         });
-        window.location.href = "/";
+        window.location.href = "/"; // Chuyển hướng đến trang chủ sau khi đăng xuất
+    };
+
+    toggleDropdown = () => {
+        this.setState((prevState) => ({
+            dropdownVisible: !prevState.dropdownVisible,
+        }));
     };
 
     render() {
-        const { isLoggedIn, user } = this.state;
-
+        const { isLoggedIn, user, courts, selectedCourtId, dropdownVisible } = this.state;
         return (
-            <div className="admin">
-                <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                    <div className="px-3 lg:px-5 lg:pl-3">
-                        <div className="flex items-center justify-between" style={{ height: 70 }}>
-                            <div className="admin-nav-bar flex items-center justify-start rtl:justify-end ">
-                                <button
-                                    data-drawer-target="logo-sidebar"
-                                    data-drawer-toggle="logo-sidebar"
-                                    aria-controls="logo-sidebar"
-                                    type="button"
-                                    className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                                >
-                                    <span className="sr-only">Open sidebar</span>
-                                    <svg
-                                        className="w-6 h-6"
-                                        aria-hidden="true"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            clipRule="evenodd"
-                                            fillRule="evenodd"
-                                            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
-                                        />
-                                    </svg>
-                                </button>
-                                <a href="/adminPage" className="flex ms-2 md:me-24">
-                                    <img src={logoImg} className="h-8 me-3 w-100" style={{ height: "70px" }} />
-                                    <span
-                                        className="self-center text-lg font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
-                                        style={{ color: "black" }}
-                                    >
-                                        4Badminton
-                                    </span>
-                                </a>
+            <div>
+                <section className="manager">
+                    <div className="topbar">
+                        <div className="logo">
+                            <div className="logo-img">
+                                <img src="asserts/img/logo-cau-long-dep-01.png" alt="logo" />
                             </div>
-                            <div className="flex items-center">
-                                <div>
-                                    {isLoggedIn && <UserDropdown user={user} handleLogout={this.handleLogout} isLoggedIn={isLoggedIn} />}
-                                    {!isLoggedIn && (
-                                        <a href="/login" className="ms-4 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:underline">
-                                            Đăng nhập
+                            <div className="nameapp">
+                                <p>ForBaD</p>
+                            </div>
+                        </div>
+                        <div className="search">
+                            {/* <input type="text" placeholder="Tìm kiếm tại đây." id="search" /> */}
+                            {/* <label htmlFor="search">
+                                <i className="fa-solid fa-magnifying-glass" />
+                            </label> */}
+                        </div>
+                        <div className="login" onClick={this.toggleDropdown}>
+                            <img src={user.avatar} alt="User Avatar" style={{ width: 50, borderRadius: "50%" }} />
+                            <p className="user-name">{user.username}</p>
+                            {dropdownVisible && (
+                                <div className="dropdownItem">
+                                    <div className="user-infor-dropdown">
+                                        <ul className="p-0 m-0">
+                                            <li>
+                                                <a href="/">
+                                                    <i className="fa-solid fa-home"></i> Trang chủ
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/profile">
+                                                    <i className="fa-solid fa-user"></i> Hồ sơ
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onClick={this.handleLogout}>
+                                                    <i className="fas fa-sign-out-alt"></i> Đăng xuất
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div className="body-manager">
+                        <div className="manager-left">
+                            <div className="list-option">
+                                <ul className="listManaher nav">                                 
+                                    <li className="nav-item">
+                                        <a className="nav-link active" href="#checkIn" data-bs-toggle="tab">
+                                            <span className="icon">
+                                                <i className="fa-solid fa-file-invoice"></i>
+                                            </span>
+                                            <span className="title">Quản Lý Check-In</span>
                                         </a>
-                                    )}
+                                    </li>
+                                    <a className="w-75 logout m-auto " href="/">
+                                        <span className="icon">
+                                            <i className="fas fa-sign-out-alt" />
+                                        </span>
+                                        <span className="title" onClickCapture={this.handleLogout}>
+                                            Đăng xuất
+                                        </span>
+                                    </a>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="manager-right">
+                            <div className="tab-content">                           
+                                <div className="tab-pane fade show active" id="checkIn" role="tabpanel">
+                                    <CheckInPage />
                                 </div>
                             </div>
                         </div>
                     </div>
-                </nav>
-
-                <SideBar />
-
-                <div className="p-4 sm:ml-64 mt-5">
-                    <div class="tab-content" id="pills-tabContent">
-                        <div class="tab-pane fade show active" id="Dashboard" role="tabpanel" aria-labelledby="pills-Dashboard-tab">
-                            {/* {isLoggedIn && } */}
-                        </div>
-                        <div class="tab-pane fade" id="admin" role="tabpanel" aria-labelledby="pills-admin-tab">
-                            {/* {isLoggedIn && } */}
-                        </div>
-                        <div class="tab-pane fade" id="FacilityList" role="tabpanel" aria-labelledby="pills-FacilityList-tab">
-                            {/* {isLoggedIn && } */}
-                        </div>
-                        <div class="tab-pane fade" id="ServicesManager" role="tabpanel" aria-labelledby="pills-ServicesManager-tab">
-                            {/* {isLoggedIn &&} */}
-                        </div>
-                        <div class="tab-pane fade" id="UserList" role="tabpanel" aria-labelledby="pills-UserLiss-tab">
-                            {/* {isLoggedIn && } */}
-                        </div>
-                    </div>
+                </section>
+                <div className="footer-Manager">
+                    <p>© Badminton Court Management - Team 4 - SWP391</p>
                 </div>
             </div>
         );

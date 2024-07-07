@@ -64,12 +64,10 @@ export default class Slot extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevState.startDate !== this.state.startDate || prevState.endDate !== this.state.endDate) {
-            console.log("Date range changed:", this.state.startDate, this.state.endDate);
             this.updateDaysOfWeek(this.state.startDate, this.state.endDate);
         }
 
         if (prevState.selectedYard !== this.state.selectedYard) {
-            console.log("Selected yard changed:", this.state.selectedYard);
             this.fetchSlots();
             this.fetchBookedSlots();
         }

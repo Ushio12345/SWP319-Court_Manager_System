@@ -186,7 +186,7 @@ export default class Slot extends Component {
 
         return (
             <div>
-                <div className="row py-5">
+                <div className="row pt-5">
                     <div className="col-md-8">
                         <button
                             id="btnThemSlot"
@@ -230,7 +230,7 @@ export default class Slot extends Component {
                         ) : (
                             currentSlots.map((slot, index) => (
                                 <tr className="" key={slot.slotId}>
-                                    <td className="text-center">{index + 1}</td>
+                                    <td className="text-center">{indexOfFirstSlot + index + 1}</td>
                                     <td className="text-center">{slot.slotId}</td>
                                     <td className="text-center">{slot.slotName}</td>
                                     <td className="text-center">{`${slot.startTime} - ${slot.endTime}`}</td>
@@ -307,7 +307,7 @@ export default class Slot extends Component {
                                         value={this.state.slot.endTime}
                                         onChange={this.handleInputChange}
                                     />
-                                </div>                        
+                                </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-primary" onClick={this.handleAddSlot}>

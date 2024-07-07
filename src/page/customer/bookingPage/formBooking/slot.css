@@ -27,6 +27,20 @@
     background-color: #ff4d4d;
     color: white;
     cursor: not-allowed;
+    pointer-events: none;
+}
+
+.slot-time.waiting-checkIn {
+    background-color: #126abd;
+    color: white;
+    cursor: not-allowed;
+}
+
+.slot-time.normal {
+    background-color: rgb(194, 192, 192);
+    color: white;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 /* Styles for past times */

@@ -96,11 +96,15 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                         <Link to="/court-manager" onClick={hideDropdown}>
                                                             <i className="fa-solid fa-shop"></i> Cơ sở của tôi
                                                         </Link>
-                                                    ) :
-                                                        (<Link onClick={() => { hideDropdown(); handleShowTermsModal(); }}>
+                                                    ) : isLoggedIn && user.roles.includes('staff') ? (
+                                                        <Link to="/staff" onClick={hideDropdown}>
+                                                            <i className="fa-solid fa-shop"></i> Quản lý check-in
+                                                        </Link>
+                                                    ) : (
+                                                        <Link onClick={() => { hideDropdown(); handleShowTermsModal(); }}>
                                                             <i className="fa-solid fa-shop"></i> Đăng ký kinh doanh
-                                                        </Link>)
-                                                    }
+                                                        </Link>
+                                                    )}
                                                 </li>
                                                 <li>
                                                     {isLoggedIn && (

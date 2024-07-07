@@ -15,7 +15,6 @@ const CourtList = () => {
     const [starFilter, setStarFilter] = useState(null);
     const [openingHoursFilter, setOpeningHoursFilter] = useState(null);
 
-
     useEffect(() => {
         fetchCourts();
         fetchLatestCourts();
@@ -55,7 +54,6 @@ const CourtList = () => {
         setOpeningHoursFilter(value);
     };
 
-
     const filteredCourts = courts.filter((court) => {
         let matches = true;
         if (starFilter !== null && court.star !== starFilter) {
@@ -66,7 +64,6 @@ const CourtList = () => {
         }
         return matches && court.courtName.toLowerCase().includes(searchKeyword.toLowerCase());
     });
-
 
     const settings = {
         dots: true,
@@ -104,7 +101,7 @@ const CourtList = () => {
     };
 
     const settingForShowAllYard = {
-        infinite: true,
+        infinite: false,
         dot: true,
         rows: 3,
         slidesPerRow: 1,

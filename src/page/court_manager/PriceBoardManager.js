@@ -407,7 +407,6 @@ export default class PriceBoardManager extends Component {
                         </div>
                     </div>
                 </div>
-                ;
             </div>
         );
     }
