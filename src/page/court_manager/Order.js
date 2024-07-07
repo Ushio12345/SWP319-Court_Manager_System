@@ -1,343 +1,173 @@
-import axios from "axios";
 import React, { Component } from "react";
+import Header from "../../components/header";
+import Footer from "../../components/footer";
+import OrderItem from "../customer/historyBooking/statusBooking/OrderItem";
+import axiosInstance from "../../config/axiosConfig";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInbox } from "@fortawesome/free-solid-svg-icons";
 
 export default class Order extends Component {
-    state = {
-        Orders: [],
-        newOrder: {
-            booking_id: "",
-            user_id: "",
-            booking_type: "",
-            booking_date: "",
-            discount: "",
-            total_price: "",
-            status: "",
-        },
-        isDetailView: false,
-        showAlert: false,
-        alertMessage: "",
-        alertType: "",
-    };
-
-    componentDidMount() {
-        this.fetchOrders();
+    constructor(props) {
+        super(props);
+        this.state = {
+            currentTab: "showProcessingOrder",
+            bookings: [],
+            searchQuery: "", // Thêm state để lưu trữ giá trị tìm kiếm
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+                email: "",
+                phone: "",
+                balance: 0,
+                roles: [],
+            },
+        };
     }
 
-    fetchOrders = () => {
-        axios
-            .get("http://localhost:3001/order")
-            .then((res) => {
-                this.setState({ Orders: res.data });
-            })
-            .catch((err) => {
-                alert("Không thể lấy dữ liệu từ API");
-            });
-    };
+    componentDidMount() {
+        const user = JSON.parse(localStorage.getItem("user"));
 
-    handleInputChange = (event) => {
-        const { name, value, files } = event.target;
-        if (files && files.length > 0) {
-            this.setState((prevState) => ({
-                newOrder: {
-                    ...prevState.newOrder,
-                    [name]: files[0],
+        if (user) {
+            this.setState({
+                isLoggedIn: true,
+                user: {
+                    username: user.fullName,
+                    avatar: user.imageUrl,
+                    email: user.email,
+                    phone: user.phone,
+                    balance: user.balance,
+                    roles: user.roles,
                 },
-            }));
-        } else {
-            this.setState((prevState) => ({
-                newOrder: {
-                    ...prevState.newOrder,
-                    [name]: value,
-                },
-            }));
-        }
-    };
-
-    handleDeleteCourt = (booking_id) => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa đơn đặt này?")) {
-            axios
-                .delete(`http://localhost:3001/order/${booking_id}`)
-                .then(() => {
-                    this.fetchOrders();
-                    this.setState({
-                        showAlert: true,
-                        alertMessage: "Xóa đơn hàng thành công!",
-                        alertType: "success",
-                    });
-                })
-                .catch((error) => {
-                    alert("Có lỗi khi xóa đơn!", error);
-                });
-        }
-    };
-
-    handleUpdateOrder = () => {
-        const { booking_id, ...updatedOrder } = this.state.newOrder;
-        axios
-            .put(`http://localhost:3001/order/${booking_id}`, updatedOrder)
-            .then(() => {
-                this.fetchOrders();
-                this.setState({
-                    newOrder: {
-                        ...updatedOrder,
-                    },
-                    showAlert: true,
-                    alertMessage: "Cập nhật đơn đặt thành công!",
-                    alertType: "success",
-                });
-            })
-            .catch((error) => {
-                alert("Có lỗi khi cập nhật đơn đặt!", error);
             });
+        }
+
+        this.fetchBookings();
+    }
+
+    fetchBookings = () => {
+        axiosInstance
+            .get("/booking/bookings")
+            .then(response => {
+                this.setState({ bookings: response.data });
+            })
+            .catch(error => {
+                console.error("There was an error fetching the bookings!", error);
+            });
+    }
+
+    handleLogout = () => {
+        localStorage.removeItem("user");
+
+        this.setState({
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+                email: "",
+                phone: "",
+                balance: 0,
+                roles: [],
+            },
+        });
+
+        window.location.href = "/";
     };
+
+    setCurrentTab = (tab) => {
+        this.setState({ currentTab: tab });
+    };
+
+    // Hàm để cập nhật giá trị tìm kiếm
+    handleSearchQueryChange = (event) => {
+        this.setState({ searchQuery: event.target.value });
+    };
+
+    filterBookings = (status) => {
+        const { bookings, searchQuery } = this.state;
+        return bookings
+            .filter(booking => booking.statusEnum === status)
+            .filter(booking => {
+                const courtName = booking.courtName ? booking.courtName.toLowerCase() : '';
+                const bookingId = booking.bookingId ? booking.bookingId.toString() : '';
+                return courtName.includes(searchQuery.toLowerCase()) || bookingId.includes(searchQuery);
+            });
+    }
 
     render() {
+        const { currentTab, isLoggedIn, user, searchQuery } = this.state;
+
         return (
-            <div>
-                {/* Modal Thông Báo */}
-                {this.state.showAlert && (
-                    <div className={`alert alert-${this.state.alertType} alert-dismissible fade show`} role="alert">
-                        {this.state.alertMessage}
-                        <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                )}
-
-                {/* Modal Chi Tiết */}
-                <div className="modal fade" id="detailModal" tabIndex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-lg">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="detailModalLabel">
-                                    Chi tiết đơn đặt
-                                </h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <p>
-                                            <strong>Mã đơn:</strong> {this.state.newOrder.booking_id}
-                                        </p>
-
-                                        <p>
-                                            <strong>Mã khách đặt:</strong> {this.state.newOrder.user_id}
-                                        </p>
-
-                                        <p>
-                                            <strong>Loại đơn:</strong> {this.state.newOrder.booking_type}
-                                        </p>
-
-                                        <p>
-                                            <strong>Ngày đặt:</strong> {this.state.newOrder.booking_date}
-                                        </p>
-
-                                        <p>
-                                            <strong>Tổng giá:</strong> {this.state.newOrder.total_price}
-                                        </p>
-
-                                        <p>
-                                            <strong>Tình trạng:</strong> {this.state.newOrder.status}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                                    Đóng
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* Kết thúc Modal Chi Tiết */}
-
-                <h1 className="text-center">Thông tin quản lí đơn đặt</h1>
-
-                <div className="row">
-                    <div className="col-md-4">
-                        <div className="input-group mb-3">
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Nhập từ khóa"
-                                aria-label="Recipient's username"
-                                aria-describedby="basic-addon2"
-                            />
-                            <div className="input-group-append">
-                                <span className="input-group-text" id="basic-addon2">
-                                    <i className="fa fa-search" />
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="clear-fix" />
-                <div className="tblCoSo" id="tblCoSo">
-                    <table className="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Mã đơn</th>
-                                <th className="text-start">Mã khách</th>
-                                <th className="text-start">Loại đơn</th>
-                                <th>Discount</th>
-                                <th>Tổng giá</th>
-                                <th>Tình trạng</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.Orders.map((order, index) => (
-                                <tr key={order.booking_id}>
-                                    <td className="text-center">{index + 1}</td>
-                                    <td className="text-center">{order.booking_id}</td>
-                                    <td className="text-start">{order.user_id}</td>
-                                    <td className="text-start">{order.booking_type}</td>
-                                    <td className="text-center">{order.discount}</td>
-                                    <td className="text-center">{order.total_price}</td>
-                                    <td className="text-center">{order.status}</td>
-                                    <td className="d-flex">
-                                        <button
-                                            className="btn btn-info mr-2"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#detailModal"
-                                            onClick={() => this.setState({ newOrder: order, isDetailView: true })}
-                                        >
-                                            <i className="fa fa-info-circle"></i>
-                                        </button>
-                                        <button
-                                            className="btn btn-warning mr-2"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#updateOrder"
-                                            onClick={() => this.setState({ newOrder: order, isDetailView: false })}
-                                        >
-                                            <i className="fa fa-pen-to-square"></i>
-                                        </button>
-                                        <button className="btn btn-danger" onClick={() => this.handleDeleteOrder(order.booking_id)}>
-                                            <i className="fa fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+            <div className="historyPage">
+                <div className="historyPage-body w-75 m-auto">
+                    <div>
+                        <ul className="nav-status nav nav-pills nav-justified mb-3" id="pills-tab" role="tablist">
+                            {["showProcessingOrder", "showCheckInOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => (
+                                <li className="nav-item" role="presentation" key={tab}>
+                                    <button
+                                        className={`nav-link ${currentTab === tab ? "active" : ""}`}
+                                        id={`${tab}-tab`}
+                                        data-bs-toggle="pill"
+                                        data-bs-target={`#${tab}`}
+                                        type="button"
+                                        role="tab"
+                                        aria-controls={tab}
+                                        aria-selected={currentTab === tab}
+                                        onClick={() => this.setCurrentTab(tab)}
+                                    >
+                                        {tab === "showProcessingOrder" && "Đang chờ xử lý"}
+                                        {tab === "showCheckInOrder" && "Đang chờ check-in"}
+                                        {tab === "showCompleteOrder" && "Đã hoàn thành"}
+                                        {tab === "showCancelledOrder" && "Đã hủy"}
+                                    </button>
+                                </li>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
-                <br />
-
-                {/* Modal Cập Nhật */}
-
-                <div className="modal fade" id="updateOrder" tabIndex="-1" aria-labelledby="addStaffLabel" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h4>Cập nhật thông tin</h4>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="booking_id">Mã đơn đặt</label>
-                                    <input
-                                        id="booking_id"
-                                        name="booking_id"
-                                        className="form-control"
-                                        placeholder="Mã đơn đặt"
-                                        value={this.state.newOrder.booking_id}
-                                        onChange={this.handleInputChange}
-                                        readOnly={true}
-                                    />
+                        </ul>
+                    </div>
+                    <div className="mb-3">
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            name="findOrder" 
+                            id="findOrder" 
+                            placeholder="Bạn có thể tìm kiếm theo tên sân hoặc mã đơn hàng" 
+                            value={searchQuery}
+                            onChange={this.handleSearchQueryChange}
+                        />
+                    </div>
+                    <div className="tab-content" id="pills-tabContent">
+                        {["showProcessingOrder", "showCheckInOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => {
+                            const filteredBookings = this.filterBookings(
+                                tab === "showProcessingOrder" ? "Đang chờ xử lý" :
+                                    tab === "showCheckInOrder" ? "Đang chờ check-in" :
+                                        tab === "showCompleteOrder" ? "Đã hoàn thành" :
+                                            "Đã hủy"
+                            );
+                            return (
+                                <div
+                                    key={tab}
+                                    className={`tab-pane fade ${currentTab === tab ? "show active" : ""}`}
+                                    id={tab}
+                                    role="tabpanel"
+                                    aria-labelledby={`${tab}-tab`}
+                                >
+                                    {filteredBookings.length > 0 ? (
+                                        filteredBookings.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate)).map((booking) => {
+                                            return (
+                                                <OrderItem key={booking.bookingId} booking={booking} onBookingCancel={this.fetchBookings} />
+                                            );
+                                        })
+                                    ) : (
+                                        <div className="no-bookings">
+                                            <FontAwesomeIcon icon={faInbox} size="3x" />
+                                            <p>Chưa có đơn hàng</p>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="user_id">Mã khách đặt</label>
-                                    <input
-                                        id="user_id"
-                                        name="user_id"
-                                        className="form-control"
-                                        placeholder="Mã khách đặt"
-                                        value={this.state.newOrder.user_id}
-                                        onChange={this.handleInputChange}
-                                        readOnly={true}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="booking_type">Loại đơn đặt</label>
-                                    <input
-                                        id="booking_type"
-                                        name="booking_type"
-                                        className="form-control"
-                                        placeholder="Cập nhật loại đơn"
-                                        value={this.state.newOrder.booking_type}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="booking_date">Ngày đặt</label>
-                                    <input
-                                        id="booking_date"
-                                        name="booking_date"
-                                        className="form-control"
-                                        placeholder="Cập nhật ngày đặt"
-                                        value={this.state.newOrder.booking_date}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="discount">Discount</label>
-                                    <input
-                                        id="discount"
-                                        name="discount"
-                                        className="form-control"
-                                        placeholder="Cập nhật mã giảm giá"
-                                        value={this.state.newOrder.discount}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="total_price">Tổng giá</label>
-                                    <input
-                                        id="total_price"
-                                        name="total_price"
-                                        className="form-control"
-                                        placeholder="Cập nhật tổng giá"
-                                        value={this.state.newOrder.total_price}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="status">Tình trạng</label>
-                                    <input
-                                        id="status"
-                                        name="status"
-                                        className="form-control"
-                                        placeholder="Cập nhật tình trạng"
-                                        value={this.state.newOrder.status}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                {!this.state.isDetailView && (
-                                    <div className="d-flex w-100">
-                                        <button type="button" className="btn btn-success " onClick={this.handleUpdateCourt}>
-                                            Cập nhật
-                                        </button>
-                                    </div>
-                                )}
-
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                                    Đóng
-                                </button>
-                            </div>
-                        </div>
+                            );
+                        })}
                     </div>
                 </div>
-                {/* Kết thúc Modal Cập Nhật */}
             </div>
         );
     }

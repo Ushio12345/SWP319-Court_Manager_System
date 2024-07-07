@@ -234,7 +234,6 @@ export default class extends Component {
                                     </div>
                                     <div className="col-md-6">
                                         <h4>{this.state.newCourt.courtName}</h4>
-                                        <h4>{this.state.newCourt.courtName}</h4>
                                         <p>
                                             <strong>Mã cơ sở:</strong> {this.state.newCourt.courtId}
                                         </p>
