@@ -26,14 +26,19 @@ export default class Staff extends Component {
     }
 
     fetchCourts = () => {
+        let token = localStorage.getItem("token");
         axiosInstance
-            .get("/court/courts-of-owner")
+            .get(`/court/courts-of-owner`,{
+                headers: { Authorization: `Bearer ${token}`}
+            })
             .then((res) => {
                 if (res.status === 200) {
                     const selectedCourt = res.data[0];
-                    this.setState({ courts: res.data, selectedCourt: selectedCourt.courtId }, () => {
-                        this.fetchStaffWithCourtID(selectedCourt.courtId);
-                    });
+                    this.setState({ courts: res.data, selectedCourt: selectedCourt.courtId },() => 
+                        {
+                            this.fetchStaffWithCourtID(selectedCourt.courtId);
+                        }
+                );
                 } else {
                     this.handleRequestError(res);
                 }
@@ -44,10 +49,10 @@ export default class Staff extends Component {
     };
 
     fetchStaffWithCourtID = (selectedCourt) => {
-        let token = localStorage.getItem("token");
+        let token = JSON.parse(localStorage.getItem("token"));
         axiosInstance
             .get(`/court/staffs-of-court/${selectedCourt}`,{
-                headers: { Authorization: `Bearer ${token}`},
+                headers: { Authorization: `Bearer ${token}`}
             })
             .then((res) => {
                 if (res.status === 200) {
@@ -72,9 +77,9 @@ export default class Staff extends Component {
     };
 
 
-    handleAddStaff = (staff_id) => {
+    handleAddStaff = () => {
         const { newStaff, selectedCourt } = this.state;
-        let token = localStorage.getItem("token");
+        let token = JSON.parse(localStorage.getItem("token"));
         let formData = new FormData();
 
         formData.append("userId", newStaff.userId);
@@ -86,7 +91,7 @@ export default class Staff extends Component {
         }
 
         axiosInstance
-            .post(`/court/${selectedCourt}/add-staff/${staff_id}`, formData, {
+            .post(`/court/${selectedCourt}/add-staff/${newStaff.userId}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
@@ -120,15 +125,15 @@ export default class Staff extends Component {
     };
 
 
-    handleDeleteStaff = (staff_id) => {
+    handleDeleteStaff = (userId) => {
         showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa Staff này không?", "Xóa", "center").then((result) => {
             if (result.isConfirmed) {
-                let token = localStorage.getItem("token");
+                let token = JSON.parse(localStorage.getItem("token"));
                 console.log("Retrieved token:", token);
                 const {selectedCourt} = this.state;
                 const deleteStaff = () => {
                     axiosInstance
-                        .delete(`/court/${selectedCourt}/deleteStaffFromCourt/${staff_id}`, {
+                        .delete(`/court/${selectedCourt}/deleteStaffFromCourt/${userId}`, {
                             headers: {
                                 Authorization: `Bearer ${token}`,
                             },
@@ -149,13 +154,11 @@ export default class Staff extends Component {
                             ) {
                                 handleTokenError();
                             } else {
-                                showAlert("error", "", "Xóa sân không thành công", "top-end");
+                                showAlert("error", "", "Xóa Staff không thành công", "top-end");
                             }
                             console.error("Response không thành công:", error);
                         });
                 };
-
-                // Call the function after confirmation
                 deleteStaff();
             }
         });
@@ -249,7 +252,9 @@ export default class Staff extends Component {
                                     <td className="text-center">{staff.email}</td>
                                     <td className="text-center">{staff.fullName}</td>
                                     <td className="text-center">
-                                        <img src={this.state.newStaff.profileAvatar} alt="Hình ảnh Staff" className="img-fluid" />
+                                        <div>
+                                        <img src={staff.profileAvatar} alt="Hình ảnh Staff" className="img-fluid" />
+                                        </div>
                                     </td>
                                     <td className="text-center">{staff.role}</td>
                                     <td className="d-flex">
@@ -293,10 +298,10 @@ export default class Staff extends Component {
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label htmlFor="staff_id">Staff ID</label>
+                                    <label htmlFor="userid">Staff ID</label>
                                     <input
-                                        id="staff_id"
-                                        name="staff_id"
+                                        id="userId"
+                                        name="userId"
                                         className="form-control"
                                         placeholder="Nhập User Id"
                                         value={this.state.newStaff.userId}
@@ -304,51 +309,16 @@ export default class Staff extends Component {
                                         readOnly={this.state.isDetailView}
                                     />
                                 </div>
-                                <div className="form-group">
-                                    <label htmlFor="email">Email</label>
-                                    <input
-                                        id="email"
-                                        name="email"
-                                        className="form-control"
-                                        placeholder="Nhập email Staff"
-                                        value={this.state.newStaff.email}
-                                        onChange={this.handleInputChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="profileAvatar">Ảnh Staff</label>
-                                    <input
-                                        id="profileAvatar"
-                                        name="profileAvatar"
-                                        className="form-control"
-                                        type="file"
-                                        //value={this.state.newStaff.profileAvatar}
-                                        onChange={this.handleFileChange}
-                                        readOnly={this.state.isDetailView}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="role">Role</label>
-                                    <input
-                                        id="role"
-                                        name="role"
-                                        className="form-control"
-                                        placeholder="role"
-                                        value={this.state.newStaff.role}
-                                        onChange={this.handleInputChange}
-                                        readOnly
-                                    />
-                                </div>
                             </div>
                             <div className="modal-footer">
-                                {!this.state.isDetailView && (
+                                {/* {!this.state.isDetailView && (
                                     <div className="d-flex w-100">
-                                        <button type="button" className="btn btn-primary" onClick={this.handleAddStaff( this.state.newStaff.staff_id)}>
+                                        <button type="button" className="btn btn-primary" onClick={this.handleAddStaff()}>
                                             Thêm mới
                                         </button>
                                     </div>
-                                )}
+                                )} */}
+                                {this.handleAddStaff()}
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                                     Đóng
                                 </button>
