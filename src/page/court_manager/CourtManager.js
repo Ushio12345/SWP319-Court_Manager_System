@@ -227,9 +227,9 @@ export default class CourtManager extends Component {
 
                                 {/* ----------------------Staff---------------------------------------------------------------------- */}
 
-                                {/* <div className="tab-pane fade" id="dsStaff" role="tabpanel">
+                                <div className="tab-pane fade" id="dsStaff" role="tabpanel">
                                     <Staff selectedCourtId={selectedCourtId} />
-                                </div> */}
+                                </div>
 
                                 {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
                                 <div className="tab-pane fade" id="dsYard" role="tabpanel">

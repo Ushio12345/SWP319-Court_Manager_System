@@ -1,29 +1,29 @@
-// // import React, { Component } from "react";
-// // import axiosInstance from "../../config/axiosConfig";
-// // import { showAlert, showConfirmAlert } from '../../utils/alertUtils';
-// // import { handleTokenError } from "../../utils/tokenErrorHandle";
+import React, { Component } from "react";
+import axiosInstance from "../../config/axiosConfig";
+import { showAlert, showConfirmAlert } from '../../utils/alertUtils';
+import { handleTokenError } from "../../utils/tokenErrorHandle";
 
-// // export default class Staff extends Component {
-// //     state = {
-// //         StaffList: [],
-// //         courts: [],
-// //         newStaff: {
-// //             userId: "",
-// //             email:"",
-// //             fullName:"",
-// //             profileAvatar:"",
-// //             role:""
-// //         },
-// //         selectedCourt: "",
-// //         showAlert: false,
-// //         alertMessage: "",
-// //         alertType: "",
-// //         isDetailView: false
-// //     };
+export default class Staff extends Component {
+    state = {
+        StaffList: [],
+        courts: [],
+        newStaff: {
+            userId: "",
+            email:"",
+            fullName:"",
+            profileAvatar:"",
+            role:""
+        },
+        selectedCourt: "",
+        showAlert: false,
+        alertMessage: "",
+        alertType: "",
+        isDetailView: false
+    };
 
-// //     componentDidMount() {
-// //         this.fetchCourts();
-// //     }
+    componentDidMount() {
+        this.fetchCourts();
+    }
 
     fetchCourts = () => {
         let token = localStorage.getItem("token");
@@ -66,15 +66,15 @@
             });
     };
 
-// //     handleInputChange = (event) => {
-// //         const { name, value } = event.target;
-// //         this.setState((prevState) => ({
-// //             newStaff: {
-// //                 ...prevState.newStaff,
-// //                 [name]: value,
-// //             },
-// //         }));
-// //     };
+    handleInputChange = (event) => {
+        const { name, value } = event.target;
+        this.setState((prevState) => ({
+            newStaff: {
+                ...prevState.newStaff,
+                [name]: value,
+            },
+        }));
+    };
 
 
     handleAddStaff = () => {
@@ -82,13 +82,13 @@
         let token = JSON.parse(localStorage.getItem("token"));
         let formData = new FormData();
 
-// //         formData.append("userId", newStaff.userId);
-// //         formData.append("email", newStaff.email);
-// //         formData.append("fullName", newStaff.fullName);
-// //         formData.append("role", newStaff.role);
-// //         if (newStaff.profileAvatar) {
-// //             formData.append("profileAvatar", newStaff.profileAvatar);
-// //         }
+        formData.append("userId", newStaff.userId);
+        formData.append("email", newStaff.email);
+        formData.append("fullName", newStaff.fullName);
+        formData.append("role", newStaff.role);
+        if (newStaff.profileAvatar) {
+            formData.append("profileAvatar", newStaff.profileAvatar);
+        }
 
         axiosInstance
             .post(`/court/${selectedCourt}/add-staff/${newStaff.userId}`, formData, {
@@ -165,67 +165,66 @@
     };
 
 
-// //     handleRequestError = (error) => {
-// //         let errorMessage = "Có lỗi xảy ra khi lấy dữ liệu";
-// //         if (error.response) {
-// //             if (error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-// //                 handleTokenError();
-// //                 errorMessage = "Token không hợp lệ hoặc đã hết hạn.";
-// //             } else {
-// //                 errorMessage = error.response.data.message || errorMessage;
-// //             }
-// //         }
-// //         showAlert("error", "Lỗi !", errorMessage, "top-end");
-// //         console.error("Request error:", error);
-// //     };
+    handleRequestError = (error) => {
+        let errorMessage = "Có lỗi xảy ra khi lấy dữ liệu";
+        if (error.response) {
+            if (error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                handleTokenError();
+                errorMessage = "Token không hợp lệ hoặc đã hết hạn.";
+            } else {
+                errorMessage = error.response.data.message || errorMessage;
+            }
+        }
+        showAlert("error", "Lỗi !", errorMessage, "top-end");
+        console.error("Request error:", error);
+    };
 
-// //     renderCourtOption = () => {
-// //         return this.state.courts.map((court) => (
-// //             <option key={court.courtId} value={court.courtId}>
-// //                 {court.courtName}
-// //             </option>
-// //         ));
-// //     };
+    renderCourtOption = () => {
+        return this.state.courts.map((court) => (
+            <option key={court.courtId} value={court.courtId}>
+                {court.courtName}
+            </option>
+        ));
+    };
 
-// //     handleCourtChange = (event) => {
-// //         const courtId = event.target.value;
-// //         this.setState({
-// //             selectedCourt: courtId,
-// //         });
+    handleCourtChange = (event) => {
+        const courtId = event.target.value;
+        this.setState({
+            selectedCourt: courtId,
+        });
+        this.fetchStaffWithCourtID(courtId);
+    };
 
-// //         this.fetchStaffWithCourtID(courtId);
-// //     };
+    handleFileChange = (event) => {
+        const file = event.target.files[0];
+        this.setState((prevState) => ({
+            newStaff: {
+                ...prevState.newStaff,
+                profileAvatar: file,
+            },
+        }));
+    };
 
-// //     handleFileChange = (event) => {
-// //         const file = event.target.files[0];
-// //         this.setState((prevState) => ({
-// //             newStaff: {
-// //                 ...prevState.newStaff,
-// //                 profileAvatar: file,
-// //             },
-// //         }));
-// //     };
+    render() {
 
-// //     render() {
-
-// //         return (
-// //             <div>
-// //                 {/* Alert Message */}
-// //                 {this.state.showAlert && (
-// //                     <div className={`alert alert-${this.state.alertType} alert-dismissible fade show`} role="alert">
-// //                         {this.state.alertMessage}
-// //                         <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-// //                     </div>
-// //                 )}
-// //                 <h1 className="text-center">Danh sách nhân viên</h1>
-// //                 <div className="flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
-// //                     <div className="select-court d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
-// //                         <label className="me-3">Chọn cơ sở: </label>
-// //                         <select className="" style={{ height: 40 }} onChange={this.handleCourtChange}>
-// //                             {this.renderCourtOption()}
-// //                         </select>
-// //                     </div>
-// //                 </div>
+        return (
+            <div>
+                {/* Alert Message */}
+                {this.state.showAlert && (
+                    <div className={`alert alert-${this.state.alertType} alert-dismissible fade show`} role="alert">
+                        {this.state.alertMessage}
+                        <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                )}
+                <h1 className="text-center">Danh sách nhân viên</h1>
+                <div className="flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
+                    <div className="select-court d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
+                        <label className="me-3">Chọn cơ sở: </label>
+                        <select className="" style={{ height: 40 }} onChange={this.handleCourtChange}>
+                            {this.renderCourtOption()}
+                        </select>
+                    </div>
+                </div>
 
                 <button className="btn btn-success w-25 mb-2" data-bs-toggle="modal" data-bs-target="#addStaff">
                     Thêm nhân viên
@@ -252,7 +251,7 @@
                                     <td className="text-center">{staff.email}</td>
                                     <td className="text-center">{staff.fullName}</td>
                                     <td className="text-center">
-                                        <div>
+                                        <div style={{height: 60, width: 50}}>
                                         <img src={staff.profileAvatar} alt="Hình ảnh Staff" className="img-fluid" />
                                         </div>
                                     </td>
@@ -267,7 +266,7 @@
                                             <i className="fa fa-info-circle"></i>
                                         </button> */}
                                         <button className="btn btn-danger" onClick={() => this.handleDeleteStaff(staff.userId)}>
-                                            <i className="fa fa-trash"></i>
+                                            Xoá
                                         </button>
                                     </td>
                                 </tr>
