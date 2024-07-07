@@ -45,6 +45,8 @@ export default class CourtManager extends Component {
                     avatar: user.imageUrl,
                 },
             });
+        } else {
+            window.location.href = "/login"; // Chuyển hướng đến trang đăng nhập nếu không đăng nhập
         }
     };
 
@@ -70,7 +72,7 @@ export default class CourtManager extends Component {
                 avatar: "",
             },
         });
-        window.location.href = "/";
+        window.location.href = "/"; // Chuyển hướng đến trang chủ sau khi đăng xuất
     };
 
     toggleDropdown = () => {
@@ -99,33 +101,35 @@ export default class CourtManager extends Component {
                                 <i className="fa-solid fa-magnifying-glass" />
                             </label> */}
                         </div>
-                        <div className="login" onClick={this.toggleDropdown}>
-                            <img src={user.avatar} alt="User Avatar" style={{ width: 50, borderRadius: "50%" }} />
-                            <p className="user-name">Xin chào, {user.username}</p>
-                            {dropdownVisible && (
-                                <div className="dropdownItem">
-                                    <div className="user-infor-dropdown">
-                                        <ul className="p-0 m-0">
-                                        <li>
-                                                <a href="/">
-                                                    <i className="fa-solid fa-user"></i> Trang chủ
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="/profile">
-                                                    <i className="fa-solid fa-user"></i> Hồ sơ
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a onClick={this.handleLogout}>
-                                                    <i className="fas fa-sign-out-alt"></i> Đăng xuất
-                                                </a>
-                                            </li>
-                                        </ul>
+                        {isLoggedIn && (
+                            <div className="login" onClick={this.toggleDropdown}>
+                                <img src={user.avatar} alt="User Avatar" style={{ width: 50, borderRadius: "50%" }} />
+                                <p className="user-name">Xin chào, {user.username}</p>
+                                {dropdownVisible && (
+                                    <div className="dropdownItem">
+                                        <div className="user-infor-dropdown">
+                                            <ul className="p-0 m-0">
+                                                <li>
+                                                    <a href="/">
+                                                        <i className="fa-solid fa-house"></i> Trang chủ
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="/profile">
+                                                        <i className="fa-solid fa-user"></i> Hồ sơ
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a onClick={this.handleLogout}>
+                                                        <i className="fas fa-sign-out-alt"></i> Đăng xuất
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                     <div className="body-manager">
                         <div className="manager-left">
@@ -190,7 +194,7 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsPrice" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa-solid fa-money-bill"></i>
+                                                <i className="fa-solid fa-money-bill"></i>
                                             </span>
                                             <span className="title">Quản lý bảng giá</span>
                                         </a>
@@ -207,16 +211,15 @@ export default class CourtManager extends Component {
                         <div className="manager-right">
                             <div className="tab-content">
                                 <div className="tab-pane fade show active" id="dsDashboard" role="tabpanel">
-                                    {" "}
                                     <Dashboard />
                                 </div>
 
                                 {/* ----------------------Coso------------------------------------- */}
 
-                                <div className="tab-pane fade " id="dsCoSo" role="tabpanel">
+                                <div className="tab-pane fade" id="dsCoSo" role="tabpanel">
                                     <Court />
                                 </div>
-                                <div className="tab-pane fade " id="dsOrder" role="tabpanel">
+                                <div className="tab-pane fade" id="dsOrder" role="tabpanel">
                                     <Order />
                                 </div>
 
@@ -245,7 +248,7 @@ export default class CourtManager extends Component {
                         </div>
                     </div>
                 </section>
-                <div className="footer-Manager ">
+                <div className="footer-Manager">
                     <p>© Badminton Court Management - Team 4 - SWP391</p>
                 </div>
             </div>

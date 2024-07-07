@@ -109,7 +109,7 @@ export default class ServicesManager extends Component {
     };
 
     handleUpdateServices = () => {
-        const { currentService } = this.state; // Corrected access to currentService in state
+        const { currentService } = this.state;
 
         axiosInstance
             .put("/facility/update", currentService, {
@@ -122,7 +122,6 @@ export default class ServicesManager extends Component {
                     this.fetchAllServices();
                     this.setState({
                         currentService: {
-                            // Corrected state update to currentService
                             facilityId: "",
                             facilityIcon: "",
                             facilityName: "",

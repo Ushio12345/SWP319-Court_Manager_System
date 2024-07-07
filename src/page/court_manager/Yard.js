@@ -236,7 +236,6 @@ export default class Yard extends Component {
 
         axiosInstance
             .delete(`/yard-schedule/${selectedYard}/deleteSlotFromYard/${slotId}`)
-
             .then((res) => {
                 if (res.status === 200) {
                     showAlert("success", "Thành công!", "Đã xóa slot khỏi sân.", "top-end");
@@ -328,15 +327,14 @@ export default class Yard extends Component {
         const currentSlots = slotInYard.slice(indexOfFirstItem, indexOfLastItem);
 
         return currentSlots.map((slot, index) => (
-            <tr key={slot.id}>
+            <tr key={slot.slotId}>
                 <td className="text-center">{index + 1}</td>
                 <td className="text-center">{slot.slotName}</td>
                 <td className="text-center">
                     {slot.startTime} - {slot.endTime}
                 </td>
-
                 <td className="text-center">
-                    <button className="btn btn-danger" onClick={() => this.deleteSlotForYard(slot.id)}>
+                    <button className="btn btn-danger" onClick={() => this.deleteSlotForYard(slot.slotId)}>
                         Xóa
                     </button>
                 </td>
@@ -410,14 +408,9 @@ export default class Yard extends Component {
     handleDeleteYard = (yardId) => {
         showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa sân này không?", "Xóa", "center").then((result) => {
             if (result.isConfirmed) {
-                let token = localStorage.getItem("token");
                 const deleteYard = () => {
                     axiosInstance
-                        .delete(`/yard/delete/${yardId}`, {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                        })
+                        .delete(`/yard/delete/${yardId}`)
                         .then((res) => {
                             if (res.status === 200) {
                                 this.fetchYardWithCourtID(this.state.selectedCourt);
@@ -511,6 +504,7 @@ export default class Yard extends Component {
                                     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
                                     alignItems: "center",
                                     fontSize: 12,
+                                    height: "100%",
 
                                     justifyContent: "end",
                                 }}
@@ -522,7 +516,7 @@ export default class Yard extends Component {
                             <button type="button" className=" btn btn-outline-primary w-25 m-0" onClick={this.handleAddYard}>
                                 Thêm sân
                             </button>
-                            <button class="btn btn-outline-success w-25 m-0 p-0 " type="button " onClick={this.handleEditYard}>
+                            <button class="btn btn-outline-success w-25 " type="button " onClick={this.handleEditYard}>
                                 Chỉnh sửa
                             </button>
                         </div>

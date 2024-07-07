@@ -125,3 +125,7 @@
 .yardWithCourtID {
     background-color: #f5f5f5;
 }
+.priceBoard th {
+    background-color: #f5f5f5 !important;
+    color: black !important;
+}

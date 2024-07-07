@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { Component } from "react";
 import { showAlert, showConfirmAlert } from "../../utils/alertUtils";
 import axiosInstance from "../../config/axiosConfig";
