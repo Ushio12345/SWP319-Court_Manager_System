@@ -16,6 +16,9 @@ export default class Staff extends Component {
         },
         selectedStaffId: null,
         selectedCourtId: "",
+        currentPage: 1,
+        itemsPerPage: 5,
+        searchInput: "",
     };
 
     componentDidMount() {
@@ -43,7 +46,7 @@ export default class Staff extends Component {
                     this.setState({ staffs: res.data });
                 } else {
                     this.setState({ staffs: [] });
-                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "center");
                     console.error("Response không thành công:", res.status);
                 }
             })
@@ -62,7 +65,7 @@ export default class Staff extends Component {
                     this.setState({ courts: res.data });
                 } else {
                     this.setState({ courts: [] });
-                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "center");
                     console.error("Response không thành công:", res.status);
                 }
             })
@@ -81,7 +84,7 @@ export default class Staff extends Component {
                     this.setState({ staffs: res.data });
                 } else {
                     this.setState({ staffs: [] });
-                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "center");
                     console.error("Response không thành công:", res.status);
                 }
             })
@@ -107,7 +110,7 @@ export default class Staff extends Component {
         axiosInstance
             .post("/auth/signup", this.state.newStaff)
             .then((response) => {
-                showAlert("success", "", "Tài khoản nhân viên được thêm thành công", "top-end");
+                showAlert("success", "", "Tài khoản nhân viên được thêm thành công", "center");
                 this.setState({
                     staffs: [...this.state.staffs, response.data],
                     newStaff: {
@@ -121,7 +124,7 @@ export default class Staff extends Component {
             })
             .catch((error) => {
                 handleTokenError(error);
-                showAlert("error", "Lỗi !", "Tạo tài khoản không thành công", "top-end");
+                showAlert("error", "Lỗi !", "Tạo tài khoản không thành công", "center");
             });
     };
 
@@ -133,16 +136,16 @@ export default class Staff extends Component {
                     .then((res) => {
                         this.fetchAllStaff();
                         if (res.status === 200) {
-                            showAlert("success", "", "Đã xóa nhân viên thành công", "top-end");
+                            showAlert("success", "", "Đã xóa nhân viên thành công", "center");
                             this.fetchAllStaff();
                         } else {
-                            showAlert("error", "Lỗi !", "Xóa nhân viên không thành công", "top-end");
+                            showAlert("error", "Lỗi !", "Xóa nhân viên không thành công", "center");
                             console.error("Response không thành công:", res.status);
                         }
                     })
                     .catch((error) => {
                         handleTokenError(error);
-                        showAlert("error", "", "Có lỗi trong quá trình xóa", "top-end");
+                        showAlert("error", "", "Có lỗi trong quá trình xóa", "center");
                     });
             }
         });
@@ -153,7 +156,7 @@ export default class Staff extends Component {
         axiosInstance
             .post(`/court/${courtId}/add-staff/${selectedStaffId}`)
             .then((res) => {
-                showAlert("success", "", "Cập nhật sân làm việc cho nhân viên này thành công", "top-end");
+                showAlert("success", "", "Cập nhật sân làm việc cho nhân viên này thành công", "center");
                 const updatedStaffs = this.state.staffs.map((staff) => {
                     if (staff.userId === selectedStaffId) {
                         return { ...staff, courtId: courtId };
@@ -163,8 +166,7 @@ export default class Staff extends Component {
                 this.setState({ staffs: updatedStaffs, selectedStaffId: null });
             })
             .catch((error) => {
-                handleTokenError(error);
-                showAlert("error", "Có lỗi xảy ra", "top-end");
+                showAlert("error", "", "Nhân viên đã tồn tại", "center-enđ");
             });
     };
 
@@ -177,12 +179,24 @@ export default class Staff extends Component {
             this.fetchAllStaff();
         }
     };
+    handlePageChange = (pageNumber) => {
+        this.setState({ currentPage: pageNumber });
+    };
+    handleSearchStaff = (e) => {
+        this.setState({ searchInput: e.target.value });
+    };
 
     renderStaff = () => {
-        return this.state.staffs.map((staff, index) => {
+        const { staffs, currentPage, itemsPerPage, searchInput } = this.state;
+        const filteredStaffs = staffs.filter((staff) => staff.fullName.toLowerCase().includes(searchInput.toLowerCase()));
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+        const currentStaffs = filteredStaffs.slice(indexOfFirstItem, indexOfLastItem);
+
+        return currentStaffs.map((staff, index) => {
             return (
                 <tr key={staff.userId}>
-                    <td className="text-center">{index + 1}</td>
+                    <td className="text-center">{indexOfFirstItem + index + 1}</td>
                     <td>
                         <img className="" src={staff.profileAvatar} style={{ width: 50, height: 50 }} alt="Avatar" />
                     </td>
@@ -207,9 +221,30 @@ export default class Staff extends Component {
             );
         });
     };
+    renderPagination = () => {
+        const { staffs, currentPage, itemsPerPage } = this.state;
+        const pageNumbers = [];
+        for (let i = 1; i <= Math.ceil(staffs.length / itemsPerPage); i++) {
+            pageNumbers.push(i);
+        }
 
+        return (
+            <nav>
+                <ul className="pagination">
+                    {pageNumbers.map((number) => (
+                        <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
+                            <button onClick={() => this.handlePageChange(number)} className="page-link">
+                                {number}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+        );
+    };
     render() {
-        const { newStaff, selectedCourtId } = this.state;
+        const { newStaff, selectedCourtId, searchInput } = this.state;
+
         return (
             <div className="staffManager py-4">
                 <div>
@@ -222,10 +257,20 @@ export default class Staff extends Component {
                                 </option>
                             ))}
                         </select>
-                        <button type="button" className="btn btn-primary w-25 my-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Tạo tài khoản nhân viên
-                        </button>
+                        <div className="w-50 d-flex align-items-center justify-end" style={{ height: "100%" }}>
+                            <label for="" class="form-label"></label>
+                            <input
+                                type="text"
+                                className="form-control w-50 ms-3"
+                                placeholder="Nhập nhân viên cần tìm"
+                                value={searchInput}
+                                onChange={this.handleSearchStaff}
+                            />
+                        </div>
                     </div>
+                    <button type="button" className="btn btn-primary w-25 my-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Tạo tài khoản nhân viên
+                    </button>
                     <div className="">
                         <table className="table table-hover">
                             <thead>
@@ -240,6 +285,7 @@ export default class Staff extends Component {
                             </thead>
                             <tbody>{this.renderStaff()}</tbody>
                         </table>
+                        {this.renderPagination()}
                     </div>
 
                     {/* modal add nhan vien mới */}
@@ -254,13 +300,13 @@ export default class Staff extends Component {
                                 </div>
                                 <div className="modal-body">
                                     <form onSubmit={this.createAccountStaff}>
-                                        <div className="mb-3">
+                                        <div className="">
                                             <label htmlFor="nameStaff" className="form-label">
                                                 Tên
                                             </label>
                                             <input
                                                 type="text"
-                                                className="form-control"
+                                                className="form-control w-100"
                                                 name="fullName"
                                                 id="nameStaff"
                                                 value={newStaff.fullName}

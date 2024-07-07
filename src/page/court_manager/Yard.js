@@ -328,7 +328,7 @@ export default class Yard extends Component {
 
         return currentSlots.map((slot, index) => (
             <tr key={slot.slotId}>
-                <td className="text-center">{index + 1}</td>
+                <td className="text-center">{indexOfFirstItem + index + 1}</td>
                 <td className="text-center">{slot.slotName}</td>
                 <td className="text-center">
                     {slot.startTime} - {slot.endTime}
@@ -465,7 +465,7 @@ export default class Yard extends Component {
     render() {
         const { selectedYard } = this.state;
         return (
-            <div className="yardManager">
+            <div className="yardManager pt-4">
                 <div>
                     <div className="flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
                         <div className="select-court d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
@@ -475,7 +475,7 @@ export default class Yard extends Component {
                             </select>
                         </div>
 
-                        <div className="input-group w-50">
+                        {/* <div className="input-group w-50">
                             <input
                                 type="text"
                                 className="form-control"
@@ -490,14 +490,8 @@ export default class Yard extends Component {
                                     <i className="fa fa-search" />
                                 </span>
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="d-flex my-4" style={{ alignItems: "center", justifyContent: "space-between" }}>
-                        <button className="btn btn-primary w-25" data-bs-toggle="modal" data-bs-target="#modalDsSlot">
-                            <i className="fa-solid fa-plus"></i> Thêm slot
-                        </button>
-                        <div className="w-50 input-group d-flex">
+                        </div> */}
+                        <div className="w-50 input-group d-flex ">
                             <input
                                 className=" bg-light form-control "
                                 style={{
@@ -520,6 +514,12 @@ export default class Yard extends Component {
                                 Chỉnh sửa
                             </button>
                         </div>
+                    </div>
+
+                    <div className="d-flex my-4" style={{ alignItems: "center", justifyContent: "space-between" }}>
+                        <button className="btn btn-primary w-25" data-bs-toggle="modal" data-bs-target="#modalDsSlot">
+                            <i className="fa-solid fa-plus"></i> Thêm slot
+                        </button>
                     </div>
                     {selectedYard && (
                         <div className="row">

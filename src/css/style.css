@@ -1029,7 +1029,6 @@ form h1 {
 .pagination .disabled {
     pointer-events: none;
     opacity: 0.6;
-    background-color: grey;
 }
 .manager-right .historyPage-body {
     padding: 30px 0;
