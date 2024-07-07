@@ -66,10 +66,10 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                             Giới Thiệu
                         </NavLink>
                         <NavLink to="/contact" activeClassName="active">
-                            Liên hệ
+                            Liên Hệ
                         </NavLink>
                         <NavLink to="/rules" activeClassName="active">
-                            Quy định
+                            Quy Định
                         </NavLink>
                     </div>
                     <div className="header-top-right col-lg-4 col-md-3">
@@ -140,7 +140,30 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                     <Modal.Title>Điều khoản và Điều kiện</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Đây là nội dung điều khoản và điều kiện của bạn...</p>
+                    <h5>1. Giới thiệu</h5>
+                    <p>Chào mừng bạn đến với ứng dụng ForBAD. Khi sử dụng ứng dụng này, bạn đồng ý tuân thủ các điều khoản và điều kiện dưới đây.</p>
+
+                    <h5>2. Dịch vụ của chúng tôi</h5>
+                    <p>ForBAD cung cấp dịch vụ đặt sân cầu lông trực tuyến, giúp bạn dễ dàng tìm kiếm và đặt chỗ sân cầu lông phù hợp nhất với nhu cầu của mình.</p>
+
+                    <h5>3. Quyền và trách nhiệm của người dùng</h5>
+                    <ul>
+                        <li>Người dùng cam kết cung cấp thông tin chính xác và đầy đủ khi đăng ký và sử dụng dịch vụ của chúng tôi.</li>
+                        <li>Người dùng chịu trách nhiệm bảo mật thông tin tài khoản và mật khẩu của mình.</li>
+                        <li>Người dùng không được sử dụng dịch vụ của chúng tôi cho các mục đích phi pháp, lừa đảo, hoặc gây tổn hại đến người khác.</li>
+                    </ul>
+
+                    <h5>4. Chính sách bảo mật</h5>
+                    <p>Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn và chỉ sử dụng nó cho các mục đích liên quan đến dịch vụ của chúng tôi. Bạn có thể tham khảo thêm về chính sách bảo mật của chúng tôi tại đây (liên kết đến chính sách bảo mật).</p>
+
+                    <h5>5. Thay đổi điều khoản và điều kiện</h5>
+                    <p>Chúng tôi có quyền thay đổi các điều khoản và điều kiện này bất kỳ lúc nào. Những thay đổi sẽ được cập nhật trên ứng dụng và có hiệu lực ngay sau khi được đăng tải.</p>
+
+                    <h5>6. Liên hệ</h5>
+                    <p>Nếu bạn có bất kỳ câu hỏi nào về các điều khoản và điều kiện này, vui lòng liên hệ với chúng tôi qua email: support@forbad.com.</p>
+
+                    <h5>7. Điều khoản khác</h5>
+                    <p>Việc bạn tiếp tục sử dụng dịch vụ của chúng tôi sau khi các điều khoản và điều kiện đã được sửa đổi có nghĩa là bạn chấp nhận và đồng ý tuân theo các thay đổi đó.</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCloseTermsModal}>

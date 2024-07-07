@@ -11,7 +11,10 @@ import axiosInstance from "../../config/axiosConfig";
 const CourtList = () => {
     const [courts, setCourts] = useState([]);
     const [latestCourts, setLatestCourts] = useState([]);
-    const [favoriteCourts, setFavoriteCourts] = useState([]);
+    const [searchKeyword, setSearchKeyword] = useState(""); // State để lưu từ khóa tìm kiếm
+    const [starFilter, setStarFilter] = useState(null);
+    const [openingHoursFilter, setOpeningHoursFilter] = useState(null);
+
 
     useEffect(() => {
         fetchCourts();
@@ -33,12 +36,37 @@ const CourtList = () => {
         axiosInstance
             .get("/court/latest-courts")
             .then((response) => {
-                setLatestCourts(response.data); // Lưu danh sách sân vào state
+                setLatestCourts(response.data); // Lưu danh sách sân mới nhất vào state
             })
             .catch((error) => {
-                console.error("Error fetching courts:", error);
+                console.error("Error fetching latest courts:", error);
             });
     };
+
+    const handleSearchChange = (event) => {
+        setSearchKeyword(event.target.value); // Cập nhật từ khóa tìm kiếm khi người dùng nhập vào input
+    };
+
+    const handleStarFilterChange = (value) => {
+        setStarFilter(value);
+    };
+
+    const handleOpeningHoursFilterChange = (value) => {
+        setOpeningHoursFilter(value);
+    };
+
+
+    const filteredCourts = courts.filter((court) => {
+        let matches = true;
+        if (starFilter !== null && court.star !== starFilter) {
+            matches = false;
+        }
+        if (openingHoursFilter !== null && court.openingHours !== openingHoursFilter) {
+            matches = false;
+        }
+        return matches && court.courtName.toLowerCase().includes(searchKeyword.toLowerCase());
+    });
+
 
     const settings = {
         dots: true,
@@ -117,7 +145,7 @@ const CourtList = () => {
     };
 
     return (
-        <section className="yard">
+        <section className="yard" id="court-list">
             <h1 className="m-4">CÁC SÂN CẦU LÔNG MỚI</h1>
             <div className="container w-4/5">
                 <Slider {...settings} className="list-yard showNewYard">
@@ -125,11 +153,51 @@ const CourtList = () => {
                         <CardYard key={court.courtId} court={court} />
                     ))}
                 </Slider>
+                <br />
             </div>
             <h1 className="m-4">TẤT CẢ SÂN CẦU LÔNG</h1>
+            <div className="filter">
+                <div className="search-container flex-grow-1">
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="searchCourt"
+                        id="searchCourt"
+                        placeholder="Tìm kiếm theo tên sân"
+                        value={searchKeyword}
+                        onChange={handleSearchChange}
+                    />
+                </div>
+                {/* <div className="filter-options">
+                    <label htmlFor="starFilter">Số sao:</label>
+                    <select
+                        id="starFilter"
+                        onChange={(e) => handleStarFilterChange(parseInt(e.target.value))}
+                        value={starFilter || ""}
+                    >
+                        <option value="">Tất cả</option>
+                        <option value="1">1 sao</option>
+                        <option value="2">2 sao</option>
+                        <option value="3">3 sao</option>
+                        <option value="4">4 sao</option>
+                        <option value="5">5 sao</option>
+                    </select>
+                    <label htmlFor="openingHoursFilter">Giờ mở cửa:</label>
+                    <select
+                        id="openingHoursFilter"
+                        onChange={(e) => handleOpeningHoursFilterChange(e.target.value)}
+                        value={openingHoursFilter || ""}
+                    >
+                        <option value="">Tất cả</option>
+                        <option value="08:00 - 12:00">08:00 - 12:00</option>
+                        <option value="13:00 - 17:00">13:00 - 17:00</option>
+                        <option value="18:00 - 22:00">18:00 - 22:00</option>
+                    </select>
+                </div> */}
+            </div>
             <div className="container w-4/5">
                 <Slider {...settingForShowAllYard} className="list-yard showAllYard">
-                    {courts.map((court) => (
+                    {filteredCourts.map((court) => (
                         <div className="card-container" key={court.courtId}>
                             <CardYard court={court} />
                         </div>

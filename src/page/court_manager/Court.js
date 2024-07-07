@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { Component } from "react";
 import { showAlert, showConfirmAlert } from "../../utils/alertUtils";
 import axiosInstance from "../../config/axiosConfig";
@@ -233,7 +232,6 @@ export default class extends Component {
                                         <img src={this.state.newCourt.imageUrl} alt="Hình ảnh cơ sở" className="img-fluid" />
                                     </div>
                                     <div className="col-md-6">
-                                        <h4>{this.state.newCourt.courtName}</h4>
                                         <h4>{this.state.newCourt.courtName}</h4>
                                         <p>
                                             <strong>Mã cơ sở:</strong> {this.state.newCourt.courtId}

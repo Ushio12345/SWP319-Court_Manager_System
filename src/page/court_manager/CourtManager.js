@@ -12,6 +12,7 @@ import Order from "./Order";
 import Slot from "./Slot";
 import axiosInstance from "../../config/axiosConfig";
 import Dashboard from "./Dashboard";
+import PriceBoardManager from "./PriceBoardManager";
 
 export default class CourtManager extends Component {
     constructor(props) {
@@ -44,6 +45,8 @@ export default class CourtManager extends Component {
                     avatar: user.imageUrl,
                 },
             });
+        } else {
+            window.location.href = "/login"; // Chuyển hướng đến trang đăng nhập nếu không đăng nhập
         }
     };
 
@@ -69,7 +72,7 @@ export default class CourtManager extends Component {
                 avatar: "",
             },
         });
-        window.location.href = "/";
+        window.location.href = "/"; // Chuyển hướng đến trang chủ sau khi đăng xuất
     };
 
     toggleDropdown = () => {
@@ -100,14 +103,14 @@ export default class CourtManager extends Component {
                         </div>
                         <div className="login" onClick={this.toggleDropdown}>
                             <img src={user.avatar} alt="User Avatar" style={{ width: 50, borderRadius: "50%" }} />
-                            <p className="user-name">Xin chào, {user.username}</p>
+                            <p className="user-name">{user.username}</p>
                             {dropdownVisible && (
                                 <div className="dropdownItem">
                                     <div className="user-infor-dropdown">
                                         <ul className="p-0 m-0">
-                                        <li>
+                                            <li>
                                                 <a href="/">
-                                                    <i className="fa-solid fa-user"></i> Trang chủ
+                                                    <i className="fa-solid fa-home"></i> Trang chủ
                                                 </a>
                                             </li>
                                             <li>
@@ -135,7 +138,7 @@ export default class CourtManager extends Component {
                                             <span className="icon">
                                                 <i className="fa-solid fa-chart-line" />
                                             </span>
-                                            <span className="title">Thống kê</span>
+                                            <span className="title">Thống Kê</span>
                                         </a>
                                     </li>
                                     <li className="nav-item">
@@ -143,7 +146,7 @@ export default class CourtManager extends Component {
                                             <span className="icon">
                                                 <i className="fa-solid fa-file-invoice"></i>
                                             </span>
-                                            <span className="title">Quản lý đơn đặt hàng</span>
+                                            <span className="title">Quản Lý Đơn Hàng</span>
                                         </a>
                                     </li>
                                     <li className="nav-item">
@@ -151,7 +154,7 @@ export default class CourtManager extends Component {
                                             <span className="icon">
                                                 <i className="fa-solid fa-computer" />
                                             </span>
-                                            <span className="title">Quản lý Nhân viên</span>
+                                            <span className="title">Quản Lý Nhân Viên</span>
                                         </a>
                                     </li>
                                     <li className="nav-item">
@@ -159,7 +162,7 @@ export default class CourtManager extends Component {
                                             <span className="icon">
                                                 <i className="fa-solid fa-shop" />
                                             </span>
-                                            <span className="title">Quản lý Cơ Sở</span>
+                                            <span className="title">Quản Lý Cơ Sở</span>
                                         </a>
                                     </li>
                                     <li className="nav-item">
@@ -167,7 +170,7 @@ export default class CourtManager extends Component {
                                             <span className="icon">
                                                 <i className="fa fa-table-tennis"></i>
                                             </span>
-                                            <span className="title">Quản lý Sân</span>
+                                            <span className="title">Quản Lý Sân</span>
                                         </a>
                                     </li>
                                     <li className="nav-item">
@@ -175,7 +178,7 @@ export default class CourtManager extends Component {
                                             <span className="icon">
                                                 <i className="fa-solid fa-clock"></i>
                                             </span>
-                                            <span className="title">Quản lý Slot</span>
+                                            <span className="title">Quản Lý Slot</span>
                                         </a>
                                     </li>
                                     <li className="nav-item">
@@ -183,14 +186,24 @@ export default class CourtManager extends Component {
                                             <span className="icon">
                                                 <i className="fa-solid fa-mug-saucer"></i>
                                             </span>
-                                            <span className="title">Quản lý tiện ích sân</span>
+                                            <span className="title">Quản Lý Tiện Ích</span>
+                                        </a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#dsPrice" data-bs-toggle="tab">
+                                            <span className="icon">
+                                                <i class="fa-solid fa-money-bill"></i>
+                                            </span>
+                                            <span className="title">Quản Lý Bảng Giá</span>
                                         </a>
                                     </li>
                                     <a className="w-75 logout m-auto " href="/">
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
                                         </span>
-                                        <span className="title">Trở về trang chủ</span>
+                                        <span className="title" onClickCapture={this.handleLogout}>
+                                            Đăng xuât
+                                        </span>
                                     </a>
                                 </ul>
                             </div>
@@ -198,16 +211,15 @@ export default class CourtManager extends Component {
                         <div className="manager-right">
                             <div className="tab-content">
                                 <div className="tab-pane fade show active" id="dsDashboard" role="tabpanel">
-                                    {" "}
                                     <Dashboard />
                                 </div>
 
                                 {/* ----------------------Coso------------------------------------- */}
 
-                                <div className="tab-pane fade " id="dsCoSo" role="tabpanel">
+                                <div className="tab-pane fade" id="dsCoSo" role="tabpanel">
                                     <Court />
                                 </div>
-                                <div className="tab-pane fade " id="dsOrder" role="tabpanel">
+                                <div className="tab-pane fade" id="dsOrder" role="tabpanel">
                                     <Order />
                                 </div>
 
@@ -215,9 +227,9 @@ export default class CourtManager extends Component {
 
                                 {/* ----------------------Staff---------------------------------------------------------------------- */}
 
-                                <div className="tab-pane fade" id="dsStaff" role="tabpanel">
+                                {/* <div className="tab-pane fade" id="dsStaff" role="tabpanel">
                                     <Staff selectedCourtId={selectedCourtId} />
-                                </div>
+                                </div> */}
 
                                 {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
                                 <div className="tab-pane fade" id="dsYard" role="tabpanel">
@@ -229,11 +241,14 @@ export default class CourtManager extends Component {
                                 <div className="tab-pane fade" id="dsSlot" role="tabpanel">
                                     <Slot fetchCourts={this.fetchCourts} selectedCourtId={selectedCourtId} />
                                 </div>
+                                <div className="tab-pane fade" id="dsPrice" role="tabpanel">
+                                    <PriceBoardManager fetchCourts={this.fetchCourts} selectedCourtId={selectedCourtId} />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </section>
-                <div className="footer-Manager ">
+                <div className="footer-Manager">
                     <p>© Badminton Court Management - Team 4 - SWP391</p>
                 </div>
             </div>

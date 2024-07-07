@@ -13,6 +13,7 @@ export default class HistoryBooking extends Component {
         this.state = {
             currentTab: "showProcessingOrder",
             bookings: [],
+            searchQuery: "", // Thêm state để lưu trữ giá trị tìm kiếm
             isLoggedIn: false,
             user: {
                 username: "",
@@ -78,21 +79,32 @@ export default class HistoryBooking extends Component {
         this.setState({ currentTab: tab });
     };
 
+    // Hàm để cập nhật giá trị tìm kiếm
+    handleSearchQueryChange = (event) => {
+        this.setState({ searchQuery: event.target.value });
+    };
+
     filterBookings = (status) => {
-        const filteredBookings = this.state.bookings.filter(booking => booking.statusEnum === status);
-        return filteredBookings;
+        const { bookings, searchQuery } = this.state;
+        return bookings
+            .filter(booking => booking.statusEnum === status)
+            .filter(booking => {
+                const courtName = booking.courtName ? booking.courtName.toLowerCase() : '';
+                const bookingId = booking.bookingId ? booking.bookingId.toString() : '';
+                return courtName.includes(searchQuery.toLowerCase()) || bookingId.includes(searchQuery);
+            });
     }
 
     render() {
-        const { currentTab, isLoggedIn, user } = this.state;
+        const { currentTab, isLoggedIn, user, searchQuery } = this.state;
 
         return (
             <div className="historyPage">
                 <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
                 <div className="historyPage-body w-75 m-auto">
-                        <div>
-                            <ul className="nav-status nav nav-pills nav-justified mb-3" id="pills-tab" role="tablist">
-                            {["showProcessingOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => (
+                    <div>
+                        <ul className="nav-status nav nav-pills nav-justified mb-3" id="pills-tab" role="tablist">
+                            {["showProcessingOrder", "showCheckInOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => (
                                 <li className="nav-item" role="presentation" key={tab}>
                                     <button
                                         className={`nav-link ${currentTab === tab ? "active" : ""}`}
@@ -106,22 +118,32 @@ export default class HistoryBooking extends Component {
                                         onClick={() => this.setCurrentTab(tab)}
                                     >
                                         {tab === "showProcessingOrder" && "Đang chờ xử lý"}
+                                        {tab === "showCheckInOrder" && "Đang chờ check-in"}
                                         {tab === "showCompleteOrder" && "Đã hoàn thành"}
                                         {tab === "showCancelledOrder" && "Đã hủy"}
                                     </button>
                                 </li>
                             ))}
-                            </ul>
-                        </div>
-                        <div className="mb-3">
-                            <input type="text" className="form-control" name="findOrder" id="findOrder" placeholder="Nhập sân cần tìm" />
-                        </div>
-                        <div className="tab-content" id="pills-tabContent">
-                        {["showProcessingOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => {
+                        </ul>
+                    </div>
+                    <div className="mb-3">
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            name="findOrder" 
+                            id="findOrder" 
+                            placeholder="Bạn có thể tìm kiếm theo tên sân hoặc mã đơn hàng" 
+                            value={searchQuery}
+                            onChange={this.handleSearchQueryChange}
+                        />
+                    </div>
+                    <div className="tab-content" id="pills-tabContent">
+                        {["showProcessingOrder", "showCheckInOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => {
                             const filteredBookings = this.filterBookings(
                                 tab === "showProcessingOrder" ? "Đang chờ xử lý" :
-                                tab === "showCompleteOrder" ? "Đã hoàn thành" :
-                                "Đã hủy"
+                                    tab === "showCheckInOrder" ? "Đang chờ check-in" :
+                                        tab === "showCompleteOrder" ? "Đã hoàn thành" :
+                                            "Đã hủy"
                             );
                             return (
                                 <div
@@ -132,7 +154,7 @@ export default class HistoryBooking extends Component {
                                     aria-labelledby={`${tab}-tab`}
                                 >
                                     {filteredBookings.length > 0 ? (
-                                        filteredBookings.map((booking) => {                                         
+                                        filteredBookings.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate)).map((booking) => {
                                             return (
                                                 <OrderItem key={booking.bookingId} booking={booking} onBookingCancel={this.fetchBookings} />
                                             );
@@ -141,9 +163,9 @@ export default class HistoryBooking extends Component {
                                         <div className="no-bookings">
                                             <FontAwesomeIcon icon={faInbox} size="3x" />
                                             <p>Chưa có đơn hàng</p>
-                            </div>
+                                        </div>
                                     )}
-                        </div>
+                                </div>
                             );
                         })}
                     </div>
