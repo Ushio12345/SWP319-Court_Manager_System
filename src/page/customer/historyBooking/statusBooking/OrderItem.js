@@ -68,6 +68,20 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                 return null;
         }
     }
+
+    function getPrice(bookingType) {
+        switch (bookingType) {
+            case 'Lịch đơn':
+                return booking.court.priceList.singleBookingPrice.toLocaleString('vi-VN');
+            case 'Lịch cố định':
+                return booking.court.priceList.fixedBookingPrice.toLocaleString('vi-VN');
+            case 'Lịch linh hoạt':
+                return booking.court.priceList.flexibleBookingPrice.toLocaleString('vi-VN');
+            default:
+                return null;
+        }
+    }
+
     return (
         <div className="orderItemList">
             <div className="orderItem mt-4">
@@ -93,8 +107,8 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                             {booking.flexibleBooking &&
                                 <p><b>Số giờ linh hoạt:</b> {booking.flexibleBooking.availableHours + booking.flexibleBooking.usedHours}</p>}
                             <p>
-                                <b>Hình thức thanh toán:</b> <i className="fa-brands fa-paypal"></i>
-                                <span> PayPal</span>
+                                <b>Hình thức thanh toán: </b>
+                                {booking.totalPrice !== 0 ? (<><i className="fa-brands fa-paypal"></i> <span> PayPal</span></>) : (<><FontAwesomeIcon icon={faClock} className="text-info" /> <span> Giờ linh hoạt</span></>)}
                             </p>
                         </div>
                     </div>
@@ -114,7 +128,7 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                         </button>}
                 </div>
 
-                <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>Chi tiết đơn</Modal.Title>
                     </Modal.Header>
@@ -126,6 +140,9 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                                         <th>Slot</th>
                                         <th>Ngày check-in</th>
                                         <th>Sân</th>
+                                        <th>
+                                            {booking.totalPrice === 0 ? "Giờ" : "Giá (VND)"}
+                                        </th>
                                         <th>Trạng thái</th>
                                     </tr>
                                 </thead>
@@ -137,9 +154,25 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                                                 <td>{bookingDetail.yardSchedule.slot.slotName}</td>
                                                 <td>{bookingDetail.date}</td>
                                                 <td>{bookingDetail.yardSchedule.yard.yardName}</td>
+                                                <td>{ booking.totalPrice === 0 ? `1 giờ` : getPrice(booking.bookingType) }</td>
                                                 <td style={{ color: getStatusTextColor(booking.statusEnum) }}>{bookingDetail.status}</td>
                                             </tr>
                                         ))}
+                                    {booking.totalPrice === 0 ? (
+                                        <tr>
+                                            <td><b>Giờ linh hoạt:</b></td>
+                                            <td colSpan="2"></td>
+                                            <td style={{ color: 'green', fontWeight: 'bold' }}>
+                                                {booking.totalPrice === 0 ? `${booking.bookingDetails.length} giờ` : `0 giờ`}
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        <tr>
+                                            <td><b>Tổng tiền:</b></td>
+                                            <td colSpan="2"></td>
+                                            <td style={{ color: 'green', fontWeight: 'bold' }}>{booking.totalPrice.toLocaleString('vi-VN')}</td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         )}

@@ -8,7 +8,7 @@ import Court from "./Court";
 import Staff from "./Staff";
 import Yard from "./Yard";
 import Services from "./Services";
-import Order from "./Order";
+import Order from "../court_manager/dashboardComponent/order/Order";
 import Slot from "./Slot";
 import axiosInstance from "../../config/axiosConfig";
 import Dashboard from "./Dashboard";
@@ -202,7 +202,7 @@ export default class CourtManager extends Component {
                                             <i className="fas fa-sign-out-alt" />
                                         </span>
                                         <span className="title" onClickCapture={this.handleLogout}>
-                                            Đăng xuât
+                                            Đăng xuất
                                         </span>
                                     </a>
                                 </ul>

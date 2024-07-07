@@ -90,6 +90,10 @@ export default class Staff extends Component {
             formData.append("profileAvatar", newStaff.profileAvatar);
         }
 
+        if (!selectedCourt) {
+            return;
+        }
+
         axiosInstance
             .post(`/court/${selectedCourt}/add-staff/${newStaff.userId}`, formData, {
                 headers: {

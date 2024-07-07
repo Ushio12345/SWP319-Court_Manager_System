@@ -19,20 +19,16 @@ export default class PriceBpard extends Component {
                             {priceBoard ? (
                                 <div>
                                     <div className="d-flex justify-between">
-                                        <div>Mã bảng giá: </div>
-                                        <strong>{priceBoard.priceListId}</strong>
-                                    </div>
-                                    <div className="d-flex justify-between">
                                         <div>Giá đặt đơn: </div>
-                                        <strong>{priceBoard.singleBookingPrice} VND</strong>
+                                        <strong>{priceBoard?.singleBookingPrice?.toLocaleString('vi-VN')} VND</strong>
                                     </div>
                                     <div className="d-flex justify-between">
                                         <div>Giá đặt cố định: </div>
-                                        <strong>{priceBoard.fixedBookingPrice} VND</strong>
+                                        <strong>{priceBoard?.fixedBookingPrice?.toLocaleString('vi-VN')} VND</strong>
                                     </div>
                                     <div className="d-flex justify-between">
                                         <div>Giá đặt linh hoạt:</div>
-                                        <strong>{priceBoard.flexibleBookingPrice} VND</strong>
+                                        <strong>{priceBoard?.flexibleBookingPrice?.toLocaleString('vi-VN')} VND</strong>
                                     </div>
                                 </div>
                             ) : (

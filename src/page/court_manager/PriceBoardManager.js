@@ -216,9 +216,9 @@ export default class PriceBoardManager extends Component {
                 <tbody>
                     <tr>
                         <td className="text-center">Giá/Slot</td>
-                        <td className="text-center">{price.singleBookingPrice}</td>
-                        <td className="text-center">{price.fixedBookingPrice}</td>
-                        <td className="text-center">{price.flexibleBookingPrice}</td>
+                        <td className="text-center">{price.singleBookingPrice.toLocaleString('vi-VN')} VND</td>
+                        <td className="text-center">{price.fixedBookingPrice.toLocaleString('vi-VN')} VND</td>
+                        <td className="text-center">{price.flexibleBookingPrice.toLocaleString('vi-VN')} VND</td>
                         <td className="d-flex justify-content-between">
                             <button className="btn btn-warning" onClick={() => this.handleEditPriceBoard(price)}>
                                 <i className="fa-solid fa-pen-to-square"></i>
