@@ -6,10 +6,10 @@ export default class Customer extends Component {
             <div className="infomation-Customer">
                 <div className="Customer my-4">
                     <div className="avtCus">
-                        <img src="https://i.pravatar.cc/4"></img>
+                        <img src="https://i.pravatar.cc/4" style={{ width: 50, height: 50 }}></img>
                     </div>
                     <div className="nameCus">
-                        <h4>Huỳnh Thị An</h4>
+                        <h6>Huỳnh Thị An</h6>
                         <div className="time-rate">
                             <p className="me-2">24/06/2024</p>
                             <p> 6:25</p>

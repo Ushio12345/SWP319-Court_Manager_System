@@ -189,6 +189,14 @@ export default class CourtManager extends Component {
                                             <span className="title">Quản Lý Tiện Ích</span>
                                         </a>
                                     </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#dsPrice" data-bs-toggle="tab">
+                                            <span className="icon">
+                                                <i class="fa-solid fa-money-bill"></i>
+                                            </span>
+                                            <span className="title">Quản Lý Bảng Giá</span>
+                                        </a>
+                                    </li>
                                     <a className="w-75 logout m-auto " href="/">
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />

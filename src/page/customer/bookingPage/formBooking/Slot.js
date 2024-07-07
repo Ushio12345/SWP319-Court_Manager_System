@@ -7,6 +7,7 @@ import axiosInstance from "../../../../config/axiosConfig";
 import NapGio from "./NapGio";
 import { showConfirmPayment } from "../../../../utils/alertUtils";
 import "./slot.css";
+import PriceBpard from "./PriceBpard";
 
 // Register the Vietnamese locale with react-datepicker
 registerLocale("vi", vi);
@@ -306,7 +307,7 @@ export default class Slot extends Component {
                 break;
             case "codinh":
                 url = `/booking/${courtId}/fixed`;
-                data = bookingDetailsList; 
+                data = bookingDetailsList;
                 break;
             default:
                 console.error("Invalid selectedTab value!");
@@ -336,18 +337,24 @@ export default class Slot extends Component {
                 })
                 .catch((error) => {
                     console.error("There was an error when booking !", error);
-                });
+                })
                 .post(url, data)
                 .then((response) => {
                     if (response.status === 200) {
-                        showConfirmPayment('Thông báo', 'Thanh toán và đặt lịch thành công !', 'success', 'Xem trạng thái đơn hàng', 'Trở về trang chủ', 'center')
-                            .then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.href = "/historyOrder";
-                                } else if (result.dismiss) {
-                                    window.location.href = "/";
-                                }
-                            });
+                        showConfirmPayment(
+                            "Thông báo",
+                            "Thanh toán và đặt lịch thành công !",
+                            "success",
+                            "Xem trạng thái đơn hàng",
+                            "Trở về trang chủ",
+                            "center"
+                        ).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/historyOrder";
+                            } else if (result.dismiss) {
+                                window.location.href = "/";
+                            }
+                        });
                     }
                 })
                 .catch((error) => {
@@ -385,7 +392,7 @@ export default class Slot extends Component {
 
     isPastTime(startTime) {
         const currentTime = new Date();
-        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const [startHour, startMinute] = startTime.split(":").map(Number);
         const slotStartTime = new Date(currentTime);
         slotStartTime.setHours(startHour, startMinute, 0, 0);
 
@@ -399,7 +406,6 @@ export default class Slot extends Component {
         const formattedToday = format(today, "yyyy-MM-dd");
         return formattedToday === formattedDayKey;
     }
-
 
     render() {
         const { court } = this.props;
@@ -415,8 +421,7 @@ export default class Slot extends Component {
         return (
             <div className="">
                 <form className="order row">
-                    <div className="col-lg-2">{this.renderPriceBoard()}</div>
-                    <div className="select-slot p-3 col-lg-10">
+                    <div className="select-slot p-3">
                         <ul className="nav nav-pills mb-3" id="pills-tab" role="tablist">
                             <li className="nav-item" role="presentation">
                                 <button
@@ -463,11 +468,21 @@ export default class Slot extends Component {
                                     Lịch linh hoạt
                                 </button>
                             </li>
+                            <li>
+                                <div>
+                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        Xem thông tin bảng giá
+                                    </button>
+                                    <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="modalPriceBoard" aria-hidden="true">
+                                        <PriceBpard priceBoard={this.state.priceBoard} />
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
-                        {selectedTab === "linhhoat" && <h2 style={{ fontSize: '30px' }}>Số giờ linh hoạt hiện có: {this.getAvailableHours()} giờ</h2>}
+                        {selectedTab === "linhhoat" && <h2 style={{ fontSize: "30px" }}>Số giờ linh hoạt hiện có: {this.getAvailableHours()} giờ</h2>}
 
                         <select
-                            className="form-select"
+                            className="form-select my-3"
                             aria-label="Default select example"
                             value={this.state.selectedYard}
                             onChange={this.handleYardChange}
@@ -504,12 +519,17 @@ export default class Slot extends Component {
                                                 <td>{slot.slotName}</td>
                                                 {daysOfWeek.map((_, dayIndex) => (
                                                     <td key={dayIndex} className="slot-times-column">
-
                                                         <div
-                                                            className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime) ? "pastTime" : ""}`}
+                                                            className={`slot-time ${
+                                                                selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                            } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${
+                                                                this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                    ? "pastTime"
+                                                                    : ""
+                                                            }`}
                                                             onClick={
-                                                                !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) && !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
                                                                     ? () => this.handleSlotSelection(slot.slotId, dayIndex)
                                                                     : null
                                                             }
@@ -543,13 +563,18 @@ export default class Slot extends Component {
                                             <tr key={slot.slotId}>
                                                 <td>{slot.slotName}</td>
                                                 {daysOfWeek.map((_, dayIndex) => (
-
                                                     <td key={dayIndex} className="slot-times-column">
                                                         <div
-                                                            className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime) ? "pastTime" : ""}`}
+                                                            className={`slot-time ${
+                                                                selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                            } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${
+                                                                this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                    ? "pastTime"
+                                                                    : ""
+                                                            }`}
                                                             onClick={
-                                                                !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) && !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
                                                                     ? () => this.handleSlotSelection(slot.slotId, dayIndex)
                                                                     : null
                                                             }
@@ -586,14 +611,18 @@ export default class Slot extends Component {
                                                     <tr key={slot.slotId}>
                                                         <td>{slot.slotName}</td>
                                                         {daysOfWeek.map((_, dayIndex) => (
-
                                                             <td key={dayIndex} className="slot-times-column">
-
                                                                 <div
-                                                                    className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                        } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime) ? "pastTime" : ""}`}
+                                                                    className={`slot-time ${
+                                                                        selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                    } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${
+                                                                        this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                            ? "pastTime"
+                                                                            : ""
+                                                                    }`}
                                                                     onClick={
-                                                                        !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) && !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                        !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                        !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
                                                                             ? () => this.handleSlotSelection(slot.slotId, dayIndex)
                                                                             : null
                                                                     }
@@ -621,26 +650,28 @@ export default class Slot extends Component {
                             <>
                                 <div>
                                     Bạn đã chọn:
-                                    {this.state.bookingDetailsList.reduce((acc, bookingDetail, index) => {
-                                        const selectedSlot = this.state.slots.find(slot => slot.slotId === bookingDetail.slotId);
-                                        if (!selectedSlot) {
+                                    {this.state.bookingDetailsList
+                                        .reduce((acc, bookingDetail, index) => {
+                                            const selectedSlot = this.state.slots.find((slot) => slot.slotId === bookingDetail.slotId);
+                                            if (!selectedSlot) {
+                                                return acc;
+                                            }
+                                            const existingDate = acc.find((item) => item.date === bookingDetail.date);
+                                            if (existingDate) {
+                                                existingDate.slots.push(selectedSlot.slotName);
+                                            } else {
+                                                acc.push({
+                                                    date: bookingDetail.date,
+                                                    slots: [selectedSlot.slotName],
+                                                });
+                                            }
                                             return acc;
-                                        }
-                                        const existingDate = acc.find(item => item.date === bookingDetail.date);
-                                        if (existingDate) {
-                                            existingDate.slots.push(selectedSlot.slotName);
-                                        } else {
-                                            acc.push({
-                                                date: bookingDetail.date,
-                                                slots: [selectedSlot.slotName]
-                                            });
-                                        }
-                                        return acc;
-                                    }, []).map((item, index) => (
-                                        <div key={index}>
-                                            Ngày: {item.date}: {item.slots.join(', ')}
-                                        </div>
-                                    ))}
+                                        }, [])
+                                        .map((item, index) => (
+                                            <div key={index}>
+                                                Ngày: {item.date}: {item.slots.join(", ")}
+                                            </div>
+                                        ))}
                                 </div>
 
                                 <div className="w-25 m-auto">

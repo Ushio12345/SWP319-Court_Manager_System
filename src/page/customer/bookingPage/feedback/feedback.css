@@ -37,6 +37,7 @@ img {
 .infomation-Customer .Customer {
     display: flex;
     align-items: center;
+    font-size: 12px;
 }
 .Customer {
     margin-bottom: 10px;
