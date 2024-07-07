@@ -49,6 +49,17 @@ class GuestPage extends Component {
         window.location.href = "/";
     };
 
+    scrollToCourtList = () => {
+        const courtListSection = document.getElementById("court-list");
+        if (courtListSection) {
+            courtListSection.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
+    handleSearchChange = (event) => {
+        this.setState({ searchKeyword: event.target.value });
+    };
+
     render() {
         const { isLoggedIn, user } = this.state;
 
@@ -57,41 +68,8 @@ class GuestPage extends Component {
                 <section className="header">
                     <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
                 </section>
-                <Banner />
-                <div className="filter ">
-                    <div className="locGio">
-                        <p>Giờ hoạt động</p>
-                        <ul className="filter-time">
-                            <li>
-                                <a href="login.html">7:00 - 12:00</a>
-                            </li>
-                            <li>
-                                <a href="login.html">9:00 - 23:00</a>
-                            </li>
-                            <li>
-                                <a href="login.html">7:00 - 24:00</a>
-                            </li>
-                            <li>
-                                <a href="login.html">10:00 - 20:00</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="search-name">
-                        <input type="text" placeholder="Nhập tên sân cần tìm" />
-                        <i className="fa-solid fa-magnifying-glass" />
-                    </div>
-                    <div className="sort">
-                        {/* drop down sắp xếp các sân */}
-                        <select id="sorted" name>
-                            <option value>Sắp xếp theo</option>
-                            <option value={1}>Từ A - Z</option>
-                            <option value={2}>Từ Z - A</option>
-                            <option value={3}>Giá tăng dần</option>
-                            <option value={4}>Giá giảm dần</option>
-                        </select>
-                    </div>
-                </div>
-                <CourtList />
+                <Banner scrollToCourtList={this.scrollToCourtList} /> 
+                <CourtList /> {/* Truyền searchKeyword vào CourtList */}
                 <Footer />
             </div>
         );

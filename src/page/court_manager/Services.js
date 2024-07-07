@@ -13,7 +13,7 @@ export default class Services extends Component {
         facilityOfCourt: [],
     };
 
-    componentDidMount() {
+    componentDidMount() {   
         this.fetchServices();
         this.fetchCourts();
     }
@@ -23,7 +23,17 @@ export default class Services extends Component {
             .get("/court/courts-of-owner")
             .then((res) => {
                 if (res.status === 200) {
-                    this.setState({ courts: res.data });
+                    this.setState({ courts: res.data }, () => {
+                        // Set selectedCourt to the first court in the list and fetch its services
+                        if (this.state.courts.length > 0) {
+                            const firstCourt = this.state.courts[0];
+                            this.setState({
+                                selectedCourt: firstCourt.courtId,
+                                selectedCourtName: firstCourt.courtName,
+                            });
+                            this.renderServicesInCourt(firstCourt.courtId);
+                        }
+                    });
                 } else {
                     showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
                     console.error("Response không thành công:", res.status);

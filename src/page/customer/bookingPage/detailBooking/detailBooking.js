@@ -214,7 +214,6 @@ const DetailBooking = () => {
                                             <th>Slot</th>
                                             <th>Ngày check-in</th>
                                             <th>Sân</th>
-                                            <th>Giá tiền</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -225,7 +224,6 @@ const DetailBooking = () => {
                                                     <td>{bookingDetail.yardSchedule.slot.slotName}</td>
                                                     <td>{bookingDetail.date}</td>
                                                     <td>{bookingDetail.yardSchedule.yard.yardName}</td>
-                                                    <td>{bookingDetail.yardSchedule.slot.price} VND</td>
                                                 </tr>
                                             ))}
                                     </tbody>
@@ -260,7 +258,7 @@ const DetailBooking = () => {
                             </label>
                             <div className="col-lg-6 " style={{ display: "flex", alignItems: "center" }}>
                                 <strong style={{ fontSize: "22px", color: "orangered", display: "flex", alignItems: "center" }}>
-                                    {booking.totalPrice} VNĐ
+                                    {booking.totalPrice.toLocaleString('vi-VN')} VND
                                 </strong>
                             </div>
                         </div>
