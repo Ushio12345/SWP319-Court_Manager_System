@@ -22,6 +22,7 @@ export default class CourtManager extends Component {
             user: {
                 username: "",
                 avatar: "",
+                userId: "",
             },
             courts: [],
             selectedCourtId: "",
@@ -43,6 +44,7 @@ export default class CourtManager extends Component {
                 user: {
                     username: user.fullName,
                     avatar: user.imageUrl,
+                    userId: user.userId,
                 },
             });
         } else {
@@ -83,6 +85,7 @@ export default class CourtManager extends Component {
 
     render() {
         const { isLoggedIn, user, courts, selectedCourtId, dropdownVisible } = this.state;
+        console.log(user.userId);
         return (
             <div>
                 <section className="manager">
@@ -227,9 +230,9 @@ export default class CourtManager extends Component {
 
                                 {/* ----------------------Staff---------------------------------------------------------------------- */}
 
-                                {/* <div className="tab-pane fade" id="dsStaff" role="tabpanel">
-                                    <Staff selectedCourtId={selectedCourtId} />
-                                </div> */}
+                                <div className="tab-pane fade" id="dsStaff" role="tabpanel">
+                                    <Staff managerId={user.userId} />
+                                </div>
 
                                 {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
                                 <div className="tab-pane fade" id="dsYard" role="tabpanel">
