@@ -174,7 +174,7 @@ export default class Slot extends Component {
     };
 
     handleTabChange = (tab) => {
-        this.setState({ selectedTab: tab, selectedSlots: {}, selectedDay: null, errorMessage: "" });
+        this.setState({ selectedTab: tab, selectedSlots: {}, selectedDay: null, errorMessage: "", bookingDetailsList: [] });
     };
 
     handleSlotSelection = (slot, dayIndex) => {
@@ -336,28 +336,6 @@ export default class Slot extends Component {
                 .catch((error) => {
                     console.error("There was an error when booking !", error);
                 })
-                .post(url, data)
-                .then((response) => {
-                    if (response.status === 200) {
-                        showConfirmPayment(
-                            "Thông báo",
-                            "Thanh toán và đặt lịch thành công !",
-                            "success",
-                            "Xem trạng thái đơn hàng",
-                            "Trở về trang chủ",
-                            "center"
-                        ).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = "/historyOrder";
-                            } else if (result.dismiss) {
-                                window.location.href = "/";
-                            }
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.error("There was an error when booking !", error);
-                });
         } else {
             axiosInstance
                 .post(url, data)

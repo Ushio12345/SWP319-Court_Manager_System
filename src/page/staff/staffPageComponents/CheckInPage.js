@@ -4,11 +4,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { addDays, format, eachDayOfInterval, parse, differenceInHours } from "date-fns";
 import { vi } from "date-fns/locale";
 import "../../customer/bookingPage/formBooking/slot.css";
+import "../../../css/style.css";
 import axiosInstance from "../../../config/axiosConfig";
-import { showConfirmPayment } from "../../../utils/alertUtils";
-import PriceBpard from "../../customer/bookingPage/formBooking/PriceBpard";
-import NapGio from "../../customer/bookingPage/formBooking/NapGio";
 import { Button, Modal } from "react-bootstrap";
+import { showAlert } from "../../../utils/alertUtils";
 
 // Register the Vietnamese locale with react-datepicker
 registerLocale("vi", vi);
@@ -24,6 +23,7 @@ export default class CheckInPage extends Component {
             selectedTab: "lichdon",
             slots: [],
             waitingCheckInSlots: [],
+            bookedSlots: [],
             selectedSlots: {},
             selectedDay: null,
             selectedYard: "",
@@ -38,6 +38,8 @@ export default class CheckInPage extends Component {
             availableHours: "",
             priceBoard: [],
             selectedSlotInfo: null,
+            selectedCustomer: null,
+            bookingDetails: null
         };
     }
 
@@ -115,6 +117,21 @@ export default class CheckInPage extends Component {
             });
     };
 
+    fetchBookedSlots = () => {
+        const formattedDates = this.state.daysOfWeek.map((day) => day.split(" ")[0]);
+
+        console.log("Fetching booked slots for dates:", formattedDates); // Log dates
+
+        axiosInstance
+            .post(`/booking-details/booked-slots/${this.state.selectedYard}`, formattedDates)
+            .then((response) => {
+                this.setState({ bookedSlots: response.data });
+            })
+            .catch((error) => {
+                console.error("There was an error fetching the booked slots!", error);
+            });
+    };
+
     setCurrentTab = (tab) => {
         this.setState({ currentTab: tab });
     };
@@ -177,7 +194,20 @@ export default class CheckInPage extends Component {
             return false;
         }
 
-        return waitingCheckInSlots[formattedDayKey].some((checkInDto) => checkInDto.waitingCheckInSlot.slotId === slotId);
+        return waitingCheckInSlots[formattedDayKey].some((checkInDto) => checkInDto.bookingDetails.yardSchedule.slot.slotId === slotId);
+    };
+
+    isSlotBooked = (dayKey, slotId) => {
+        const { bookedSlots } = this.state;
+        const formattedDayKey = dayKey.split(" ")[0];
+
+        console.log("Daykey data received:", formattedDayKey);
+
+        if (!bookedSlots[formattedDayKey] || bookedSlots[formattedDayKey].length === 0) {
+            return false;
+        }
+
+        return bookedSlots[formattedDayKey].some((slot) => slot.slotId === slotId);
     };
 
     isPastTime(startTime) {
@@ -217,13 +247,47 @@ export default class CheckInPage extends Component {
         });
     };
 
-    handleShowModal = (customer) => {
-        this.setState({ showModal: true, selectedCustomer: customer });
+    handleShowModal = (slot, day) => {
+        const { waitingCheckInSlots } = this.state;
+
+        const parsedDate = parse(day.split(" ")[0], "dd/MM/yyyy", new Date());
+        const formattedDayKey = format(parsedDate, "yyyy-MM-dd");
+
+        if (!waitingCheckInSlots[formattedDayKey] || waitingCheckInSlots[formattedDayKey].length === 0) {
+            return;
+        }
+
+        const matchedCheckIn = waitingCheckInSlots[formattedDayKey]?.find((checkInDto) => checkInDto?.bookingDetails?.yardSchedule?.slot?.slotId === slot.slotId);
+
+        if (matchedCheckIn) {
+            const customer = matchedCheckIn.customer;
+            const bookingDetailsFound = matchedCheckIn.bookingDetails;
+            this.setState({ showModal: true, selectedCustomer: customer, selectedSlotInfo: slot, bookingDetails: bookingDetailsFound });
+        } else {
+            console.error('No matching checkInDto found for the given slot');
+        }
     };
 
     handleCloseModal = () => {
         this.setState({ showModal: false, selectedCustomer: null });
     };
+
+    handleCheckIn = async (detailId) => {
+        try {
+            const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/check-in`);
+            if (confirmResponse.data.message === 'Check-in thành công') {
+                showAlert('success', 'Thông báo', 'Check-in thành công !', 'top-end');
+                this.handleCloseModal();
+                this.fetchWaitingCheckInSlots(); // Fetch waiting check-in slots again
+                this.fetchSlots(); // Fetch all slots again
+            } else {
+                showAlert('error', 'Thông báo', 'Check-in không thành công !', 'top-end')
+            }
+        } catch (error) {
+            console.error('Failed to check-in', error);
+        }
+    };
+
     render() {
         const { court } = this.props;
         const { startDate, endDate, daysOfWeek, selectedTab, selectedSlots, errorMessage, slots } = this.state;
@@ -237,6 +301,7 @@ export default class CheckInPage extends Component {
         return (
             <div className="">
                 <form className="order row">
+                    {console.log(this.state.selectedSlotInfo)}
                     <div className="select-slot p-3">
                         <div className="orderPage-body">
                             <div className="select-court d-flex" style={{ alignItems: "center" }}>
@@ -292,7 +357,7 @@ export default class CheckInPage extends Component {
                                                                 onClick={
                                                                     this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) &&
                                                                         !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
-                                                                        ? () => this.handleShowModal(slot)
+                                                                        ? () => this.handleShowModal(slot, daysOfWeek[dayIndex])
                                                                         : null
                                                                 }
                                                             >
@@ -309,20 +374,24 @@ export default class CheckInPage extends Component {
                         </div>
                     </div>
                 </form>
-                <Modal show={false} onHide={this.closeModal}>
+                <Modal show={this.state.showModal} onHide={() => this.setState({ showModal: false })} centered>
                     <Modal.Header closeButton>
-                        <Modal.Title>Thông tin người chơi</Modal.Title>
+                        <Modal.Title>Thông tin check-in</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {/* <p>Slot ID: {slotInfo.slotId}</p>
-                        <p>Day: {slotInfo.day}</p>
-                        <p>Slot Name: {slotInfo.slotName}</p>
-                        <p>Time: {`${slotInfo.startTime} - ${slotInfo.endTime}`}</p>
-                        Add more player information here */}
+                        <b>Khách hàng: </b> {this.state.selectedCustomer?.fullName} <br />
+                        <b>Email: </b> {this.state.selectedCustomer?.email} <br />
+                        <b>Ngày check-in: </b> {this.state.bookingDetails?.date} <br />
+                        <b>Sân: </b> {this.state.bookingDetails?.yardSchedule?.yard?.yardName} <br />
+                        <b>Slot: </b> {this.state.selectedSlotInfo?.slotName}<br />
+                        <b>Thời gian: </b> {this.state.selectedSlotInfo?.startTime} - {this.state.selectedSlotInfo?.endTime} <br />
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={this.closeModal}>
-                            Close
+                        <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
+                            Đóng
+                        </Button>
+                        <Button variant="primary" onClick={() => this.handleCheckIn(this.state.bookingDetails?.detailId)}>
+                            Check-in
                         </Button>
                     </Modal.Footer>
                 </Modal>

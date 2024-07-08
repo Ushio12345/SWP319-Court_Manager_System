@@ -128,7 +128,7 @@ export default function Booking() {
             </section>
             <section>
                 <div className="container">
-                    <h1 className="mt-5">SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
+                    <h1 className="mt-5" style={{fontSize: '40px'}}>SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
                     <section className="yard">
                         <div className="container w-4/5">
                             <Slider {...settings} className="list-yard">
