@@ -92,7 +92,7 @@ export default class CourtManager extends Component {
                     <div className="topbar">
                         <div className="logo">
                             <div className="logo-img">
-                                <img src="asserts/img/logo-cau-long-dep-01.png" alt="logo" />
+                                <img src="asserts/img/logo-cau-long-dep-01.png" alt="logo" style={{ marginRight: 10 }} />
                             </div>
                             <div className="nameapp">
                                 <p>ForBaD</p>
