@@ -77,8 +77,11 @@ export default class Staff extends Component {
     };
 
     fetchStaffWithCourt = (courtId) => {
+        let token = JSON.parse(localStorage.getItem("token"));
         axiosInstance
-            .get(`/court/staffs-of-court/${courtId}`)
+            .get(`/court/staffs-of-court/${courtId}`,{
+                headers: { Authorization: `Bearer ${token}`}
+            })
             .then((res) => {
                 if (res.status === 200) {
                     this.setState({ staffs: res.data });
