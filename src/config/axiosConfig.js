@@ -2,7 +2,7 @@ import axios from "axios";
 import { showConfirmAlert } from "../utils/alertUtils";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "http://167.99.67.127:8080",
 });
 
 axiosInstance.interceptors.request.use(
@@ -14,30 +14,28 @@ axiosInstance.interceptors.request.use(
             config.headers["Authorization"] = `Bearer ${token}`;
         }
         return config;
-    },
-    (error) => {
-        if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-            showConfirmAlert("Phiên đăng nhập đã hết hạn.", "Vui lòng đăng nhập lại để tiếp tục.", "Đăng nhập lại.", "top").then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.removeItem("jwtToken");
-                    window.location.href = "/login";
-                }
-            });
-        }
-        return Promise.reject(error);
     }
 );
 
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-            showConfirmAlert("Phiên đăng nhập đã hết hạn.", "Vui lòng đăng nhập lại để tiếp tục.", "Đăng nhập lại.", "top").then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.removeItem("jwtToken");
-                    window.location.href = "/login";
-                }
-            });
+        if (error.response && error.response.status === 401) {
+            if (error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                showConfirmAlert("Phiên đăng nhập đã hết hạn.", "Vui lòng đăng nhập lại để tiếp tục.", "Đăng nhập lại.", "top").then((result) => {
+                    if (result.isConfirmed) {
+                        localStorage.removeItem("jwtToken");
+                        window.location.href = "/login";
+                    }
+                });
+            } else if (error.response.data.message === "Không có token.") {
+                showConfirmAlert("Thông báo", "Bạn hãy đăng nhập để tiếp tục !", "Đăng nhập", "top").then((result) => {
+                    if (result.isConfirmed) {
+                        localStorage.removeItem("jwtToken");
+                        window.location.href = "/login";
+                    }
+                });
+            }
         }
         return Promise.reject(error);
     }

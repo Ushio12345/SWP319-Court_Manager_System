@@ -271,7 +271,7 @@ export default class Order extends Component {
                                     aria-labelledby={`${tab}-tab`}
                                 >
                                     {filteredBookings.length > 0 ? (
-                                        <table className="table table-hover table-borderless">
+                                        <table className="table table-hover">
                                             <thead>
                                                 <tr>
                                                     <th className="text-start">STT</th>
