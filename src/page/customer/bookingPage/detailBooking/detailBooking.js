@@ -34,8 +34,12 @@ const DetailBooking = () => {
             }
 
             const response = await axiosInstance.get(`/paypal/success?paymentId=${paymentId}&PayerID=${PayerID}`);
-            if (response.data.message === 'Payment successful') {
+
+            if (response.data && response.data.id) {
+                const paymentId = response.data.id;
+
                 const bookingResponse = await axiosInstance.post(`/booking/success/${paymentId}`, bookingData);
+
                 if (bookingResponse.data.message === 'Đã đặt lịch thành công.') {
                     showConfirmPayment('Thông báo', 'Thanh toán và đặt lịch thành công !', 'success', 'Xem trạng thái đơn hàng', 'Trở về trang chủ', 'center')
                         .then((result) => {
@@ -130,8 +134,8 @@ const DetailBooking = () => {
                 total: totalPriceUSD,
                 currency: 'USD',
                 description: 'Payment via PayPal',
-                cancelUrl: 'http://localhost:3000/detailBooking',
-                successUrl: 'http://localhost:3000/detailBooking'
+                cancelUrl: 'http://167.99.67.127/detailBooking',
+                successUrl: 'http://167.99.67.127/detailBooking'
             });
             setPaymentUrl(response.data);
             window.location.href = response.data;

@@ -5,6 +5,7 @@ import axiosInstance from "../../../../config/axiosConfig";
 import { alert, showConfirmPayment } from "../../../../utils/alertUtils";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faCheckCircle, faTimesCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import axios from "axios";
 
 const OrderItem = ({ booking, onBookingCancel }) => {
     const [showModal, setShowModal] = useState(false);
@@ -14,18 +15,72 @@ const OrderItem = ({ booking, onBookingCancel }) => {
     useEffect(() => {
     }, [booking]);
 
-    const handleCancelBooking = async (bookingId) => {
+    const getExchangeRate = async () => {
+        const API_KEY = 'a2ebea95ae9c3ce5ae387b15';
+        const BASE_URL = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`;
+
+        try {
+            const response = await axios.get(BASE_URL);
+            if (response.status === 200) {
+                const exchangeRates = response.data.conversion_rates;
+                // Lấy tỷ giá VND
+                const exchangeRateVND = exchangeRates.VND;
+                return exchangeRateVND;
+            } else {
+                console.error('Failed to fetch exchange rates:', response.statusText);
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching exchange rates:', error);
+            return null;
+        }
+    };
+
+    const handleCancelBooking = async (booking) => {
         try {
 
             showConfirmPayment('Thông báo', 'Bạn có chắc chắn muốn hủy đơn hàng ?', 'warning', 'Chắc chắn rồi', 'Trở lại', 'center')
                 .then(async (result) => {
                     if (result.isConfirmed) {
-                        const cancelResponse = await axiosInstance.post(`/booking/${bookingId}/cancel`);
-                        if (cancelResponse.data.message === 'Đã hủy đơn hàng thành công.') {
-                            alert('success', 'Thông báo', 'Hủy đơn hàng thành công !', 'center')
-                            onBookingCancel();
-                        } else {
-                            alert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'center')
+
+                        if (booking && booking.bookingType === 'Lịch linh hoạt') {
+                            const bookingId = booking?.bookingId;
+
+                            const cancelResponse = await axiosInstance.post(`/booking/${bookingId}/cancel`);
+
+                            if (cancelResponse.data.message === 'Đã hủy đơn hàng thành công.') {
+                                alert('success', 'Thông báo', 'Hủy đơn hàng thành công ! Số giờ linh hoạt đã được hoàn vào tài khoản của bạn.', 'center')
+                                onBookingCancel();
+                                return;
+                            } else {
+                                alert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'center')
+                                return;
+                            }
+                        }
+
+                        const exchangeRate = await getExchangeRate();
+                        if (!exchangeRate) {
+                            throw new Error('Failed to get exchange rate');
+                        }
+
+                        const saleId = booking?.payment?.saleId;
+
+                        const refundAmount = booking?.payment?.paymentAmount / exchangeRate;
+
+                        const refundResponse = await axiosInstance.post(`/paypal/refund/${saleId}/${refundAmount}`);
+
+                        if (refundResponse.data.message === 'Refund successful') {
+
+                            const bookingId = booking?.bookingId;
+
+                            const cancelResponse = await axiosInstance.post(`/booking/${bookingId}/cancel`);
+
+                            if (cancelResponse.data.message === 'Đã hủy đơn hàng thành công.') {
+                                alert('success', 'Thông báo', 'Hủy đơn hàng thành công ! Số tiền đã được hoàn trả vào tài khoản Paypal của bạn.', 'center')
+                                onBookingCancel();
+                            } else {
+                                alert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'center')
+                            }
                         }
                     }
                 })
@@ -69,19 +124,6 @@ const OrderItem = ({ booking, onBookingCancel }) => {
         }
     }
 
-    function getPrice(bookingType) {
-        switch (bookingType) {
-            case 'Lịch đơn':
-                return booking.court.priceList.singleBookingPrice.toLocaleString('vi-VN');
-            case 'Lịch cố định':
-                return booking.court.priceList.fixedBookingPrice.toLocaleString('vi-VN');
-            case 'Lịch linh hoạt':
-                return booking.court.priceList.flexibleBookingPrice.toLocaleString('vi-VN');
-            default:
-                return null;
-        }
-    }
-
     return (
         <div className="orderItemList">
             <div className="orderItem mt-4">
@@ -120,7 +162,7 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                 </div>
                 <div className="orderItem-btn w-50 m-auto">
                     {booking.statusEnum !== "Đã hủy" && booking.statusEnum !== "Đã hoàn thành" && (
-                        <button className="btn" onClick={() => handleCancelBooking(booking.bookingId)}>Hủy đơn</button>
+                        <button className="btn" onClick={() => handleCancelBooking(booking)}>Hủy đơn</button>
                     )}
                     {!booking.flexibleBooking &&
                         <button className="btn" onClick={() => setShowModal(true)}>
@@ -154,7 +196,7 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                                                 <td>{bookingDetail.yardSchedule.slot.slotName}</td>
                                                 <td>{bookingDetail.date}</td>
                                                 <td>{bookingDetail.yardSchedule.yard.yardName}</td>
-                                                <td>{ booking.totalPrice === 0 ? `1 giờ` : getPrice(booking.bookingType) }</td>
+                                                <td>{booking.totalPrice === 0 ? `1 giờ` : bookingDetail.price.toLocaleString('vi-VN')}</td>
                                                 <td style={{ color: getStatusTextColor(booking.statusEnum) }}>{bookingDetail.status}</td>
                                             </tr>
                                         ))}

@@ -37,7 +37,7 @@
 }
 
 .slot-time.normal {
-    background-color: rgb(194, 192, 192);
+    background-color: rgb(167, 194, 146);
     color: white;
     cursor: not-allowed;
     pointer-events: none;
@@ -58,9 +58,31 @@
 }
 
 .slot-time {
-    height: 100%;
-    width: 100%;
+    height: 90%;
+    width: 90%;
 }
 .detail-yard {
     padding: 150px 0 50px 0;
 }
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.tabs button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    outline: none;
+    margin-right: 5px;
+    border-radius: 5px;
+}
+
+.tabs button.active {
+    background-color: #007bff;
+    color: white;
+}
+

@@ -109,6 +109,10 @@ export default function Booking() {
         window.location.href = "/";
     };
 
+    if (!court || !court.imageUrl) {
+        return <div>Đang tải....</div>; // Hoặc có thể thay đổi xử lý tùy vào yêu cầu của bạn
+    }
+
     return (
         <div className="bookingPage">
             <Header isLoggedIn={isLoggedIn} user={user} handleLogout={handleLogout} />
@@ -128,7 +132,7 @@ export default function Booking() {
             </section>
             <section>
                 <div className="container">
-                    <h1 className="mt-5">SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
+                    <h1 className="mt-5" style={{fontSize: '40px'}}>SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
                     <section className="yard">
                         <div className="container w-4/5">
                             <Slider {...settings} className="list-yard">
