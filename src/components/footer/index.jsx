@@ -32,7 +32,7 @@ export default class Footer extends Component {
                                     </a>
                                 </div>
                             </div>
-                            <div className="archieve col-lg-4 col-md-6 col-sm-6" style={{ lineHeight: "40px" }}>
+                            <div className="infomation-contact col-lg-4 col-md-6 col-sm-12" style={{ lineHeight: "40px" }}>
                                 <h2>Liên hệ</h2>
                                 <p>
                                     <i className="fa-solid fa-phone" />
@@ -45,7 +45,7 @@ export default class Footer extends Component {
                                     <i class="fa-solid fa-house"></i>Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Hồ Chí Minh 700000
                                 </p>
                             </div>
-                            <div className="contact col-lg-4 col-md-6">
+                            <div className="contact col-lg-4 col-md-12">
                                 <h2>Trụ sở</h2>
                                 <iframe
                                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.6100105370124!2d106.80730807480579!3d10.841127589311634!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752731176b07b1%3A0xb752b24b379bae5e!2sFPT%20University%20HCMC!5e0!3m2!1sen!2s!4v1719592934424!5m2!1sen!2s"

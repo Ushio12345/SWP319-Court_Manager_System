@@ -73,14 +73,16 @@ const CourtList = () => {
         speed: 300,
         slidesToShow: 4,
         slidesToScroll: 1,
+        arrows: true,
         responsive: [
             {
                 breakpoint: 1024,
                 settings: {
-                    slidesToShow: 3,
+                    slidesToShow: 2,
                     slidesToScroll: 3,
                     infinite: true,
                     dots: true,
+                    arrows: true,
                 },
             },
             {
@@ -88,13 +90,17 @@ const CourtList = () => {
                 settings: {
                     slidesToShow: 2,
                     slidesToScroll: 2,
+                    dots: true,
+                    arrows: true,
                 },
             },
             {
                 breakpoint: 480,
                 settings: {
-                    slidesToShow: 1,
+                    slidesToShow: 2,
                     slidesToScroll: 1,
+                    dots: true,
+                    arrows: true,
                 },
             },
         ],
@@ -112,7 +118,7 @@ const CourtList = () => {
             {
                 breakpoint: 1024,
                 settings: {
-                    slidesToShow: 3,
+                    slidesToShow: 2,
                     slidesToScroll: 3,
                     rows: 3,
                     slidesPerRow: 1,
@@ -132,7 +138,7 @@ const CourtList = () => {
             {
                 breakpoint: 480,
                 settings: {
-                    slidesToShow: 1,
+                    slidesToShow: 2,
                     slidesToScroll: 1,
                     rows: 3,
                     slidesPerRow: 1,
@@ -144,7 +150,7 @@ const CourtList = () => {
     return (
         <section className="yard" id="court-list">
             <h1 className="m-4">CÁC SÂN CẦU LÔNG MỚI</h1>
-            <div className="container w-4/5">
+            <div className="container ">
                 <Slider {...settings} className="list-yard showNewYard">
                     {latestCourts.slice(0, 10).map((court) => (
                         <CardYard key={court.courtId} court={court} />

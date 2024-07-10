@@ -502,44 +502,46 @@ export default class Slot extends Component {
                                 role="tabpanel"
                                 aria-labelledby="lichdon"
                             >
-                                <table className="table table-borderless">
-                                    <thead>
-                                        <tr>
-                                            <th>Slot</th>
-                                            {daysOfWeek.map((day, index) => (
-                                                <th key={index}>{day}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.state.slots.map((slot, slotIndex) => (
-                                            <tr key={slot.slotId}>
-                                                <td>{slot.slotName}</td>
-                                                {daysOfWeek.map((_, dayIndex) => (
-                                                    <td key={dayIndex} className="slot-times-column">
-                                                        <div
-                                                            className={`slot-time ${
-                                                                selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                            } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${
-                                                                this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
-                                                                    ? "pastTime"
-                                                                    : ""
-                                                            }`}
-                                                            onClick={
-                                                                !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
-                                                                    ? () => this.handleSlotSelection(slot.slotId, dayIndex)
-                                                                    : null
-                                                            }
-                                                        >
-                                                            {`${slot.startTime} - ${slot.endTime}`}
-                                                        </div>
-                                                    </td>
+                                <div style={{ overflowX: "auto" }}>
+                                    <table className="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th>Slot</th>
+                                                {daysOfWeek.map((day, index) => (
+                                                    <th key={index}>{day}</th>
                                                 ))}
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {this.state.slots.map((slot, slotIndex) => (
+                                                <tr key={slot.slotId}>
+                                                    <td>{slot.slotName}</td>
+                                                    {daysOfWeek.map((_, dayIndex) => (
+                                                        <td key={dayIndex} className="slot-times-column">
+                                                            <div
+                                                                className={`slot-time ${
+                                                                    selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${
+                                                                    this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                        ? "pastTime"
+                                                                        : ""
+                                                                }`}
+                                                                onClick={
+                                                                    !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                    !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                        ? () => this.handleSlotSelection(slot.slotId, dayIndex)
+                                                                        : null
+                                                                }
+                                                            >
+                                                                {`${slot.startTime} - ${slot.endTime}`}
+                                                            </div>
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div
                                 className={`tab-pane fade ${selectedTab === "codinh" ? "show active" : ""}`}

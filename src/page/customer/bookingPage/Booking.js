@@ -80,10 +80,12 @@ export default function Booking() {
                 },
             },
             {
-                breakpoint: 600,
+                breakpoint: 850,
                 settings: {
                     slidesToShow: 2,
                     slidesToScroll: 2,
+                    infinite: true,
+                    dots: true,
                 },
             },
             {
@@ -91,6 +93,8 @@ export default function Booking() {
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
+                    infinite: true,
+                    dots: true,
                 },
             },
         ],
@@ -126,7 +130,7 @@ export default function Booking() {
             <section className="feedback container w-50">
                 <Feedback />
             </section>
-            <section>
+            <section className="newYardinBooking">
                 <div className="container">
                     <h1 className="mt-5">SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
                     <section className="yard">

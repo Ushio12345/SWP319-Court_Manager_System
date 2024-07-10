@@ -196,11 +196,13 @@ export default class Staff extends Component {
         return currentStaffs.map((staff, index) => {
             return (
                 <tr key={staff.userId}>
-                    <td className="text-top-end">{indexOfFirstItem + index + 1}</td>
+                    <td className="text-center">{indexOfFirstItem + index + 1}</td>
                     <td>
                         <img className="" src={staff.profileAvatar} style={{ width: 50, height: 50 }} alt="Avatar" />
                     </td>
-                    <td className="text-top-end">{staff.userId}</td>
+                    <td className="text-center">
+                        <p>{staff.userId}</p>
+                    </td>
                     <td>{staff.fullName}</td>
                     <td>{staff.email}</td>
                     <td className="d-flex align-items-top-end justify-between">
