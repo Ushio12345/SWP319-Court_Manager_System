@@ -1,0 +1,20 @@
+.checkin-form .overflow-x-auto {
+    overflow-x: auto;
+}
+
+.checkin-form .tableCheckIn {
+    width: 100%;
+}
+
+.checkin-form .table-bcheckin-formless {
+    width: 100%;
+    bcheckin-form-collapse: collapse;
+}
+
+.checkin-form .slot-times-column,
+.checkin-form td {
+    white-space: nowrap;
+}
+.checkin-form .slot-time {
+    padding: 10px 0;
+}

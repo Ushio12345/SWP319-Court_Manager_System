@@ -8,6 +8,7 @@ import NapGio from "./NapGio";
 import { showConfirmPayment } from "../../../../utils/alertUtils";
 import "./slot.css";
 import PriceBpard from "./PriceBpard";
+import HuyGio from "./HuyGio";
 
 // Register the Vietnamese locale with react-datepicker
 registerLocale("vi", vi);
@@ -32,11 +33,11 @@ export default class Slot extends Component {
             showModal: false,
             hoursToLoad: 0,
             user: "",
-            priceList: this.props.court.priceList,
-            courtId: this.props.court.courtId,
+            courtId: this.props.court?.courtId,
             flexibleBookings: [],
             availableHours: "",
             priceBoard: [],
+            activeTab: 'dangky'
         };
     }
 
@@ -87,7 +88,7 @@ export default class Slot extends Component {
 
     fetchFlexibleBookings = () => {
         axiosInstance
-            .get(`/booking/flexible-bookings`)
+            .get(`/booking/${this.state.courtId}/flexible-bookings`)
             .then((response) => {
                 this.setState({ flexibleBookings: response.data });
             })
@@ -496,16 +497,14 @@ export default class Slot extends Component {
                                                 {daysOfWeek.map((_, dayIndex) => (
                                                     <td key={dayIndex} className="slot-times-column">
                                                         <div
-                                                            className={`slot-time ${
-                                                                selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                            } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${
-                                                                this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                            className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) && !this.isToday(daysOfWeek[dayIndex]) ? "booked" : ""} ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
                                                                     ? "pastTime"
                                                                     : ""
-                                                            }`}
+                                                                }`}
                                                             onClick={
                                                                 !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                    !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
                                                                     ? () => this.handleSlotSelection(slot.slotId, dayIndex)
                                                                     : null
                                                             }
@@ -541,16 +540,14 @@ export default class Slot extends Component {
                                                 {daysOfWeek.map((_, dayIndex) => (
                                                     <td key={dayIndex} className="slot-times-column">
                                                         <div
-                                                            className={`slot-time ${
-                                                                selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                            } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${
-                                                                this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                            className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) && !this.isToday(daysOfWeek[dayIndex]) ? "booked" : ""} ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
                                                                     ? "pastTime"
                                                                     : ""
-                                                            }`}
+                                                                }`}
                                                             onClick={
                                                                 !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                    !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
                                                                     ? () => this.handleSlotSelection(slot.slotId, dayIndex)
                                                                     : null
                                                             }
@@ -589,16 +586,14 @@ export default class Slot extends Component {
                                                         {daysOfWeek.map((_, dayIndex) => (
                                                             <td key={dayIndex} className="slot-times-column">
                                                                 <div
-                                                                    className={`slot-time ${
-                                                                        selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                    } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${
-                                                                        this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                    className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                        } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) && !this.isToday(daysOfWeek[dayIndex]) ? "booked" : ""} ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
                                                                             ? "pastTime"
                                                                             : ""
-                                                                    }`}
+                                                                        }`}
                                                                     onClick={
                                                                         !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                        !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                            !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
                                                                             ? () => this.handleSlotSelection(slot.slotId, dayIndex)
                                                                             : null
                                                                     }
@@ -613,7 +608,31 @@ export default class Slot extends Component {
                                         </table>
                                     </div>
                                     <div style={{ flex: 3 }}>
-                                        {this.state.priceList && <NapGio priceList={this.state.priceList} courtId={this.state.courtId} />}
+                                        <div className="tabs">
+                                            <button
+                                                type="button"
+                                                onClick={() => this.setState({ activeTab: 'dangky' })}
+                                                className={this.state.activeTab === 'dangky' ? 'active' : ''}
+                                            >
+                                                Đăng ký tổng giờ chơi
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => this.setState({ activeTab: 'huyvachuyendoi' })}
+                                                className={this.state.activeTab === 'huyvachuyendoi' ? 'active' : ''}
+                                            >
+                                                Hủy và chuyển đổi giờ
+                                            </button>
+                                        </div>
+
+                                        <div className="tab-content">
+                                            {this.state.activeTab === 'dangky' && this.state.priceBoard && this.state.courtId && (
+                                                <NapGio priceList={this.state.priceBoard} courtId={this.state.courtId} />
+                                            )}
+                                            {this.state.activeTab === 'huyvachuyendoi' && this.state.priceBoard && this.state.courtId && (
+                                                <HuyGio priceList={this.state.priceBoard} courtId={this.state.courtId} onHoursCancel={this.fetchFlexibleBookings} />
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

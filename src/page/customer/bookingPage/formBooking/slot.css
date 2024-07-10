@@ -64,3 +64,25 @@
 .detail-yard {
     padding: 150px 0 50px 0;
 }
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.tabs button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    outline: none;
+    margin-right: 5px;
+    border-radius: 5px;
+}
+
+.tabs button.active {
+    background-color: #007bff;
+    color: white;
+}
+

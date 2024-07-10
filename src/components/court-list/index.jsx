@@ -165,32 +165,6 @@ const CourtList = () => {
                         onChange={handleSearchChange}
                     />
                 </div>
-                {/* <div className="filter-options">
-                    <label htmlFor="starFilter">Số sao:</label>
-                    <select
-                        id="starFilter"
-                        onChange={(e) => handleStarFilterChange(parseInt(e.target.value))}
-                        value={starFilter || ""}
-                    >
-                        <option value="">Tất cả</option>
-                        <option value="1">1 sao</option>
-                        <option value="2">2 sao</option>
-                        <option value="3">3 sao</option>
-                        <option value="4">4 sao</option>
-                        <option value="5">5 sao</option>
-                    </select>
-                    <label htmlFor="openingHoursFilter">Giờ mở cửa:</label>
-                    <select
-                        id="openingHoursFilter"
-                        onChange={(e) => handleOpeningHoursFilterChange(e.target.value)}
-                        value={openingHoursFilter || ""}
-                    >
-                        <option value="">Tất cả</option>
-                        <option value="08:00 - 12:00">08:00 - 12:00</option>
-                        <option value="13:00 - 17:00">13:00 - 17:00</option>
-                        <option value="18:00 - 22:00">18:00 - 22:00</option>
-                    </select>
-                </div> */}
             </div>
             <div className="container w-4/5">
                 <Slider {...settingForShowAllYard} className="list-yard showAllYard">

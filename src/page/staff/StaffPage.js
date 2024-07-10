@@ -4,7 +4,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import CheckInPage from "./staffPageComponents/CheckInPage";
 
-
 export default class StaffPage extends Component {
     constructor(props) {
         super(props);
@@ -85,7 +84,7 @@ export default class StaffPage extends Component {
                             </label> */}
                         </div>
                         <div className="login" onClick={this.toggleDropdown}>
-                            <img src={user.avatar} alt="User Avatar" style={{ width: 50, borderRadius: "50%" }} />
+                            <img src={user.avatar} alt="User Avatar" style={{ width: 50, borderRadius: "50%", marginRight: 10 }} />
                             <p className="user-name">{user.username}</p>
                             {dropdownVisible && (
                                 <div className="dropdownItem">
@@ -115,7 +114,7 @@ export default class StaffPage extends Component {
                     <div className="body-manager">
                         <div className="manager-left">
                             <div className="list-option">
-                                <ul className="listManaher nav">                                 
+                                <ul className="listManaher nav">
                                     <li className="nav-item">
                                         <a className="nav-link active" href="#checkIn" data-bs-toggle="tab">
                                             <span className="icon">
@@ -136,7 +135,7 @@ export default class StaffPage extends Component {
                             </div>
                         </div>
                         <div className="manager-right">
-                            <div className="tab-content">                           
+                            <div className="tab-content">
                                 <div className="tab-pane fade show active" id="checkIn" role="tabpanel">
                                     <CheckInPage />
                                 </div>

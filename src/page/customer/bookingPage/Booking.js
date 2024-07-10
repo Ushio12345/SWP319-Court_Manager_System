@@ -109,6 +109,10 @@ export default function Booking() {
         window.location.href = "/";
     };
 
+    if (!court || !court.imageUrl) {
+        return <div>Đang tải....</div>; // Hoặc có thể thay đổi xử lý tùy vào yêu cầu của bạn
+    }
+
     return (
         <div className="bookingPage">
             <Header isLoggedIn={isLoggedIn} user={user} handleLogout={handleLogout} />
