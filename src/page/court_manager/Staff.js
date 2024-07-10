@@ -12,7 +12,7 @@ export default class Staff extends Component {
             password: "",
             fullName: "",
             role: "staff",
-            managerId: this.props.managerId,
+            managerId: this.props.managerId
         },
         selectedStaffId: null,
         selectedCourtId: "",

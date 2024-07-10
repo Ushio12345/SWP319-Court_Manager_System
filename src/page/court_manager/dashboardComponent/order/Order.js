@@ -24,6 +24,8 @@ export default class Order extends Component {
             bookingTypeFilter: "",
             currentPage: 1,
             itemsPerPage: 5,
+            sortOrder:"asc",
+            priceOrder: "asc",
             selectedBooking: null
         };
     }
@@ -214,9 +216,35 @@ export default class Order extends Component {
         this.setState({ showModal: false, selectedBooking: null });
     };
 
+    handlePageChange = (pageNumber) => {
+        this.setState({ currentPage: pageNumber });
+    };
+
+    renderPagination = () => {
+        const { bookingsOfSelectedCourt, currentPage, itemsPerPage } = this.state;
+        const pageNumbers = [];
+        for (let i = 1; i <= Math.ceil(bookingsOfSelectedCourt.length / itemsPerPage); i++) {
+            pageNumbers.push(i);
+        }
+
+        return (
+            <nav>
+                <ul className="pagination">
+                    {pageNumbers.map((number) => (
+                        <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
+                            <button onClick={() => this.handlePageChange(number)} className="page-link">
+                                {number}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+        );
+    };
+
 
     render() {
-        const { currentTab, searchQuery, showModal, selectedBooking, currentPage, itemsPerPage } = this.state;
+        const { currentTab, searchQuery, showModal, selectedBooking, currentPage, itemsPerPage, sortOrder, priceOrder } = this.state;
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
@@ -274,7 +302,8 @@ export default class Order extends Component {
                                             "Đã hủy"
                             );
 
-                            const currentBookingPage = filteredBookings.slice(indexOfFirstItem, indexOfLastItem);
+                            const currentBookingPage = filteredBookings
+                            .slice(indexOfFirstItem, indexOfLastItem);
                             
                             return (
                                 <div
@@ -302,14 +331,43 @@ export default class Order extends Component {
                                                                 <option value="Lịch linh hoạt">Lịch linh hoạt</option>
                                                         </select>
                                                     </th>
-                                                    <th className="text-start">Tổng giá (VND)</th>
-                                                    <th className="text-start">Ngày đặt</th>
+                                                    <th className="text-start">
+                                                        <select className="form-control"
+                                                        value={this.state.priceOrder}
+                                                        onChange={(e) => this.setState({priceOrder: e.target.value})}>
+                                                            <option value="asc">Giá ASC (VND)</option>
+                                                            <option value="desc">Giá DESC (VND)</option>
+                                                        </select>
+                                                    </th>
+                                                    <th className="text-start">
+                                                        <select className="form-control"
+                                                        value={this.state.sortOrder}
+                                                        onChange={(e) => this.setState({sortOrder : e.target.value})}>
+                                                            <option value="asc">Ngày đặt ASC</option>
+                                                            <option value="desc">Ngày đặt DESC</option>
+
+                                                        </select>
+                                                    </th>
                                                     <th className="text-center">Thao tác</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {currentBookingPage
-                                                .sort((a, b) => new Date(a.bookingDate) - new Date(b.bookingDate))
+                                                .sort((a, b) => {
+                                                    if(sortOrder==='asc'){
+                                                        return new Date(a.bookingDate) - new Date(b.bookingDate)}
+                                                    else{
+                                                        return new Date(b.bookingDate) - new Date(a.bookingDate)}
+                                                    }
+                                                )
+                                                .sort((a,b) => {
+                                                    if(priceOrder === 'asc'){
+                                                        return  a.totalPrice - b.totalPrice;
+                                                    }
+                                                    else{
+                                                        return b.totalPrice - a.totalPrice;
+                                                    }
+                                                })
                                                 .map((booking, index) => (
                                                     <tr key={booking.bookingId}>
                                                         <td className="text-start">{index + 1}</td>
