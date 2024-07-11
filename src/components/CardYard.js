@@ -7,8 +7,8 @@ const CardYard = ({ court }) => {
     const handleBookingClick = (e) => {
         e.preventDefault(); // Prevent default anchor behavior
         navigate("/bookingPage", { state: { court } });
-        window.location.reload();
     };
+    
 
     const renderStars = (rate) => {
         const totalStars = 5; // Tổng số ngôi sao

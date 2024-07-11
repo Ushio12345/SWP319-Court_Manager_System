@@ -126,7 +126,7 @@ export default class Services extends Component {
                     key={service.facilityId}
                     style={{
                         display: "flex",
-                        alignItems: "top-end",
+                        alignItems: "center",
                         marginBottom: "10px",
                         justifyContent: "space-between",
                         backgroundColor: isFacilityInCourt ? "#000" : "#f5f5f5",
@@ -134,7 +134,7 @@ export default class Services extends Component {
                         padding: "5px 0",
                     }}
                 >
-                    <div>
+                    <div className="servicesItem">
                         <p style={{ margin: "0 10px 0 0" }}>
                             <i className={service.facilityIcon} style={{ marginRight: "20px" }} />
                             {service.facilityName}

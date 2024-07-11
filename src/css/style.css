@@ -6,7 +6,7 @@
 }
 body {
     background-color: #eeeded !important;
-    font-family: "Roboto Condensed", sans-serif;
+    font-family: "Nyght Serif", sans-serif;
 }
 a {
     text-decoration: none !important;
@@ -109,12 +109,13 @@ h1 {
 
 .banner {
     background-image: url("../assets/images/background-image.jpg");
-    height: 700px;
+
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
     position: relative;
 }
+
 .banner::before {
     position: absolute;
     content: "";
@@ -504,12 +505,14 @@ ul li {
 }
 .manager .body-manager {
     display: flex;
+    flex: 1;
 }
 .manager .body-manager .link {
     font-weight: 700;
 }
 .manager .body-manager .manager-right {
-    width: 80%;
+    flex: 1;
+
     padding: 70px;
 }
 
@@ -517,6 +520,7 @@ ul li {
     padding: 80px 0;
     width: 20%;
     background-color: rgba(39, 38, 38, 0.9058823529);
+    transition: width 0.3s;
 }
 
 .manager .body-manager .manager-left .manager-left-title {
@@ -1033,7 +1037,14 @@ form h1 {
 .manager-right .historyPage-body {
     padding: 30px 0;
 }
-
+.overflow-x-auto {
+    overflow-x: auto;
+}
+@media (max-width: 1200px) {
+    .list-yard .slick-slide {
+        padding: 10px;
+    }
+}
 @media (max-width: 992px) {
     .banner .banner-intro {
         width: 50%;
@@ -1080,13 +1091,16 @@ form h1 {
     .banner .banner-intro {
         left: 0px;
     }
-    .banner {
+    /* .banner {
         width: 100vh;
-    }
+    } */
     #court-list {
-        width: 100vh;
+        /* width: 100vh; */
         padding: 40px;
     }
 }
-@media (max-width: 481px) {
+@media (max-width: 360px) {
+    .yard h1 {
+        font-size: 12px;
+    }
 }

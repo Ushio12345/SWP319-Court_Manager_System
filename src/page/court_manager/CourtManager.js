@@ -3,7 +3,7 @@ import axios from "axios";
 import "../../css/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-
+import "./manager.css";
 import Court from "./Court";
 import Staff from "./Staff";
 import Yard from "./Yard";
@@ -27,6 +27,7 @@ export default class CourtManager extends Component {
             courts: [],
             selectedCourtId: "",
             dropdownVisible: false,
+            isOpen: true,
         };
     }
 
@@ -34,6 +35,11 @@ export default class CourtManager extends Component {
         this.checkLoginStatus();
         this.fetchCourts();
     }
+    toggleMenu = () => {
+        this.setState((prevState) => ({
+            isOpen: !prevState.isOpen,
+        }));
+    };
 
     checkLoginStatus = () => {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -84,10 +90,10 @@ export default class CourtManager extends Component {
     };
 
     render() {
-        const { isLoggedIn, user, courts, selectedCourtId, dropdownVisible } = this.state;
+        const { isLoggedIn, user, courts, selectedCourtId, dropdownVisible, isOpen } = this.state;
         console.log(user.userId);
         return (
-            <div>
+            <div className="court_managerPage">
                 <section className="manager">
                     <div className="topbar">
                         <div className="logo">
@@ -133,9 +139,12 @@ export default class CourtManager extends Component {
                         </div>
                     </div>
                     <div className="body-manager">
-                        <div className="manager-left">
+                        <div className={`manager-left ${isOpen ? "" : "closed"}`}>
                             <div className="list-option">
-                                <ul className="listManaher nav">
+                                <ul className="listManager nav">
+                                    <div className="toggle-button" onClick={this.toggleMenu}>
+                                        <i className={`fa-solid ${isOpen ? "fa-x" : "fa-bars"}`} />
+                                    </div>
                                     <li className="nav-item">
                                         <a className="nav-link active" href="#dsDashboard" data-bs-toggle="tab">
                                             <span className="icon">
@@ -195,12 +204,12 @@ export default class CourtManager extends Component {
                                     <li className="nav-item">
                                         <a className="nav-link" href="#dsPrice" data-bs-toggle="tab">
                                             <span className="icon">
-                                                <i class="fa-solid fa-money-bill"></i>
+                                                <i className="fa-solid fa-money-bill"></i>
                                             </span>
                                             <span className="title">Quản Lý Bảng Giá</span>
                                         </a>
                                     </li>
-                                    <a className="w-75 logout m-auto " href="/">
+                                    <a className="w-75 logout m-auto" href="/">
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
                                         </span>
