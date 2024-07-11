@@ -21,6 +21,11 @@ export default class Order extends Component {
             bookings: [],
             searchQuery: "", // Thêm state để lưu trữ giá trị tìm kiếm
             showModal: false,
+            bookingTypeFilter: "",
+            currentPage: 1,
+            itemsPerPage: 5,
+            sortOrder:"asc",
+            priceOrder: "asc",
             selectedBooking: null
         };
     }
@@ -188,14 +193,19 @@ export default class Order extends Component {
     };
 
     filterBookings = (status) => {
-        const { bookingsOfSelectedCourt, searchQuery } = this.state;
+        const { bookingsOfSelectedCourt, searchQuery, bookingTypeFilter } = this.state;
         return bookingsOfSelectedCourt
             .filter(booking => booking.statusEnum === status)
             .filter(booking => {
                 const courtName = booking.courtName ? booking.courtName.toLowerCase() : '';
                 const bookingId = booking.bookingId ? booking.bookingId.toString() : '';
-                return courtName.includes(searchQuery.toLowerCase()) || bookingId.includes(searchQuery);
-            });
+                if(bookingTypeFilter){
+                    return booking.bookingType === bookingTypeFilter;
+                }
+                return courtName.includes(searchQuery.toLowerCase()) 
+                || bookingId.toLowerCase().includes(searchQuery.toLowerCase());
+            })
+            ;
     };
 
     handleShowModal = (booking) => {
@@ -206,9 +216,37 @@ export default class Order extends Component {
         this.setState({ showModal: false, selectedBooking: null });
     };
 
+    handlePageChange = (pageNumber) => {
+        this.setState({ currentPage: pageNumber });
+    };
+
+    renderPagination = () => {
+        const { bookingsOfSelectedCourt, currentPage, itemsPerPage } = this.state;
+        const pageNumbers = [];
+        for (let i = 1; i <= Math.ceil(bookingsOfSelectedCourt.length / itemsPerPage); i++) {
+            pageNumbers.push(i);
+        }
+
+        return (
+            <nav>
+                <ul className="pagination">
+                    {pageNumbers.map((number) => (
+                        <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
+                            <button onClick={() => this.handlePageChange(number)} className="page-link">
+                                {number}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+        );
+    };
+
 
     render() {
-        const { currentTab, searchQuery, showModal, selectedBooking } = this.state;
+        const { currentTab, searchQuery, showModal, selectedBooking, currentPage, itemsPerPage, sortOrder, priceOrder } = this.state;
+        const indexOfLastItem = currentPage * itemsPerPage;
+        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
         return (
             <div className="historyPage">
@@ -250,10 +288,11 @@ export default class Order extends Component {
                             name="findOrder"
                             id="findOrder"
                             placeholder="Bạn có thể tìm kiếm theo tên sân hoặc mã đơn hàng"
-                            value={searchQuery}
+                            value={this.state.searchQuery}
                             onChange={this.handleSearchQueryChange}
                         />
                     </div>
+
                     <div className="tab-content" id="pills-tabContent">
                         {["showProcessingOrder", "showCheckInOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => {
                             const filteredBookings = this.filterBookings(
@@ -262,6 +301,10 @@ export default class Order extends Component {
                                         tab === "showCompleteOrder" ? "Đã hoàn thành" :
                                             "Đã hủy"
                             );
+
+                            const currentBookingPage = filteredBookings
+                            .slice(indexOfFirstItem, indexOfLastItem);
+                            
                             return (
                                 <div
                                     key={tab}
@@ -270,22 +313,62 @@ export default class Order extends Component {
                                     role="tabpanel"
                                     aria-labelledby={`${tab}-tab`}
                                 >
-                                    {filteredBookings.length > 0 ? (
-                                        <table className="table table-hover">
+                                    {currentBookingPage.length > -1 ? (
+                                    <div>
+                                        <table className="table table-hover table-borderless">
                                             <thead>
                                                 <tr>
                                                     <th className="text-start">STT</th>
                                                     <th className="text-start">Mã đơn hàng</th>
                                                     <th className="text-start">Khách hàng</th>
+                                                    <th className="text-start">
+                                                        <select className="form-control" 
+                                                            value={this.state.bookingTypeFilter} 
+                                                            onChange={(e) => this.setState({ bookingTypeFilter: e.target.value })}>
+                                                                <option value="">Tất cả lịch</option>
+                                                                <option value="Lịch đơn">Lịch đơn</option>
+                                                                <option value="Lịch cố định">Lịch cố định</option>
+                                                                <option value="Lịch linh hoạt">Lịch linh hoạt</option>
+                                                        </select>
+                                                    </th>
+                                                    <th className="text-start">
+                                                        <select className="form-control"
+                                                        value={this.state.priceOrder}
+                                                        onChange={(e) => this.setState({priceOrder: e.target.value})}>
+                                                            <option value="asc">Giá ASC (VND)</option>
+                                                            <option value="desc">Giá DESC (VND)</option>
+                                                        </select>
+                                                    </th>
+                                                    <th className="text-start">
+                                                        <select className="form-control"
+                                                        value={this.state.sortOrder}
+                                                        onChange={(e) => this.setState({sortOrder : e.target.value})}>
+                                                            <option value="asc">Ngày đặt ASC</option>
+                                                            <option value="desc">Ngày đặt DESC</option>
 
-                                                    <th className="text-start">Loại lịch</th>
-                                                    <th className="text-start">Tổng giá (VND)</th>
-                                                    <th className="text-start">Ngày đặt</th>
+                                                        </select>
+                                                    </th>
                                                     <th className="text-center">Thao tác</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {filteredBookings.sort((a, b) => new Date(a.bookingDate) - new Date(b.bookingDate)).map((booking, index) => (
+                                                {currentBookingPage
+                                                .sort((a, b) => {
+                                                    if(sortOrder==='asc'){
+                                                        return new Date(a.bookingDate) - new Date(b.bookingDate)}
+                                                    else{
+                                                        return new Date(b.bookingDate) - new Date(a.bookingDate)}
+                                                    }
+                                                )
+                                                .sort((a,b) => {
+                                                    if(priceOrder === 'asc'){
+                                                        return  a.totalPrice - b.totalPrice;
+                                                    }
+                                                    else{
+                                                        return b.totalPrice - a.totalPrice;
+                                                    }
+                                                })
+                                                .map((booking, index) => (
                                                     <tr key={booking.bookingId}>
                                                         <td className="text-start">{index + 1}</td>
                                                         <td className="text-start">{booking.bookingId}</td>
@@ -321,6 +404,8 @@ export default class Order extends Component {
                                                 ))}
                                             </tbody>
                                         </table>
+                                        {this.renderPagination()}
+                                    </div>
                                     ) : (
                                         <div className="no-bookings text-center">
                                             <FontAwesomeIcon icon={faInbox} size="3x" />
