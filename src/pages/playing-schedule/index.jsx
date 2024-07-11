@@ -12,7 +12,7 @@ import { showAlert } from "../../../utils/alertUtils";
 // Register the Vietnamese locale with react-datepicker
 registerLocale("vi", vi);
 
-export default class CheckInPage extends Component {
+export default class PlayingSchedule extends Component {
     constructor(props) {
         super(props);
         this.state = {

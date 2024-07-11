@@ -30,18 +30,38 @@
     pointer-events: none;
 }
 
-.slot-time.waiting-checkIn {
+.slot-time.waiting-check-in {
     background-color: #126abd;
     color: white;
     cursor: not-allowed;
 }
 
-.slot-time.normal {
+.slot-time.pending {
+    background-color: #bd1220;
+    color: white;
+    cursor: not-allowed;
+}
+
+.slot-time.completed {
+    background-color: green;
+    color: white;
+    cursor: not-allowed;
+}
+
+.slot-time.cancel {
+    background-color: #a5131f;
+    color: white;
+    cursor: not-allowed;
+    text-decoration: line-through; /* Thêm sọc chéo */
+}
+
+
+/* .slot-time.normal {
     background-color: rgb(167, 194, 146);
     color: white;
     cursor: not-allowed;
     pointer-events: none;
-}
+} */
 
 /* Styles for past times */
 .slot-time.pastTime {
@@ -49,7 +69,10 @@
     color: white;
     cursor: not-allowed;
     pointer-events: none; /* Disable pointer events */
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 10px 10px; /* Adjust the size of the stripes */
 }
+
 .modalPriceBoard div {
     margin: 10px 0;
 }
