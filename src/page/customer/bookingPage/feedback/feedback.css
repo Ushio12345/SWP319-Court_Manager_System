@@ -67,3 +67,7 @@ img {
     font-weight: 900;
     color: orangered;
 }
+@media (max-width: 994px) {
+    .feedbackCus {
+    }
+}

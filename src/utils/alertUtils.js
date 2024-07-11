@@ -29,7 +29,8 @@ export const showConfirmAlert = async (title, text, confirmText, position) => {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         position: position,
-        confirmButtonText: confirmText
+        confirmButtonText: confirmText,
+        cancelButtonText: "Đóng"
     });
     return result;
 };

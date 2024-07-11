@@ -12,7 +12,7 @@ export default class Staff extends Component {
             password: "",
             fullName: "",
             role: ["staff", "customer"],
-            managerId: this.props.managerId
+            managerId: this.props.managerId,
         },
         selectedStaffId: null,
         selectedCourtId: "",
@@ -24,7 +24,6 @@ export default class Staff extends Component {
     componentDidMount() {
         this.fetchAllStaff();
         this.fetchCourts();
-        this.fetchStaffWithCourt();
     }
 
     componentDidUpdate(prevProps) {
@@ -77,23 +76,27 @@ export default class Staff extends Component {
     };
 
     fetchStaffWithCourt = (courtId) => {
-        let token = JSON.parse(localStorage.getItem("token"));
         axiosInstance
-            .get(`/court/staffs-of-court/${courtId}`,{
-                headers: { Authorization: `Bearer ${token}`}
-            })
+            .get(`/court/staffs-of-court/${courtId}`)
             .then((res) => {
                 if (res.status === 200) {
-                    this.setState({ staffs: res.data });
+                    if (res.data.length > 0) {
+                        this.setState({ staffs: res.data });
+                    } else {
+                        this.setState({ staffs: [] });
+                        showAlert("info", "Thông báo", "Không có nhân viên nào trong sân", "top-end");
+                    }
                 } else {
                     this.setState({ staffs: [] });
                     showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
-                    console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
                 if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
                     handleTokenError();
+                } else {
+                    this.setState({ staffs: [] });
+                    // showAlert("info", "Lỗi !", "Danh sách trống", "top-end");
                 }
             });
     };
@@ -113,6 +116,8 @@ export default class Staff extends Component {
         axiosInstance
             .post("/auth/signup", this.state.newStaff)
             .then((response) => {
+                console.log("Response from API:", response.data);
+                this.fetchAllStaff();
                 showAlert("success", "", "Tài khoản nhân viên được thêm thành công", "top-end");
                 this.setState({
                     staffs: [...this.state.staffs, response.data],
@@ -132,15 +137,19 @@ export default class Staff extends Component {
     };
 
     deleteStaff = (staffId) => {
-        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa nhân viên này không?", "Xóa", "top-end").then((result) => {
+        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa nhân viên này không?", "Xóa", "center").then((result) => {
             if (result.isConfirmed) {
+                const { selectedCourtId } = this.state;
+                const deleteUrl = selectedCourtId ? `/court/${selectedCourtId}/deleteStaffFromCourt/${staffId}` : `/member/delete?userId=${staffId}`;
+
                 axiosInstance
-                    .delete(`/court/${this.state.selectedCourtId}/deleteStaffFromCourt/${staffId}`)
+                    .delete(deleteUrl)
                     .then((res) => {
-                        this.fetchAllStaff();
                         if (res.status === 200) {
-                            showAlert("success", "", "Đã xóa nhân viên thành công", "top-end");
                             this.fetchAllStaff();
+                            this.fetchStaffWithCourt();
+                            showAlert("success", "", "Đã xóa nhân viên thành công", "top-end");
+                            selectedCourtId ? this.fetchStaffWithCourt(selectedCourtId) : this.fetchAllStaff();
                         } else {
                             showAlert("error", "Lỗi !", "Xóa nhân viên không thành công", "top-end");
                             console.error("Response không thành công:", res.status);
@@ -162,6 +171,7 @@ export default class Staff extends Component {
                 showAlert("success", "", "Cập nhật sân làm việc cho nhân viên này thành công", "top-end");
                 const updatedStaffs = this.state.staffs.map((staff) => {
                     if (staff.userId === selectedStaffId) {
+                        this.fetchStaffWithCourt();
                         return { ...staff, courtId: courtId };
                     }
                     return staff;
@@ -190,40 +200,54 @@ export default class Staff extends Component {
     };
 
     renderStaff = () => {
-        const { staffs, currentPage, itemsPerPage, searchInput } = this.state;
-        const filteredStaffs = staffs.filter((staff) => staff.fullName.toLowerCase().includes(searchInput.toLowerCase()));
+        const { staffs, currentPage, itemsPerPage, searchInput, selectedCourtId } = this.state;
+
+        const filteredStaffs = staffs.filter((staff) => staff.fullName && staff.fullName.toLowerCase().includes(searchInput.toLowerCase()));
+
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
         const currentStaffs = filteredStaffs.slice(indexOfFirstItem, indexOfLastItem);
 
-        return currentStaffs.map((staff, index) => {
-            return (
-                <tr key={staff.userId}>
-                    <td className="text-top-end">{indexOfFirstItem + index + 1}</td>
-                    <td>
-                        <img className="" src={staff.profileAvatar} style={{ width: 50, height: 50 }} alt="Avatar" />
-                    </td>
-                    <td className="text-top-end">{staff.userId}</td>
-                    <td>{staff.fullName}</td>
-                    <td>{staff.email}</td>
-                    <td className="d-flex align-items-top-end justify-between">
-                        <button
-                            type="button"
-                            className="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalSelectCourt"
-                            onClick={() => this.setState({ selectedStaffId: staff.userId })}
-                        >
-                            <i className="fa-solid fa-house"></i>
-                        </button>
-                        <button type="button" className="btn btn-danger ms-2" onClick={() => this.deleteStaff(staff.userId)}>
-                            <i className="fa-solid fa-trash"></i>
-                        </button>
+        const renderContent =
+            currentStaffs.length > 0 ? (
+                currentStaffs.map((staff, index) => (
+                    <tr key={staff.userId}>
+                        <td className="text-center">{indexOfFirstItem + index + 1}</td>
+                        <td>
+                            <img className="" src={staff.profileAvatar} style={{ width: 50, height: 50 }} alt="Avatar" />
+                        </td>
+                        <td className="text-center">
+                            <p>{staff.userId}</p>
+                        </td>
+                        <td>{staff.fullName}</td>
+                        <td>{staff.email}</td>
+                        <td className="d-flex align-items-center justify-between">
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalSelectCourt"
+                                onClick={() => this.setState({ selectedStaffId: staff.userId })}
+                            >
+                                <i className="fa-solid fa-house"></i>
+                            </button>
+                            <button type="button" className="btn btn-danger ms-2" onClick={() => this.deleteStaff(staff.userId)}>
+                                <i className="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                ))
+            ) : (
+                <tr>
+                    <td colSpan="6" className="text-center">
+                        Hiện chưa có nhân viên nào trong sân {selectedCourtId ? "này" : "này"}
                     </td>
                 </tr>
             );
-        });
+
+        return <>{renderContent}</>;
     };
+
     renderPagination = () => {
         const { staffs, currentPage, itemsPerPage } = this.state;
         const pageNumbers = [];

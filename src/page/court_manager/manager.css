@@ -130,3 +130,32 @@
     background-color: #f5f5f5 !important;
     color: black !important;
 }
+
+.services-for-court {
+    margin-top: 50px;
+}
+.manager-left {
+    transition: width 0.3s ease;
+}
+
+.manager-left.closed {
+    width: 70px !important;
+    overflow: hidden;
+}
+
+.toggle-button {
+    cursor: pointer;
+    padding: 10px;
+    text-align: end;
+    color: white;
+    width: 100%;
+    padding: 10px;
+    margin-right: 10px;
+}
+
+.toggle-button i {
+    font-size: 1.5rem;
+}
+
+@media (max-width: 992px) {
+}

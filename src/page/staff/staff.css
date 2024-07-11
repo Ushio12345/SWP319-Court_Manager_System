@@ -16,5 +16,29 @@
     white-space: nowrap;
 }
 .checkin-form .slot-time {
-    padding: 10px 0;
+    padding: 8px 0;
+}
+
+.detail-yard {
+    width: 80%;
+    margin: 0 auto;
+    padding: 0px;
+    font-family: "Roboto Condensed", sans-serif;
+}
+
+.order .select-slot {
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+.detail-yard .detail-yard-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 10px;
+}
+
+.btn {
+    padding: 10px;
 }

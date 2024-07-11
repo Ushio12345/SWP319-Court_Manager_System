@@ -31,3 +31,19 @@
 .fromOrder .infoOfBooking {
     border-top: 5px dotted rgba(128, 128, 128, 0.263);
 }
+
+@media (max-width: 768px) {
+    .fromOrder .info-customer {
+        margin: 20px 0 0 0;
+    }
+    .fromOrder {
+        width: 100vh;
+        padding: 300px 50px;
+    }
+    .fromOrder .info-order {
+        margin: 0;
+    }
+    .button-function {
+        width: 100% !important;
+    }
+}

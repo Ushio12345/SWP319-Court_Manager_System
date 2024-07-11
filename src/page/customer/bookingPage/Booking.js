@@ -80,17 +80,21 @@ export default function Booking() {
                 },
             },
             {
-                breakpoint: 600,
+                breakpoint: 850,
                 settings: {
                     slidesToShow: 2,
                     slidesToScroll: 2,
+                    infinite: true,
+                    dots: true,
                 },
             },
             {
                 breakpoint: 480,
                 settings: {
-                    slidesToShow: 1,
+                    slidesToShow: 2,
                     slidesToScroll: 1,
+                    infinite: true,
+                    dots: true,
                 },
             },
         ],
@@ -130,9 +134,11 @@ export default function Booking() {
             <section className="feedback container w-50">
                 <Feedback />
             </section>
-            <section>
+            <section className="newYardinBooking">
                 <div className="container">
-                    <h1 className="mt-5" style={{fontSize: '40px'}}>SÂN MỚI - TRẢI NGHIỆM MỚI</h1>
+                    <h1 className="mt-5" style={{ fontSize: "40px" }}>
+                        SÂN MỚI - TRẢI NGHIỆM MỚI
+                    </h1>
                     <section className="yard">
                         <div className="container w-4/5">
                             <Slider {...settings} className="list-yard">
