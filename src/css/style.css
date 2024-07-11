@@ -1050,6 +1050,25 @@ form h1 {
         width: 50%;
     }
 }
+@media (max-width: 771px) {
+    #court-list {
+        padding: 40px;
+    }
+    .list-yard .slick-slide {
+        padding: 10px;
+    }
+    .yard h1 {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .yard .container,
+    .container-sm {
+        max-width: 633px;
+    }
+}
+
 @media (max-width: 620px) {
     .yard h1 {
         font-size: 22px;
@@ -1075,18 +1094,6 @@ form h1 {
     }
 }
 
-@media (max-width: 771px) {
-    #court-list {
-        padding: 70px;
-    }
-    .list-yard .slick-slide {
-        padding: 10px;
-    }
-    .yard h1 {
-        font-size: 20px;
-    }
-}
-
 @media (max-width: 606px) {
     .banner .banner-intro {
         left: 0px;
@@ -1099,7 +1106,24 @@ form h1 {
         padding: 40px;
     }
 }
-@media (max-width: 360px) {
+@media (max-width: 599px) {
+    #court-list {
+        padding: 90px;
+    }
+}
+@media (max-width: 430px) {
+    .banner-intro {
+        top: 58% !important;
+    }
+    .card-yard-content b {
+        font-size: 12px;
+    }
+    .yard .card-yard-content p {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 420px) {
     .yard h1 {
         font-size: 12px;
     }

@@ -209,14 +209,14 @@ export default class CourtManager extends Component {
                                             <span className="title">Quản Lý Bảng Giá</span>
                                         </a>
                                     </li>
-                                    <a className="w-75 logout m-auto" href="/">
+                                    {/* <a className="w-75 logout m-auto" href="/">
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
                                         </span>
                                         <span className="title" onClickCapture={this.handleLogout}>
                                             Đăng xuất
                                         </span>
-                                    </a>
+                                    </a> */}
                                 </ul>
                             </div>
                         </div>

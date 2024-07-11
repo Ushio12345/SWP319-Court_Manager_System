@@ -10,6 +10,8 @@ const DetailBooking = () => {
     const [bookingDetailsList, setBookingDetailsList] = useState([]);
     const [paymentUrl, setPaymentUrl] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 3;
     const [user, setUser] = useState({
         username: "",
         avatar: "",
@@ -162,7 +164,19 @@ const DetailBooking = () => {
 
         window.location.href = "/";
     };
+    // Calculate total pages
+    const totalPages = Math.ceil(bookingDetailsList.length / itemsPerPage);
 
+    // Get current items
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = bookingDetailsList
+        .sort((a, b) => a.yardSchedule.slot.slotName.localeCompare(b.yardSchedule.slot.slotName))
+        .slice(indexOfFirstItem, indexOfLastItem);
+
+    const handleClick = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
     return (
         <div className="orderDetailPage">
             <Header isLoggedIn={isLoggedIn} user={user} handleLogout={handleLogout} />
@@ -225,17 +239,27 @@ const DetailBooking = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {bookingDetailsList
-                                            .sort((a, b) => a.yardSchedule.slot.slotName.localeCompare(b.yardSchedule.slot.slotName))
-                                            .map((bookingDetail, index) => (
-                                                <tr key={index}>
-                                                    <td>{bookingDetail.yardSchedule.slot.slotName}</td>
-                                                    <td>{bookingDetail.date}</td>
-                                                    <td>{bookingDetail.yardSchedule.yard.yardName}</td>
-                                                </tr>
-                                            ))}
+                                        {currentItems.map((bookingDetail, index) => (
+                                            <tr key={index}>
+                                                <td>{bookingDetail.yardSchedule.slot.slotName}</td>
+                                                <td>{bookingDetail.date}</td>
+                                                <td>{bookingDetail.yardSchedule.yard.yardName}</td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
+                                <div className="pagination">
+                                    {Array.from({ length: totalPages }, (_, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleClick(index + 1)}
+                                            className={currentPage === index + 1 ? "active" : ""}
+                                            style={{ padding: "5px 10px", backgroundColor: "#002e86", margin: "0 10px", color: "white" }}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         ) : (
                             <>

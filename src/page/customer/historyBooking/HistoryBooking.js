@@ -49,13 +49,13 @@ export default class HistoryBooking extends Component {
     fetchBookings = () => {
         axiosInstance
             .get("/booking/bookings")
-            .then(response => {
+            .then((response) => {
                 this.setState({ bookings: response.data });
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("There was an error fetching the bookings!", error);
             });
-    }
+    };
 
     handleLogout = () => {
         localStorage.removeItem("user");
@@ -87,13 +87,13 @@ export default class HistoryBooking extends Component {
     filterBookings = (status) => {
         const { bookings, searchQuery } = this.state;
         return bookings
-            .filter(booking => booking.statusEnum === status)
-            .filter(booking => {
-                const courtName = booking.courtName ? booking.courtName.toLowerCase() : '';
-                const bookingId = booking.bookingId ? booking.bookingId.toString() : '';
+            .filter((booking) => booking.statusEnum === status)
+            .filter((booking) => {
+                const courtName = booking.courtName ? booking.courtName.toLowerCase() : "";
+                const bookingId = booking.bookingId ? booking.bookingId.toString() : "";
                 return courtName.includes(searchQuery.toLowerCase()) || bookingId.includes(searchQuery);
             });
-    }
+    };
 
     render() {
         const { currentTab, isLoggedIn, user, searchQuery } = this.state;
@@ -126,13 +126,13 @@ export default class HistoryBooking extends Component {
                             ))}
                         </ul>
                     </div>
-                    <div className="mb-3">
-                        <input 
-                            type="text" 
-                            className="form-control" 
-                            name="findOrder" 
-                            id="findOrder" 
-                            placeholder="Bạn có thể tìm kiếm theo tên sân hoặc mã đơn hàng" 
+                    <div className="findOrder mb-3">
+                        <input
+                            type="text"
+                            className="form-control"
+                            name="findOrder"
+                            id="findOrder"
+                            placeholder="Bạn có thể tìm kiếm theo tên sân hoặc mã đơn hàng"
                             value={searchQuery}
                             onChange={this.handleSearchQueryChange}
                         />
@@ -140,10 +140,13 @@ export default class HistoryBooking extends Component {
                     <div className="tab-content" id="pills-tabContent">
                         {["showProcessingOrder", "showCheckInOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => {
                             const filteredBookings = this.filterBookings(
-                                tab === "showProcessingOrder" ? "Đang chờ xử lý" :
-                                    tab === "showCheckInOrder" ? "Đang chờ check-in" :
-                                        tab === "showCompleteOrder" ? "Đã hoàn thành" :
-                                            "Đã hủy"
+                                tab === "showProcessingOrder"
+                                    ? "Đang chờ xử lý"
+                                    : tab === "showCheckInOrder"
+                                    ? "Đang chờ check-in"
+                                    : tab === "showCompleteOrder"
+                                    ? "Đã hoàn thành"
+                                    : "Đã hủy"
                             );
                             return (
                                 <div
@@ -154,11 +157,11 @@ export default class HistoryBooking extends Component {
                                     aria-labelledby={`${tab}-tab`}
                                 >
                                     {filteredBookings.length > 0 ? (
-                                        filteredBookings.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate)).map((booking) => {
-                                            return (
-                                                <OrderItem key={booking.bookingId} booking={booking} onBookingCancel={this.fetchBookings} />
-                                            );
-                                        })
+                                        filteredBookings
+                                            .sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate))
+                                            .map((booking) => {
+                                                return <OrderItem key={booking.bookingId} booking={booking} onBookingCancel={this.fetchBookings} />;
+                                            })
                                     ) : (
                                         <div className="no-bookings">
                                             <FontAwesomeIcon icon={faInbox} size="3x" />

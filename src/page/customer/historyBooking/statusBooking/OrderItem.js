@@ -6,6 +6,7 @@ import { alert, showConfirmPayment } from "../../../../utils/alertUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faCheckCircle, faTimesCircle, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import "./orderItem.css";
 
 const OrderItem = ({ booking, onBookingCancel }) => {
     const [showModal, setShowModal] = useState(false);

@@ -88,7 +88,7 @@ const CourtList = () => {
             {
                 breakpoint: 600,
                 settings: {
-                    slidesToShow: 2,
+                    slidesToShow: 1,
                     slidesToScroll: 2,
                     dots: true,
                     arrows: true,
@@ -97,7 +97,7 @@ const CourtList = () => {
             {
                 breakpoint: 480,
                 settings: {
-                    slidesToShow: 2,
+                    slidesToShow: 1,
                     slidesToScroll: 1,
                     dots: true,
                     arrows: true,
@@ -138,23 +138,23 @@ const CourtList = () => {
             {
                 breakpoint: 600,
                 settings: {
-                    slidesToShow: 2,
+                    slidesToShow: 1,
                     slidesToScroll: 2,
                     rows: 3,
                     slidesPerRow: 1,
                 },
             },
             {
-                breakpoint: 480,
+                breakpoint: 550,
                 settings: {
-                    slidesToShow: 2,
+                    slidesToShow: 1,
                     slidesToScroll: 1,
                     rows: 3,
                     slidesPerRow: 1,
                 },
             },
             {
-                breakpoint: 400,
+                breakpoint: 450,
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,

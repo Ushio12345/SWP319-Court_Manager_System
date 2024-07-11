@@ -22,7 +22,8 @@ export default class Slot extends Component {
             daysOfWeek: [],
             selectedTab: "lichdon",
             slots: [],
-            bookedSlots: [],
+            pendingSlots: [],
+            waitingCheckInSlots: [],
             selectedSlots: {},
             selectedDay: null,
             selectedYard: "",
@@ -38,8 +39,6 @@ export default class Slot extends Component {
             availableHours: "",
             priceBoard: [],
             activeTab: "dangky",
-            currentPage: 1,
-            slotsPerPage: 5,
         };
     }
 
@@ -72,7 +71,8 @@ export default class Slot extends Component {
 
         if (prevState.selectedYard !== this.state.selectedYard) {
             this.fetchSlots();
-            this.fetchBookedSlots();
+            this.fetchStatusSlots("PENDING", "pendingSlots");
+            this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
         }
     }
 
@@ -90,7 +90,7 @@ export default class Slot extends Component {
 
     fetchFlexibleBookings = () => {
         axiosInstance
-            .get(`/booking/${this.state.courtId}/flexible-bookings`)
+            .get(`/booking/flexible-bookings/${this.state.courtId}`)
             .then((response) => {
                 this.setState({ flexibleBookings: response.data });
             })
@@ -99,16 +99,16 @@ export default class Slot extends Component {
             });
     };
 
-    fetchBookedSlots = () => {
+    fetchStatusSlots = (status, list) => {
         const formattedDates = this.state.daysOfWeek.map((day) => day.split(" ")[0]);
 
         console.log("Fetching booked slots for dates:", formattedDates); // Log dates
 
         axiosInstance
-            .post(`/booking-details/booked-slots/${this.state.selectedYard}`, formattedDates)
+            .post(`/booking-details/${status}/slots/${this.state.selectedYard}`, formattedDates)
             .then((response) => {
                 console.log("Booked slots data received:", response.data); // Log response data
-                this.setState({ bookedSlots: response.data });
+                this.setState({ [list]: response.data });
             })
             .catch((error) => {
                 console.error("There was an error fetching the booked slots!", error);
@@ -124,19 +124,6 @@ export default class Slot extends Component {
             .catch((error) => {
                 console.error("Error fetching price list:", error);
             });
-    };
-
-    isSlotBooked = (dayKey, slotId) => {
-        const { bookedSlots } = this.state;
-        const formattedDayKey = dayKey.split(" ")[0];
-
-        console.log("Daykey data received:", formattedDayKey);
-
-        if (!bookedSlots[formattedDayKey] || bookedSlots[formattedDayKey].length === 0) {
-            return false;
-        }
-
-        return bookedSlots[formattedDayKey].some((slot) => slot.slotId === slotId);
     };
 
     getAvailableHours = () => {
@@ -184,7 +171,6 @@ export default class Slot extends Component {
         const { selectedTab, selectedSlots, selectedDay, bookingDetailsList, slots, selectedYard } = this.state;
         const dayKey = this.state.daysOfWeek[dayIndex];
         const newSelectedSlots = { ...selectedSlots };
-
         if (!newSelectedSlots[dayKey]) {
             newSelectedSlots[dayKey] = [];
         }
@@ -357,16 +343,28 @@ export default class Slot extends Component {
     };
 
     isSlotBooked = (dayKey, slotId) => {
-        const { bookedSlots } = this.state;
+        const { pendingSlots, waitingCheckInSlots } = this.state;
 
         const parsedDate = parse(dayKey.split(" ")[0], "dd/MM/yyyy", new Date());
         const formattedDayKey = format(parsedDate, "yyyy-MM-dd");
 
-        if (!bookedSlots[formattedDayKey] || bookedSlots[formattedDayKey].length === 0) {
+        // Kiểm tra nếu không có slot nào cho ngày này trong pendingSlots hoặc waitingCheckInSlots
+        if (!pendingSlots[formattedDayKey] || !waitingCheckInSlots[formattedDayKey]) {
             return false;
         }
 
-        return bookedSlots[formattedDayKey].some((slot) => slot.slotId === slotId);
+        // Lấy ra các bookingDetails từ pendingSlots và waitingCheckInSlots
+        const pendingBookingDetails = pendingSlots[formattedDayKey].flatMap((checkInDto) => checkInDto.bookingDetails);
+        const waitingCheckInBookingDetails = waitingCheckInSlots[formattedDayKey].flatMap((checkInDto) => checkInDto.bookingDetails);
+
+        console.log("Pending Booking Details:", pendingBookingDetails);
+        console.log("Waiting Check-In Booking Details:", waitingCheckInBookingDetails);
+
+        // Kiểm tra xem slotId có trong các yardSchedules không
+        const isPendingSlot = pendingBookingDetails.some((bookingDetails) => bookingDetails.yardSchedule.slot.slotId === slotId);
+        const isWaitingCheckInSlot = waitingCheckInBookingDetails.some((bookingDetails) => bookingDetails.yardSchedule.slot.slotId === slotId);
+
+        return isPendingSlot || isWaitingCheckInSlot;
     };
 
     isPastTime(startTime) {
@@ -389,22 +387,12 @@ export default class Slot extends Component {
     render() {
         const { court } = this.props;
         const { startDate, endDate, daysOfWeek, selectedTab, selectedSlots, errorMessage, slots } = this.state;
-        console.log("ds bang gia", this.state.priceBoard);
         const selectedSlotDetails = Object.entries(selectedSlots).flatMap(([day, slotIds]) =>
             slotIds.map((slotId) => {
                 const slot = slots.find((s) => s.slotId === slotId); // Tìm slot theo slotId
                 return `${slot ? slot.slotName : "Unknown Slot"}`; // Kiểm tra nếu slot tồn tại
             })
         );
-        const sliderSettings = {
-            dots: true,
-            infinite: false,
-            speed: 500,
-            slidesToShow: 7,
-            slidesToScroll: 1,
-            row: 15,
-            adaptiveHeight: true, // Adjust height based on content
-        };
 
         return (
             <div className="">
@@ -492,7 +480,7 @@ export default class Slot extends Component {
                                 role="tabpanel"
                                 aria-labelledby="lichdon"
                             >
-                                <div style={{ overflowX: "auto" }}>
+                                <div className="overflow-x-auto">
                                     <table className="table table-borderless">
                                         <thead>
                                             <tr>
@@ -511,7 +499,15 @@ export default class Slot extends Component {
                                                             <div
                                                                 className={`slot-time ${
                                                                     selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""} ${
+                                                                } ${
+                                                                    this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                    this.isToday(daysOfWeek[dayIndex]) &&
+                                                                    this.isPastTime(slot.startTime)
+                                                                        ? "pastTime"
+                                                                        : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId)
+                                                                        ? "booked"
+                                                                        : ""
+                                                                } ${
                                                                     this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
                                                                         ? "pastTime"
                                                                         : ""
@@ -540,7 +536,6 @@ export default class Slot extends Component {
                                 aria-labelledby="lichCoDinh-tabs"
                             >
                                 <div className="overflow-x-auto">
-                                    {" "}
                                     <table className="table table-borderless">
                                         <thead>
                                             <tr>
@@ -561,7 +556,10 @@ export default class Slot extends Component {
                                                                     selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
                                                                 } ${
                                                                     this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                    !this.isToday(daysOfWeek[dayIndex])
+                                                                    this.isToday(daysOfWeek[dayIndex]) &&
+                                                                    this.isPastTime(slot.startTime)
+                                                                        ? "pastTime"
+                                                                        : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId)
                                                                         ? "booked"
                                                                         : ""
                                                                 } ${
@@ -593,8 +591,8 @@ export default class Slot extends Component {
                                 role="tabpanel"
                                 aria-labelledby="linhhoat-tabs"
                             >
-                                <div className="row ">
-                                    <div className="col-lg-8 col-md-12">
+                                <div className="row">
+                                    <div className="col-md-8">
                                         <div className="overflow-x-auto">
                                             <table className="table table-borderless">
                                                 <thead>
@@ -618,7 +616,10 @@ export default class Slot extends Component {
                                                                                 : ""
                                                                         } ${
                                                                             this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                            !this.isToday(daysOfWeek[dayIndex])
+                                                                            this.isToday(daysOfWeek[dayIndex]) &&
+                                                                            this.isPastTime(slot.startTime)
+                                                                                ? "pastTime"
+                                                                                : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId)
                                                                                 ? "booked"
                                                                                 : ""
                                                                         } ${
@@ -642,33 +643,8 @@ export default class Slot extends Component {
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div>
-                                            Bạn đã chọn:
-                                            {this.state.bookingDetailsList
-                                                .reduce((acc, bookingDetail, index) => {
-                                                    const selectedSlot = this.state.slots.find((slot) => slot.slotId === bookingDetail.slotId);
-                                                    if (!selectedSlot) {
-                                                        return acc;
-                                                    }
-                                                    const existingDate = acc.find((item) => item.date === bookingDetail.date);
-                                                    if (existingDate) {
-                                                        existingDate.slots.push(selectedSlot.slotName);
-                                                    } else {
-                                                        acc.push({
-                                                            date: bookingDetail.date,
-                                                            slots: [selectedSlot.slotName],
-                                                        });
-                                                    }
-                                                    return acc;
-                                                }, [])
-                                                .map((item, index) => (
-                                                    <div key={index}>
-                                                        Ngày: {item.date}: {item.slots.join(", ")}
-                                                    </div>
-                                                ))}
-                                        </div>
                                     </div>
-                                    <div className="col-lg-4 col-md-12 ">
+                                    <div className="col-md-4">
                                         <div className="tabs">
                                             <button
                                                 type="button"
@@ -708,6 +684,42 @@ export default class Slot extends Component {
                                 </div>
                             )}
                             <>
+                                <div>
+                                    Bạn đã chọn:
+                                    {this.state.bookingDetailsList
+                                        .reduce((acc, bookingDetail, index) => {
+                                            const selectedSlot = this.state.slots.find((slot) => slot.slotId === bookingDetail.slotId);
+                                            if (!selectedSlot) {
+                                                return acc;
+                                            }
+                                            const existingDate = acc.find((item) => item.date === bookingDetail.date);
+                                            if (existingDate) {
+                                                existingDate.slots.push(selectedSlot.slotName);
+                                            } else {
+                                                acc.push({
+                                                    date: bookingDetail.date,
+                                                    slots: [selectedSlot.slotName],
+                                                });
+                                            }
+                                            return acc;
+                                        }, [])
+                                        .map((item, index) => (
+                                            <div key={index}>
+                                                Ngày: {item.date}: {item.slots.join(", ")}
+                                            </div>
+                                        ))}
+                                </div>
+                                <div style={{ display: "flex", justifyContent: "center" }}>
+                                    <div className="btn slot-time pastTime" style={{ width: "100px", height: "40px", alignContent: "center" }}>
+                                        <b>Đã hết giờ</b>
+                                    </div>
+                                    <div className="btn slot-time booked" style={{ width: "100px", height: "40px", alignContent: "center" }}>
+                                        <b>Đã đặt</b>
+                                    </div>
+                                    <div className="btn slot-time selected" style={{ width: "100px", height: "40px", pointerEvents: "none" }}>
+                                        Đang chọn
+                                    </div>
+                                </div>
                                 <div className="w-25 m-auto">
                                     <button onClick={this.handleButtonClick} className="btn btn-primary">
                                         Đặt sân ngay

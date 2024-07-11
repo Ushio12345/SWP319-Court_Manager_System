@@ -400,7 +400,7 @@ export default class Order extends Component {
                                                                         className="btn btn-info mr-2 p-2"
                                                                         onClick={() => this.handleShowModal(booking)}
                                                                     >
-                                                                        Chi tiết
+                                                                        <i class="fa-solid fa-circle-info"></i>
                                                                     </button>
                                                                     {booking.statusEnum === "Đang chờ xử lý" && (
                                                                         <>
@@ -408,13 +408,13 @@ export default class Order extends Component {
                                                                                 className="btn btn-success mr-2 p-2"
                                                                                 onClick={() => this.handleConfirmBooking(booking.bookingId)}
                                                                             >
-                                                                                Xác nhận
+                                                                                <i class="fa-solid fa-check-to-slot"></i>
                                                                             </button>
                                                                             <button
                                                                                 className="btn btn-danger p-2"
                                                                                 onClick={() => this.handleCancelBooking(booking)}
                                                                             >
-                                                                                Hủy
+                                                                                <i class="fa-solid fa-xmark"></i>
                                                                             </button>
                                                                         </>
                                                                     )}

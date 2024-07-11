@@ -58,7 +58,7 @@
 .orderItem-body .infor-court {
     display: flex;
     align-items: center;
-    width: 70%;
+    width: 100%;
 }
 .orderItem-footer {
     text-align: end;
@@ -122,4 +122,33 @@
     text-align: center;
     margin-top: 20px;
     color: #999;
+}
+@media (max-width: 886px) {
+    .historyPage {
+        font-size: 13px;
+    }
+}
+@media (max-width: 610px) {
+    .findOrder input {
+        font-size: 13px;
+    }
+    .findOrder input {
+        font-size: 11px;
+    }
+}
+@media (max-width: 463px) {
+    .findOrder input {
+        font-size: 10px;
+    }
+    .historyPage li {
+        font-size: 10px;
+    }
+}
+@media (max-width: 411px) {
+    .findOrder input {
+        font-size: 8px;
+    }
+    .historyPage li {
+        font-size: 7px;
+    }
 }
