@@ -11,7 +11,7 @@ export default class Staff extends Component {
             email: "",
             password: "",
             fullName: "",
-            role: "staff",
+            role: ["staff", "customer"],
             managerId: this.props.managerId
         },
         selectedStaffId: null,
@@ -120,7 +120,7 @@ export default class Staff extends Component {
                         email: "",
                         password: "",
                         fullName: "",
-                        role: "staff",
+                        role: ["staff", "customer"],
                         managerId: this.props.managerId,
                     },
                 });

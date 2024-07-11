@@ -335,16 +335,16 @@ export default class Order extends Component {
                                                         <select className="form-control"
                                                         value={this.state.priceOrder}
                                                         onChange={(e) => this.setState({priceOrder: e.target.value})}>
-                                                            <option value="asc">Giá ASC (VND)</option>
-                                                            <option value="desc">Giá DESC (VND)</option>
+                                                            <option value="asc">Giá từ nhỏ tới lớn (VND)</option>
+                                                            <option value="desc">Giá từ lớn tới nhỏ (VND)</option>
                                                         </select>
                                                     </th>
                                                     <th className="text-start">
                                                         <select className="form-control"
                                                         value={this.state.sortOrder}
                                                         onChange={(e) => this.setState({sortOrder : e.target.value})}>
-                                                            <option value="asc">Ngày đặt ASC</option>
-                                                            <option value="desc">Ngày đặt DESC</option>
+                                                            <option value="asc">Ngày đặt cũ nhất</option>
+                                                            <option value="desc">Ngày đặt mới nhất</option>
 
                                                         </select>
                                                     </th>
@@ -354,7 +354,7 @@ export default class Order extends Component {
                                             <tbody>
                                                 {currentBookingPage
                                                 .sort((a, b) => {
-                                                    if(sortOrder==='asc'){
+                                                    if(sortOrder === 'asc'){
                                                         return new Date(a.bookingDate) - new Date(b.bookingDate)}
                                                     else{
                                                         return new Date(b.bookingDate) - new Date(a.bookingDate)}
