@@ -345,7 +345,7 @@ export default class Slot extends Component {
 
     isSlotBooked = (dayKey, slotId) => {
         const { pendingSlots, waitingCheckInSlots } = this.state;
-        
+
         const parsedDate = parse(dayKey.split(" ")[0], "dd/MM/yyyy", new Date());
         const formattedDayKey = format(parsedDate, "yyyy-MM-dd");
 
@@ -353,18 +353,18 @@ export default class Slot extends Component {
         if (!pendingSlots[formattedDayKey] || !waitingCheckInSlots[formattedDayKey]) {
             return false;
         }
-    
+
         // Lấy ra các bookingDetails từ pendingSlots và waitingCheckInSlots
         const pendingBookingDetails = pendingSlots[formattedDayKey].flatMap(checkInDto => checkInDto.bookingDetails);
         const waitingCheckInBookingDetails = waitingCheckInSlots[formattedDayKey].flatMap(checkInDto => checkInDto.bookingDetails);
-    
+
         console.log("Pending Booking Details:", pendingBookingDetails);
         console.log("Waiting Check-In Booking Details:", waitingCheckInBookingDetails);
 
         // Kiểm tra xem slotId có trong các yardSchedules không
         const isPendingSlot = pendingBookingDetails.some(bookingDetails => bookingDetails.yardSchedule.slot.slotId === slotId);
         const isWaitingCheckInSlot = waitingCheckInBookingDetails.some(bookingDetails => bookingDetails.yardSchedule.slot.slotId === slotId);
-    
+
         return isPendingSlot || isWaitingCheckInSlot;
     };
 
@@ -669,9 +669,9 @@ export default class Slot extends Component {
                                         ))}
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <div className="btn slot-time pastTime" style={ {width: '100px', height: '40px', alignContent: 'center'} }><b>Đã hết giờ</b></div>
-                                    <div className="btn slot-time booked" style={ {width: '100px', height: '40px', alignContent: 'center'} }><b>Đã đặt</b></div>
-                                    <div className="btn slot-time selected" style={ {width: '100px', height: '40px', pointerEvents: 'none'} }>Đang chọn</div>
+                                    <div className="btn slot-time pastTime" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã hết giờ</b></div>
+                                    <div className="btn slot-time booked" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã đặt</b></div>
+                                    <div className="btn slot-time selected" style={{ width: '100px', height: '40px', pointerEvents: 'none' }}>Đang chọn</div>
                                 </div>
                                 <div className="w-25 m-auto">
                                     <button onClick={this.handleButtonClick} className="btn btn-primary">
