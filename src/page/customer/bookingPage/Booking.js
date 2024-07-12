@@ -89,7 +89,7 @@ export default function Booking() {
                 },
             },
             {
-                breakpoint: 480,
+                breakpoint: 400,
                 settings: {
                     slidesToShow: 2,
                     slidesToScroll: 1,

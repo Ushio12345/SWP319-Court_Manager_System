@@ -190,7 +190,7 @@ const CourtList = () => {
                     />
                 </div>
             </div>
-            <div className="container w-4/5">
+            <div className="container w-4/5" style={{ marginBottom: "10px" }}>
                 <Slider {...settingForShowAllYard} className="list-yard showAllYard">
                     {filteredCourts.map((court) => (
                         <div className="card-container" key={court.courtId}>

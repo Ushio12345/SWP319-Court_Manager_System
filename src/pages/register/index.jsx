@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import HeaderLoginForm from "../../components/header-login-form";
 import Footer from "../../components/footer";
 import "./index.css";
-import '../../App.css';
-import 'sweetalert2/dist/sweetalert2.css';
-import { showAlert } from '../../utils/alertUtils'; 
+import "../../App.css";
+import "sweetalert2/dist/sweetalert2.css";
+import { showAlert } from "../../utils/alertUtils";
 
 const Register = () => {
     const [email, setEmail] = useState("");
@@ -102,25 +102,25 @@ const Register = () => {
             body: JSON.stringify({
                 email: email,
                 password: password,
-                fullName: fullName
+                fullName: fullName,
             }),
         })
             .then((response) => {
                 if (response.status === 200) {
-                    showAlert('success', 'Đăng kí thành công', 'Hãy đăng nhập và trải nghiệm', 'top-end');
+                    showAlert("success", "Đăng kí thành công", "Hãy đăng nhập và trải nghiệm", "top-end");
                 } else {
-                    response.json().then(data => {
-                        if (response.status === 400 && data.message === 'Error: Email is already in use!') {
-                            showAlert('error', 'Đăng kí không thành công', 'Email này đã có người sử dụng', 'top-end');
+                    response.json().then((data) => {
+                        if (response.status === 400 && data.message === "Error: Email is already in use!") {
+                            showAlert("error", "Đăng kí không thành công", "Email này đã có người sử dụng", "top-end");
                         } else {
-                            showAlert('error', 'Đăng kí không thành công', 'Vui lòng thử lại !', 'top-end');
+                            showAlert("error", "Đăng kí không thành công", "Vui lòng thử lại !", "top-end");
                         }
                     });
                 }
             })
             .catch((error) => {
-                console.error('Error:', error);
-                showAlert('error', 'Đăng kí không thành công', 'Vui lòng thử lại !', 'top-end');
+                console.error("Error:", error);
+                showAlert("error", "Đăng kí không thành công", "Vui lòng thử lại !", "top-end");
             });
     };
 
@@ -132,14 +132,14 @@ const Register = () => {
                 if (response.ok) {
                     return response.json();
                 } else {
-                    showAlert('error', 'Đăng kí không thành công', 'Vui lòng thử lại !', 'top-end');
+                    showAlert("error", "Đăng kí không thành công", "Vui lòng thử lại !", "top-end");
                 }
             })
             .then((data) => {
                 if (data && data.redirectUrl) {
-                window.location.href = data.redirectUrl;
+                    window.location.href = data.redirectUrl;
                 } else {
-                    showAlert('error', 'Đăng kí không thành công', 'Vui lòng thử lại !', 'top-end');
+                    showAlert("error", "Đăng kí không thành công", "Vui lòng thử lại !", "top-end");
                 }
             })
             .catch((error) => {
@@ -153,19 +153,16 @@ const Register = () => {
 
         const sendCodeToBackend = async () => {
             try {
-                const response = await fetch(
-                    "http://167.99.67.127:8080/auth/google/callback",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ code }),
-                    }
-                );
+                const response = await fetch("http://167.99.67.127:8080/auth/google/callback", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ code }),
+                });
 
                 if (!response.ok) {
-                    showAlert('error', 'Kết nối không ổn định', 'Vui lòng thử lại !', 'top-end');
+                    showAlert("error", "Kết nối không ổn định", "Vui lòng thử lại !", "top-end");
                 }
 
                 const data = await response.json();
@@ -194,14 +191,14 @@ const Register = () => {
         }
     }, [navigate]);
 
-        return (
-            <div className="form">
+    return (
+        <div className="form-register">
             <HeaderLoginForm />
             <div className="login-form" id="Login-form">
-                    <div className="login-left">
-                        <img src="asserts/img/logo-cau-long-dep-01.png" alt="Logo" />
-                    </div>
-                    <div className="login-right">
+                <div className="login-left">
+                    <img src="asserts/img/logo-cau-long-dep-01.png" alt="Logo" />
+                </div>
+                <div className="login-right">
                     <form onSubmit={register}>
                         <div className="input-box">
                             <input
@@ -213,12 +210,10 @@ const Register = () => {
                                 value={email}
                                 onChange={setParams}
                             />
-                                <i className="fa-solid fa-user" />
-                            </div>
-                        {emailError && (
-                            <p className="text-danger">{emailError}</p>
-                        )}
-                            <div className="input-box">
+                            <i className="fa-solid fa-user" />
+                        </div>
+                        {emailError && <p className="text-danger">{emailError}</p>}
+                        <div className="input-box">
                             <input
                                 type="text"
                                 name="fullName"
@@ -229,13 +224,11 @@ const Register = () => {
                                 onChange={setParams}
                             />
                             <i className="fa-solid fa-lock" />
-                            </div>
-                        {fullNameError && (
-                            <p className="text-danger">{fullNameError}</p>
-                        )}
+                        </div>
+                        {fullNameError && <p className="text-danger">{fullNameError}</p>}
                         <div>
-                            <div className="row">
-                                <div className="col-md-6">
+                            <div className="row inputPass">
+                                <div className="col-sm-6">
                                     <div className="input-box">
                                         <input
                                             type="password"
@@ -248,12 +241,10 @@ const Register = () => {
                                         />
                                         <i className="fa-solid fa-lock" />
                                     </div>
-                                    {passwordError && (
-                                        <p className="text-danger">{passwordError}</p>
-                                    )}
+                                    {passwordError && <p className="text-danger">{passwordError}</p>}
                                 </div>
-                                <div className="col-md-6">
-                                <div className="input-box">
+                                <div className="col-sm-6">
+                                    <div className="input-box">
                                         <input
                                             type="password"
                                             name="rePassword"
@@ -265,39 +256,34 @@ const Register = () => {
                                         />
                                         <i className="fa-solid fa-lock" />
                                     </div>
-                                    {rePasswordError && (
-                                        <p className="text-danger">{rePasswordError}</p>
-                                    )}
+                                    {rePasswordError && <p className="text-danger">{rePasswordError}</p>}
                                 </div>
                             </div>
                             <button className="btn btn-primary p-2" type="submit">
                                 Đăng ký
+                            </button>
+                        </div>
+                        <div className="divider">
+                            <span>hoặc tiếp tục với</span>
+                        </div>
+                        <div className="login-with">
+                            <div className="gmail">
+                                <button className="btn btn-danger p-2" onClick={handleGoogleLogin}>
+                                    <i className="fa-brands fa-google" /> Google
                                 </button>
                             </div>
-                            <div className="divider">
-                                <span>hoặc tiếp tục với</span>
-                            </div>
-                            <div className="login-with">
-                                <div className="gmail">
-                                <button
-                                    className="btn btn-danger p-2"
-                                    onClick={handleGoogleLogin}
-                                >
-                                        <i className="fa-brands fa-google" /> Google
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="register-link">
-                                <p>
-                                    Bạn đã có tài khoản? <a href="/login">Đăng nhập</a>
-                                </p>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div className="register-link">
+                            <p>
+                                Bạn đã có tài khoản? <a href="/login">Đăng nhập</a>
+                            </p>
+                        </div>
+                    </form>
                 </div>
-                <Footer />
             </div>
-        );
+            <Footer />
+        </div>
+    );
 };
 
 export default Register;

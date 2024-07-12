@@ -272,6 +272,8 @@
         font-size: 15px;
     }
 }
+@media (max-width: 992px) {
+}
 @media (max-width: 956px) {
     .yard-service .nameServices {
         font-size: 12px;

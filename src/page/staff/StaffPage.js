@@ -66,7 +66,7 @@ export default class StaffPage extends Component {
     render() {
         const { isLoggedIn, user, courts, selectedCourtId, dropdownVisible } = this.state;
         return (
-            <div>
+            <div className="staffPageManager">
                 <section className="manager">
                     <div className="topbar">
                         <div className="logo">
