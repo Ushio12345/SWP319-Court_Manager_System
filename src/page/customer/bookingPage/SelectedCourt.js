@@ -11,11 +11,12 @@ export default class selectedCourt extends Component {
         const { court } = this.props;
 
         // Example API call to fetch amenities for a court
-        axiosInstance.get(`court/facilities-of-court/${court.courtId}`)
-            .then(response => {
+        axiosInstance
+            .get(`court/facilities-of-court/${court.courtId}`)
+            .then((response) => {
                 this.setState({ facilities: response.data });
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("There was an error fetching the facilities!", error);
             });
     }
@@ -57,24 +58,27 @@ export default class selectedCourt extends Component {
                         </div>
                         <div className="rate">
                             <p>
-                                Đánh giá: {renderStars(court.rate)} {court.rate}/5 <i className="fa-solid fa-star" /> (0  Đánh giá)
+                                Đánh giá: {renderStars(court.rate)} {court.rate}/5 <i className="fa-solid fa-star" /> (0 Đánh giá)
                             </p>
                         </div>
                     </div>
                     <div className="detail-yard-info row">
-                        <div className="yard-left col-lg-6">
+                        <div className="yard-left col-md-6">
                             <h3>Thông tin sân</h3>
                             <p>
                                 Số sân: <span>{court.yards.length}</span>
                             </p>
                             <p>
-                                Giờ hoạt động: <span>{court.openTime} - {court.closeTime}</span>
+                                Giờ hoạt động:{" "}
+                                <span>
+                                    {court.openTime} - {court.closeTime}
+                                </span>
                             </p>
                             <div className="yard-service row">
                                 <h4>Dịch vụ tiện ích</h4>
                                 {facilities.length > 0 ? (
                                     facilities.map((facility, index) => (
-                                        <div className="col-lg-6" key={index}>
+                                        <div className=" nameServices col-md-6" key={index}>
                                             <i className={`fa-solid ${facility.facilityIcon}`} /> {facility.facilityName}
                                         </div>
                                     ))
@@ -83,7 +87,7 @@ export default class selectedCourt extends Component {
                                 )}
                             </div>
                         </div>
-                        <div className="yard-right col-lg-6">
+                        <div className="yard-right col-md-6">
                             <img className="h-100" src={court.imageUrl} alt />
                         </div>
                     </div>

@@ -38,7 +38,7 @@ export default class Slot extends Component {
             flexibleBookings: [],
             availableHours: "",
             priceBoard: [],
-            activeTab: 'dangky'
+            activeTab: "dangky",
         };
     }
 
@@ -71,8 +71,8 @@ export default class Slot extends Component {
 
         if (prevState.selectedYard !== this.state.selectedYard) {
             this.fetchSlots();
-            this.fetchStatusSlots('PENDING', 'pendingSlots');
-            this.fetchStatusSlots('WAITING_FOR_CHECK_IN', 'waitingCheckInSlots');
+            this.fetchStatusSlots("PENDING", "pendingSlots");
+            this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
         }
     }
 
@@ -171,7 +171,6 @@ export default class Slot extends Component {
         const { selectedTab, selectedSlots, selectedDay, bookingDetailsList, slots, selectedYard } = this.state;
         const dayKey = this.state.daysOfWeek[dayIndex];
         const newSelectedSlots = { ...selectedSlots };
-
         if (!newSelectedSlots[dayKey]) {
             newSelectedSlots[dayKey] = [];
         }
@@ -325,7 +324,7 @@ export default class Slot extends Component {
                 })
                 .catch((error) => {
                     console.error("There was an error when booking !", error);
-                })
+                });
         } else {
             axiosInstance
                 .post(url, data)
@@ -346,6 +345,7 @@ export default class Slot extends Component {
     isSlotBooked = (dayKey, slotId) => {
         const { pendingSlots, waitingCheckInSlots } = this.state;
 
+
         const parsedDate = parse(dayKey.split(" ")[0], "dd/MM/yyyy", new Date());
         const formattedDayKey = format(parsedDate, "yyyy-MM-dd");
 
@@ -353,6 +353,7 @@ export default class Slot extends Component {
         if (!pendingSlots[formattedDayKey] || !waitingCheckInSlots[formattedDayKey]) {
             return false;
         }
+
 
         // Lấy ra các bookingDetails từ pendingSlots và waitingCheckInSlots
         const pendingBookingDetails = pendingSlots[formattedDayKey].flatMap(checkInDto => checkInDto.bookingDetails);
@@ -481,42 +482,54 @@ export default class Slot extends Component {
                                 role="tabpanel"
                                 aria-labelledby="lichdon"
                             >
-                                <table className="table table-borderless">
-                                    <thead>
-                                        <tr>
-                                            <th>Slot</th>
-                                            {daysOfWeek.map((day, index) => (
-                                                <th key={index}>{day}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.state.slots.map((slot, slotIndex) => (
-                                            <tr key={slot.slotId}>
-                                                <td>{slot.slotName}</td>
-                                                {daysOfWeek.map((_, dayIndex) => (
-                                                    <td key={dayIndex} className="slot-times-column">
-                                                        <div
-                                                            className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) && this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime) ? "pastTime"
-                                                                    : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""
-                                                                } ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime) ? "pastTime" : ""
-                                                                }`}
-                                                            onClick={
-                                                                !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                    !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
-                                                                    ? () => this.handleSlotSelection(slot.slotId, dayIndex)
-                                                                    : null
-                                                            }
-                                                        >
-                                                            {`${slot.startTime} - ${slot.endTime}`}
-                                                        </div>
-                                                    </td>
+                                <div className="overflow-x-auto">
+                                    <table className="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th>Slot</th>
+                                                {daysOfWeek.map((day, index) => (
+                                                    <th key={index}>{day}</th>
                                                 ))}
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {this.state.slots.map((slot, slotIndex) => (
+                                                <tr key={slot.slotId}>
+                                                    <td>{slot.slotName}</td>
+                                                    {daysOfWeek.map((_, dayIndex) => (
+                                                        <td key={dayIndex} className="slot-times-column">
+                                                            <div
+                                                                className={`slot-time ${
+                                                                    selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                } ${
+                                                                    this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                    this.isToday(daysOfWeek[dayIndex]) &&
+                                                                    this.isPastTime(slot.startTime)
+                                                                        ? "pastTime"
+                                                                        : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId)
+                                                                        ? "booked"
+                                                                        : ""
+                                                                } ${
+                                                                    this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                        ? "pastTime"
+                                                                        : ""
+                                                                }`}
+                                                                onClick={
+                                                                    !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                    !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                        ? () => this.handleSlotSelection(slot.slotId, dayIndex)
+                                                                        : null
+                                                                }
+                                                            >
+                                                                {`${slot.startTime} - ${slot.endTime}`}
+                                                            </div>
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div
                                 className={`tab-pane fade ${selectedTab === "codinh" ? "show active" : ""}`}
@@ -524,42 +537,54 @@ export default class Slot extends Component {
                                 role="tabpanel"
                                 aria-labelledby="lichCoDinh-tabs"
                             >
-                                <table className="table table-borderless">
-                                    <thead>
-                                        <tr>
-                                            <th>Slot</th>
-                                            {daysOfWeek.map((day, index) => (
-                                                <th key={index}>{day}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.state.slots.map((slot, slotIndex) => (
-                                            <tr key={slot.slotId}>
-                                                <td>{slot.slotName}</td>
-                                                {daysOfWeek.map((_, dayIndex) => (
-                                                    <td key={dayIndex} className="slot-times-column">
-                                                        <div
-                                                            className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) && this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime) ? "pastTime"
-                                                                    : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""
-                                                                } ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime) ? "pastTime" : ""
-                                                                }`}
-                                                            onClick={
-                                                                !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                    !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
-                                                                    ? () => this.handleSlotSelection(slot.slotId, dayIndex)
-                                                                    : null
-                                                            }
-                                                        >
-                                                            {`${slot.startTime} - ${slot.endTime}`}
-                                                        </div>
-                                                    </td>
+                                <div className="overflow-x-auto">
+                                    <table className="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th>Slot</th>
+                                                {daysOfWeek.map((day, index) => (
+                                                    <th key={index}>{day}</th>
                                                 ))}
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {this.state.slots.map((slot, slotIndex) => (
+                                                <tr key={slot.slotId}>
+                                                    <td>{slot.slotName}</td>
+                                                    {daysOfWeek.map((_, dayIndex) => (
+                                                        <td key={dayIndex} className="slot-times-column">
+                                                            <div
+                                                                className={`slot-time ${
+                                                                    selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                } ${
+                                                                    this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                    this.isToday(daysOfWeek[dayIndex]) &&
+                                                                    this.isPastTime(slot.startTime)
+                                                                        ? "pastTime"
+                                                                        : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId)
+                                                                        ? "booked"
+                                                                        : ""
+                                                                } ${
+                                                                    this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                        ? "pastTime"
+                                                                        : ""
+                                                                }`}
+                                                                onClick={
+                                                                    !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                    !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                        ? () => this.handleSlotSelection(slot.slotId, dayIndex)
+                                                                        : null
+                                                                }
+                                                            >
+                                                                {`${slot.startTime} - ${slot.endTime}`}
+                                                            </div>
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
 
                             <div
@@ -568,69 +593,87 @@ export default class Slot extends Component {
                                 role="tabpanel"
                                 aria-labelledby="linhhoat-tabs"
                             >
-                                <div style={{ display: "flex" }}>
-                                    <div style={{ flex: 7 }}>
-                                        <table className="table table-borderless">
-                                            <thead>
-                                                <tr>
-                                                    <th>Slot</th>
-                                                    {daysOfWeek.map((day, index) => (
-                                                        <th key={index}>{day}</th>
-                                                    ))}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {this.state.slots.map((slot, slotIndex) => (
-                                                    <tr key={slot.slotId}>
-                                                        <td>{slot.slotName}</td>
-                                                        {daysOfWeek.map((_, dayIndex) => (
-                                                            <td key={dayIndex} className="slot-times-column">
-                                                                <div
-                                                                    className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                        } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) && this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime) ? "pastTime"
-                                                                            : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) ? "booked" : ""
-                                                                        } ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime) ? "pastTime" : ""
-                                                                        }`}
-                                                                    onClick={
-                                                                        !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                            !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
-                                                                            ? () => this.handleSlotSelection(slot.slotId, dayIndex)
-                                                                            : null
-                                                                    }
-                                                                >
-                                                                    {`${slot.startTime} - ${slot.endTime}`}
-                                                                </div>
-                                                            </td>
+                                <div className="row">
+                                    <div className="col-md-8">
+                                        <div className="overflow-x-auto">
+                                            <table className="table table-borderless">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Slot</th>
+                                                        {daysOfWeek.map((day, index) => (
+                                                            <th key={index}>{day}</th>
                                                         ))}
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    {this.state.slots.map((slot, slotIndex) => (
+                                                        <tr key={slot.slotId}>
+                                                            <td>{slot.slotName}</td>
+                                                            {daysOfWeek.map((_, dayIndex) => (
+                                                                <td key={dayIndex} className="slot-times-column">
+                                                                    <div
+                                                                        className={`slot-time ${
+                                                                            selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId)
+                                                                                ? "selected"
+                                                                                : ""
+                                                                        } ${
+                                                                            this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                            this.isToday(daysOfWeek[dayIndex]) &&
+                                                                            this.isPastTime(slot.startTime)
+                                                                                ? "pastTime"
+                                                                                : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId)
+                                                                                ? "booked"
+                                                                                : ""
+                                                                        } ${
+                                                                            this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                                ? "pastTime"
+                                                                                : ""
+                                                                        }`}
+                                                                        onClick={
+                                                                            !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                            !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                                ? () => this.handleSlotSelection(slot.slotId, dayIndex)
+                                                                                : null
+                                                                        }
+                                                                    >
+                                                                        {`${slot.startTime} - ${slot.endTime}`}
+                                                                    </div>
+                                                                </td>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                    <div style={{ flex: 3 }}>
+                                    <div className="col-md-4">
                                         <div className="tabs">
                                             <button
                                                 type="button"
-                                                onClick={() => this.setState({ activeTab: 'dangky' })}
-                                                className={this.state.activeTab === 'dangky' ? 'active' : ''}
+                                                onClick={() => this.setState({ activeTab: "dangky" })}
+                                                className={this.state.activeTab === "dangky" ? "active" : ""}
                                             >
                                                 Đăng ký tổng giờ chơi
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => this.setState({ activeTab: 'huyvachuyendoi' })}
-                                                className={this.state.activeTab === 'huyvachuyendoi' ? 'active' : ''}
+                                                onClick={() => this.setState({ activeTab: "huyvachuyendoi" })}
+                                                className={this.state.activeTab === "huyvachuyendoi" ? "active" : ""}
                                             >
                                                 Hủy và chuyển đổi giờ
                                             </button>
                                         </div>
 
                                         <div className="tab-content">
-                                            {this.state.activeTab === 'dangky' && this.state.priceBoard && this.state.courtId && (
+                                            {this.state.activeTab === "dangky" && this.state.priceBoard && this.state.courtId && (
                                                 <NapGio priceList={this.state.priceBoard} courtId={this.state.courtId} />
                                             )}
-                                            {this.state.activeTab === 'huyvachuyendoi' && this.state.priceBoard && this.state.courtId && (
-                                                <HuyGio priceList={this.state.priceBoard} courtId={this.state.courtId} onHoursCancel={this.fetchFlexibleBookings} />
+                                            {this.state.activeTab === "huyvachuyendoi" && this.state.priceBoard && this.state.courtId && (
+                                                <HuyGio
+                                                    priceList={this.state.priceBoard}
+                                                    courtId={this.state.courtId}
+                                                    onHoursCancel={this.fetchFlexibleBookings}
+                                                />
                                             )}
                                         </div>
                                     </div>

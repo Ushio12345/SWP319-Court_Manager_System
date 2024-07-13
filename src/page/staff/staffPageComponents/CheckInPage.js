@@ -574,7 +574,6 @@ export default class CheckInPage extends Component {
                     </Modal>
                 </div>
             </div>
-
         );
     }
 }

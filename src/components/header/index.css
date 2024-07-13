@@ -135,10 +135,6 @@
 .header .header-bot a.active::before {
     width: 100%;
 }
-.user-info {
-    display: flex;
-    margin-left: 100px;
-}
 
 .user-name {
     margin-top: 30px;
@@ -193,6 +189,14 @@
     margin: 0;
     padding: 10px 0;
 }
+@media (max-width: 768px) {
+    .header .header-top .header-top-right .login .user-name {
+        display: block !important;
+    }
+    .banner .banner-intro {
+        width: 100% !important;
+    }
+}
 
 @media (max-width: 1400px) {
     .header .header-bot a,
@@ -205,9 +209,37 @@
     }
 }
 @media (max-width: 992px) {
+    .header .header-top .header-top-right .login .user-name {
+        display: none;
+    }
     .header .header-top .logo {
+        display: flex;
+        justify-content: center;
+    }
+    .header .header-bot {
+        border-top: none;
     }
     .auth-buttons {
         margin-left: 0;
+    }
+    .header .header-top .header-top-right .login .user {
+        width: 100%;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+    }
+    .header .header-top .header-top-right .login .user {
+        width: 100%;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+@media (min-width: 576px) {
+    .container,
+    .container-sm {
+        max-width: 700px;
     }
 }

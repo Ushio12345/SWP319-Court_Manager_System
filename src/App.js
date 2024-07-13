@@ -18,6 +18,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./page/customer/profile/Profile";
 import AdminPage from "./page/admin/adminPage/AdminPage";
 import StaffPage from "./page/staff/StaffPage";
+import PlayingSchedule from "./pages/playing-schedule";
 function App() {
     return (
         <Router>
@@ -72,6 +73,14 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Profile />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/playing-schedule"
+                    element={
+                        <ProtectedRoute>
+                            <PlayingSchedule />
                         </ProtectedRoute>
                     }
                 />

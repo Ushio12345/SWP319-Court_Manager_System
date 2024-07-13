@@ -8,7 +8,6 @@ import Button from "react-bootstrap/Button";
 import { alert, showAlert, showConfirmPayment } from "../../../../utils/alertUtils";
 import axios from "axios";
 
-
 export default class Order extends Component {
     constructor(props) {
         super(props);
@@ -19,14 +18,14 @@ export default class Order extends Component {
             bookingsOfSelectedCourt: [],
             currentTab: "showProcessingOrder",
             bookings: [],
-            searchQuery: "", // Thêm state để lưu trữ giá trị tìm kiếm
+            searchQuery: "",
             showModal: false,
             bookingTypeFilter: "",
             currentPage: 1,
             itemsPerPage: 5,
-            sortOrder:"asc",
+            sortOrder: "asc",
             priceOrder: "asc",
-            selectedBooking: null
+            selectedBooking: null,
         };
     }
 
@@ -41,12 +40,9 @@ export default class Order extends Component {
             .then((res) => {
                 if (res.status === 200) {
                     const firstCourt = res.data[0];
-                    this.setState(
-                        { courts: res.data, selectedCourt: firstCourt.courtId, selectedCourtName: firstCourt.courtName },
-                        () => {
-                            this.filterBookingsBySelectedCourt();
-                        }
-                    );
+                    this.setState({ courts: res.data, selectedCourt: firstCourt.courtId, selectedCourtName: firstCourt.courtName }, () => {
+                        this.filterBookingsBySelectedCourt();
+                    });
                 }
             })
             .catch((error) => {
@@ -70,7 +66,7 @@ export default class Order extends Component {
     };
 
     getExchangeRate = async () => {
-        const API_KEY = 'a2ebea95ae9c3ce5ae387b15';
+        const API_KEY = "a2ebea95ae9c3ce5ae387b15";
         const BASE_URL = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`;
 
         try {
@@ -81,80 +77,92 @@ export default class Order extends Component {
                 const exchangeRateVND = exchangeRates.VND;
                 return exchangeRateVND;
             } else {
-                console.error('Failed to fetch exchange rates:', response.statusText);
+                console.error("Failed to fetch exchange rates:", response.statusText);
                 return null;
             }
         } catch (error) {
-            console.error('Error fetching exchange rates:', error);
+            console.error("Error fetching exchange rates:", error);
             return null;
         }
     };
 
     handleCancelBooking = async (booking) => {
         try {
+            showConfirmPayment(
+                "Thông báo",
+                "Bạn có chắc chắn muốn hủy đơn hàng của khách hàng này ?",
+                "warning",
+                "Chắc chắn",
+                "Trở lại",
+                "center"
+            ).then(async (result) => {
+                if (result.isConfirmed) {
+                    if (booking && booking.bookingType === "Lịch linh hoạt") {
+                        const bookingId = booking?.bookingId;
 
-            showConfirmPayment('Thông báo', 'Bạn có chắc chắn muốn hủy đơn hàng của khách hàng này ?', 'warning', 'Chắc chắn', 'Trở lại', 'center')
-                .then(async (result) => {
-                    if (result.isConfirmed) {
+                        const cancelResponse = await axiosInstance.post(`/booking/${bookingId}/cancel`);
 
-                        if (booking && booking.bookingType === 'Lịch linh hoạt') {
-                            const bookingId = booking?.bookingId;
-
-                            const cancelResponse = await axiosInstance.post(`/booking/${bookingId}/cancel`);
-
-                            if (cancelResponse.data.message === 'Đã hủy đơn hàng thành công.') {
-                                alert('success', 'Thông báo', 'Hủy đơn hàng thành công ! Số giờ linh hoạt đã được hoàn vào tài khoản của khách hàng.', 'center')
-                                this.fetchBookingsOfCourts();
-                                return;
-                            } else {
-                                alert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'center')
-                                return;
-                            }
-                        }
-
-                        const exchangeRate = await this.getExchangeRate();
-                        if (!exchangeRate) {
-                            throw new Error('Failed to get exchange rate');
-                        }
-
-                        const saleId = booking?.payment?.saleId;
-
-                        const refundAmount = booking?.payment?.paymentAmount / exchangeRate;
-
-                        const refundResponse = await axiosInstance.post(`/paypal/refund/${saleId}/${refundAmount}`);
-
-                        if (refundResponse.data.message === 'Refund successful') {
-
-                            const bookingId = booking?.bookingId;
-
-                            const cancelResponse = await axiosInstance.post(`/booking/${bookingId}/cancel`);
-
-                            if (cancelResponse.data.message === 'Đã hủy đơn hàng thành công.') {
-                                alert('success', 'Thông báo', 'Hủy đơn hàng thành công ! Số tiền đã được hoàn trả vào tài khoản Paypal của khách hàng.', 'center')
-                                this.fetchBookingsOfCourts();
-                            } else {
-                                alert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'center')
-                            }
+                        if (cancelResponse.data.message === "Đã hủy đơn hàng thành công.") {
+                            alert(
+                                "success",
+                                "Thông báo",
+                                "Hủy đơn hàng thành công ! Số giờ linh hoạt đã được hoàn vào tài khoản của khách hàng.",
+                                "center"
+                            );
+                            this.fetchBookingsOfCourts();
+                            return;
+                        } else {
+                            alert("error", "Thông báo", "Hủy đơn hàng không thành công !", "center");
+                            return;
                         }
                     }
-                })
 
+                    const exchangeRate = await this.getExchangeRate();
+                    if (!exchangeRate) {
+                        throw new Error("Failed to get exchange rate");
+                    }
+
+                    const saleId = booking?.payment?.saleId;
+
+                    const refundAmount = booking?.payment?.paymentAmount / exchangeRate;
+
+                    const refundResponse = await axiosInstance.post(`/paypal/refund/${saleId}/${refundAmount}`);
+
+                    if (refundResponse.data.message === "Refund successful") {
+                        const bookingId = booking?.bookingId;
+
+                        const cancelResponse = await axiosInstance.post(`/booking/${bookingId}/cancel`);
+
+                        if (cancelResponse.data.message === "Đã hủy đơn hàng thành công.") {
+                            alert(
+                                "success",
+                                "Thông báo",
+                                "Hủy đơn hàng thành công ! Số tiền đã được hoàn trả vào tài khoản Paypal của khách hàng.",
+                                "center"
+                            );
+                            this.fetchBookingsOfCourts();
+                        } else {
+                            alert("error", "Thông báo", "Hủy đơn hàng không thành công !", "center");
+                        }
+                    }
+                }
+            });
         } catch (error) {
-            console.error('Failed to cancel booking:', error);
+            console.error("Failed to cancel booking:", error);
         }
     };
 
     handleConfirmBooking = async (bookingId) => {
         try {
             const confirmResponse = await axiosInstance.post(`/booking/${bookingId}/confirm`);
-            if (confirmResponse.data.message === 'Xác nhận đơn hàng thành công') {
-                showAlert('success', 'Thông báo', 'Xác nhận đơn hàng thành công !', 'top-end');
+            if (confirmResponse.data.message === "Xác nhận đơn hàng thành công") {
+                showAlert("success", "Thông báo", "Xác nhận đơn hàng thành công !", "top-end");
                 this.fetchBookingsOfCourts();
             } else {
-                showAlert('error', 'Thông báo', 'Hủy đơn hàng không thành công !', 'top-end')
+                showAlert("error", "Thông báo", "Hủy đơn hàng không thành công !", "top-end");
             }
         } catch (error) {
-            console.error('Failed to confirm booking:', error);
+            console.error("Failed to confirm booking:", error);
         }
     };
 
@@ -170,12 +178,15 @@ export default class Order extends Component {
     handleCourtChange = (event) => {
         const courtId = event.target.value;
         const courtName = event.target.options[event.target.selectedIndex].text;
-        this.setState({
-            selectedCourt: courtId,
-            selectedCourtName: courtName,
-        }, () => {
-            this.filterBookingsBySelectedCourt();
-        });
+        this.setState(
+            {
+                selectedCourt: courtId,
+                selectedCourtName: courtName,
+            },
+            () => {
+                this.filterBookingsBySelectedCourt();
+            }
+        );
     };
 
     renderCourtOption = () => {
@@ -195,17 +206,15 @@ export default class Order extends Component {
     filterBookings = (status) => {
         const { bookingsOfSelectedCourt, searchQuery, bookingTypeFilter } = this.state;
         return bookingsOfSelectedCourt
-            .filter(booking => booking.statusEnum === status)
-            .filter(booking => {
-                const courtName = booking.courtName ? booking.courtName.toLowerCase() : '';
-                const bookingId = booking.bookingId ? booking.bookingId.toString() : '';
-                if(bookingTypeFilter){
+            .filter((booking) => booking.statusEnum === status)
+            .filter((booking) => {
+                const courtName = booking.courtName ? booking.courtName.toLowerCase() : "";
+                const bookingId = booking.bookingId ? booking.bookingId.toString() : "";
+                if (bookingTypeFilter) {
                     return booking.bookingType === bookingTypeFilter;
                 }
-                return courtName.includes(searchQuery.toLowerCase()) 
-                || bookingId.toLowerCase().includes(searchQuery.toLowerCase());
-            })
-            ;
+                return courtName.includes(searchQuery.toLowerCase()) || bookingId.toLowerCase().includes(searchQuery.toLowerCase());
+            });
     };
 
     handleShowModal = (booking) => {
@@ -241,7 +250,6 @@ export default class Order extends Component {
             </nav>
         );
     };
-
 
     render() {
         const { currentTab, searchQuery, showModal, selectedBooking, currentPage, itemsPerPage, sortOrder, priceOrder } = this.state;
@@ -296,15 +304,17 @@ export default class Order extends Component {
                     <div className="tab-content" id="pills-tabContent">
                         {["showProcessingOrder", "showCheckInOrder", "showCompleteOrder", "showCancelledOrder"].map((tab) => {
                             const filteredBookings = this.filterBookings(
-                                tab === "showProcessingOrder" ? "Đang chờ xử lý" :
-                                    tab === "showCheckInOrder" ? "Đang chờ check-in" :
-                                        tab === "showCompleteOrder" ? "Đã hoàn thành" :
-                                            "Đã hủy"
+                                tab === "showProcessingOrder"
+                                    ? "Đang chờ xử lý"
+                                    : tab === "showCheckInOrder"
+                                    ? "Đang chờ check-in"
+                                    : tab === "showCompleteOrder"
+                                    ? "Đã hoàn thành"
+                                    : "Đã hủy"
                             );
 
-                            const currentBookingPage = filteredBookings
-                            .slice(indexOfFirstItem, indexOfLastItem);
-                            
+                            const currentBookingPage = filteredBookings.slice(indexOfFirstItem, indexOfLastItem);
+
                             return (
                                 <div
                                     key={tab}
@@ -314,98 +324,107 @@ export default class Order extends Component {
                                     aria-labelledby={`${tab}-tab`}
                                 >
                                     {currentBookingPage.length > -1 ? (
-                                    <div>
-                                        <table className="table table-hover table-borderless">
-                                            <thead>
-                                                <tr>
-                                                    <th className="text-start">STT</th>
-                                                    <th className="text-start">Mã đơn hàng</th>
-                                                    <th className="text-start">Khách hàng</th>
-                                                    <th className="text-start">
-                                                        <select className="form-control" 
-                                                            value={this.state.bookingTypeFilter} 
-                                                            onChange={(e) => this.setState({ bookingTypeFilter: e.target.value })}>
+                                        <div>
+                                            <table className="table table-hover table-borderless">
+                                                <thead>
+                                                    <tr>
+                                                        <th className="text-start">STT</th>
+                                                        <th className="text-start">Mã đơn hàng</th>
+                                                        <th className="text-start">Khách hàng</th>
+                                                        <th className="text-start">
+                                                            <select
+                                                                className="form-control"
+                                                                value={this.state.bookingTypeFilter}
+                                                                onChange={(e) => this.setState({ bookingTypeFilter: e.target.value })}
+                                                            >
                                                                 <option value="">Tất cả lịch</option>
                                                                 <option value="Lịch đơn">Lịch đơn</option>
                                                                 <option value="Lịch cố định">Lịch cố định</option>
                                                                 <option value="Lịch linh hoạt">Lịch linh hoạt</option>
-                                                        </select>
-                                                    </th>
-                                                    <th className="text-start">
-                                                        <select className="form-control"
-                                                        value={this.state.priceOrder}
-                                                        onChange={(e) => this.setState({priceOrder: e.target.value})}>
-                                                            <option value="asc">Giá ASC (VND)</option>
-                                                            <option value="desc">Giá DESC (VND)</option>
-                                                        </select>
-                                                    </th>
-                                                    <th className="text-start">
-                                                        <select className="form-control"
-                                                        value={this.state.sortOrder}
-                                                        onChange={(e) => this.setState({sortOrder : e.target.value})}>
-                                                            <option value="asc">Ngày đặt ASC</option>
-                                                            <option value="desc">Ngày đặt DESC</option>
-
-                                                        </select>
-                                                    </th>
-                                                    <th className="text-center">Thao tác</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {currentBookingPage
-                                                .sort((a, b) => {
-                                                    if(sortOrder==='asc'){
-                                                        return new Date(a.bookingDate) - new Date(b.bookingDate)}
-                                                    else{
-                                                        return new Date(b.bookingDate) - new Date(a.bookingDate)}
-                                                    }
-                                                )
-                                                .sort((a,b) => {
-                                                    if(priceOrder === 'asc'){
-                                                        return  a.totalPrice - b.totalPrice;
-                                                    }
-                                                    else{
-                                                        return b.totalPrice - a.totalPrice;
-                                                    }
-                                                })
-                                                .map((booking, index) => (
-                                                    <tr key={booking.bookingId}>
-                                                        <td className="text-start">{index + 1}</td>
-                                                        <td className="text-start">{booking.bookingId}</td>
-                                                        <td className="text-start">
-                                                            <p>{booking.customer.fullName}</p>
-                                                            <p className="text-xs text-gray-600 dark:text-gray-400">{booking.customer.email}</p></td>
-                                                        <td className="text-start">{booking.bookingType}</td>
-                                                        <td className="text-start">{booking.totalPrice.toLocaleString('vi-VN')}</td>
-                                                        <td className="text-start">{booking.bookingDate}</td>
-                                                        <td className="d-flex btn-action">                                                           
-                                                            <button
-                                                                className="btn btn-info mr-2 p-2"
-                                                                onClick={() => this.handleShowModal(booking)}
+                                                            </select>
+                                                        </th>
+                                                        <th className="text-start">
+                                                            <select
+                                                                className="form-control"
+                                                                value={this.state.priceOrder}
+                                                                onChange={(e) => this.setState({ priceOrder: e.target.value })}
                                                             >
-                                                                Chi tiết
-                                                            </button>
-                                                            {booking.statusEnum === "Đang chờ xử lý" && (
-                                                                <>
-                                                                    <button
-                                                                        className="btn btn-success mr-2 p-2"
-                                                                        onClick={() => this.handleConfirmBooking(booking.bookingId)}
-                                                                    >
-                                                                        Xác nhận
-                                                                    </button>
-                                                                    <button className="btn btn-danger p-2"
-                                                                        onClick={() => this.handleCancelBooking(booking)}>
-                                                                        Hủy
-                                                                    </button>
-                                                                </>
-                                                            )}
-                                                        </td>
+                                                                <option value="asc">Giá ASC (VND)</option>
+                                                                <option value="desc">Giá DESC (VND)</option>
+                                                            </select>
+                                                        </th>
+                                                        <th className="text-start">
+                                                            <select
+                                                                className="form-control"
+                                                                value={this.state.sortOrder}
+                                                                onChange={(e) => this.setState({ sortOrder: e.target.value })}
+                                                            >
+                                                                <option value="asc">Ngày đặt ASC</option>
+                                                                <option value="desc">Ngày đặt DESC</option>
+                                                            </select>
+                                                        </th>
+                                                        <th className="text-center">Thao tác</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                        {this.renderPagination()}
-                                    </div>
+                                                </thead>
+                                                <tbody>
+                                                    {currentBookingPage
+                                                        .sort((a, b) => {
+                                                            if (sortOrder === "asc") {
+                                                                return new Date(a.bookingDate) - new Date(b.bookingDate);
+                                                            } else {
+                                                                return new Date(b.bookingDate) - new Date(a.bookingDate);
+                                                            }
+                                                        })
+                                                        .sort((a, b) => {
+                                                            if (priceOrder === "asc") {
+                                                                return a.totalPrice - b.totalPrice;
+                                                            } else {
+                                                                return b.totalPrice - a.totalPrice;
+                                                            }
+                                                        })
+                                                        .map((booking, index) => (
+                                                            <tr key={booking.bookingId}>
+                                                                <td className="text-start">{index + 1}</td>
+                                                                <td className="text-start">{booking.bookingId}</td>
+                                                                <td className="text-start">
+                                                                    <p>{booking.customer.fullName}</p>
+                                                                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                                        {booking.customer.email}
+                                                                    </p>
+                                                                </td>
+                                                                <td className="text-start">{booking.bookingType}</td>
+                                                                <td className="text-start">{booking.totalPrice.toLocaleString("vi-VN")}</td>
+                                                                <td className="text-start">{booking.bookingDate}</td>
+                                                                <td className="d-flex btn-action">
+                                                                    <button
+                                                                        className="btn btn-info mr-2 p-2"
+                                                                        onClick={() => this.handleShowModal(booking)}
+                                                                    >
+                                                                        <i class="fa-solid fa-circle-info"></i>
+                                                                    </button>
+                                                                    {booking.statusEnum === "Đang chờ xử lý" && (
+                                                                        <>
+                                                                            <button
+                                                                                className="btn btn-success mr-2 p-2"
+                                                                                onClick={() => this.handleConfirmBooking(booking.bookingId)}
+                                                                            >
+                                                                                <i class="fa-solid fa-check-to-slot"></i>
+                                                                            </button>
+                                                                            <button
+                                                                                className="btn btn-danger p-2"
+                                                                                onClick={() => this.handleCancelBooking(booking)}
+                                                                            >
+                                                                                <i class="fa-solid fa-xmark"></i>
+                                                                            </button>
+                                                                        </>
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                </tbody>
+                                            </table>
+                                            {this.renderPagination()}
+                                        </div>
                                     ) : (
                                         <div className="no-bookings text-center">
                                             <FontAwesomeIcon icon={faInbox} size="3x" />
@@ -422,18 +441,39 @@ export default class Order extends Component {
                             <Modal.Body>
                                 {selectedBooking && (
                                     <div className="order-detail ms-3">
-                                        <p><b>Mã đơn hàng:</b> {selectedBooking.bookingId}</p>
-                                        <p><b>Khách hàng:</b> {selectedBooking.customer.fullName}</p>
-                                        <p><b>Email:</b> {selectedBooking.customer.email}</p>
-                                        <p><b>Thời gian đặt đơn:</b> {selectedBooking.bookingDate}</p>
-                                        <p className="booking-type"><b>Dạng lịch:</b> {selectedBooking.bookingType}</p>
-                                        {selectedBooking.flexibleBooking &&
-                                            <p><b>Số giờ linh hoạt:</b> {selectedBooking.flexibleBooking.availableHours + selectedBooking.flexibleBooking.usedHours}</p>}
+                                        <p>
+                                            <b>Mã đơn hàng:</b> {selectedBooking.bookingId}
+                                        </p>
+                                        <p>
+                                            <b>Khách hàng:</b> {selectedBooking.customer.fullName}
+                                        </p>
+                                        <p>
+                                            <b>Email:</b> {selectedBooking.customer.email}
+                                        </p>
+                                        <p>
+                                            <b>Thời gian đặt đơn:</b> {selectedBooking.bookingDate}
+                                        </p>
+                                        <p className="booking-type">
+                                            <b>Dạng lịch:</b> {selectedBooking.bookingType}
+                                        </p>
+                                        {selectedBooking.flexibleBooking && (
+                                            <p>
+                                                <b>Số giờ linh hoạt:</b>{" "}
+                                                {selectedBooking.flexibleBooking.availableHours + selectedBooking.flexibleBooking.usedHours}
+                                            </p>
+                                        )}
                                         <p></p>
                                         <p>
                                             <b>Hình thức thanh toán: </b>
-                                            {selectedBooking.totalPrice !== 0 ? (<><i className="fa-brands fa-paypal text-info"></i> <span> PayPal</span></>) :
-                                                (<><FontAwesomeIcon icon={faClock} className="text-info" /> <span> Giờ linh hoạt</span></>)}
+                                            {selectedBooking.totalPrice !== 0 ? (
+                                                <>
+                                                    <i className="fa-brands fa-paypal text-info"></i> <span> PayPal</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <FontAwesomeIcon icon={faClock} className="text-info" /> <span> Giờ linh hoạt</span>
+                                                </>
+                                            )}
                                         </p>
                                         <hr />
                                         {/* Additional details */}
@@ -444,9 +484,7 @@ export default class Order extends Component {
                                                         <th>Slot</th>
                                                         <th>Ngày check-in</th>
                                                         <th>Sân</th>
-                                                        <th>
-                                                            {selectedBooking.totalPrice === 0 ? "Giờ" : "Giá (VND)"}
-                                                        </th>
+                                                        <th>{selectedBooking.totalPrice === 0 ? "Giờ" : "Giá (VND)"}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -457,27 +495,38 @@ export default class Order extends Component {
                                                                 <td>{bookingDetail.yardSchedule.slot.slotName}</td>
                                                                 <td>{bookingDetail.date}</td>
                                                                 <td>{bookingDetail.yardSchedule.yard.yardName}</td>
-                                                                <td>{selectedBooking.totalPrice === 0 ? `1 giờ` : bookingDetail.price.toLocaleString('vi-VN')}</td>
+                                                                <td>
+                                                                    {selectedBooking.totalPrice === 0
+                                                                        ? `1 giờ`
+                                                                        : bookingDetail.price.toLocaleString("vi-VN")}
+                                                                </td>
                                                             </tr>
                                                         ))}
                                                     {selectedBooking.totalPrice === 0 ? (
                                                         <tr>
-                                                            <td><b>Giờ linh hoạt:</b></td>
+                                                            <td>
+                                                                <b>Giờ linh hoạt:</b>
+                                                            </td>
                                                             <td colSpan="2"></td>
-                                                            <td style={{ color: 'green', fontWeight: 'bold' }}>
-                                                                {selectedBooking.totalPrice === 0 ? `${selectedBooking.bookingDetails.length} giờ` : 0}
+                                                            <td style={{ color: "green", fontWeight: "bold" }}>
+                                                                {selectedBooking.totalPrice === 0
+                                                                    ? `${selectedBooking.bookingDetails.length} giờ`
+                                                                    : 0}
                                                             </td>
                                                         </tr>
                                                     ) : (
                                                         <tr>
-                                                            <td><b>Tổng tiền:</b></td>
+                                                            <td>
+                                                                <b>Tổng tiền:</b>
+                                                            </td>
                                                             <td colSpan="2"></td>
-                                                            <td style={{ color: 'green', fontWeight: 'bold' }}>{selectedBooking.totalPrice.toLocaleString('vi-VN')}</td>
+                                                            <td style={{ color: "green", fontWeight: "bold" }}>
+                                                                {selectedBooking.totalPrice.toLocaleString("vi-VN")}
+                                                            </td>
                                                         </tr>
                                                     )}
                                                 </tbody>
                                             </table>
-
                                         )}
                                     </div>
                                 )}

@@ -1,0 +1,6 @@
+@media (max-width: 768px) {
+    .header .header-top .logo {
+        display: flex;
+        justify-content: center;
+    }
+}

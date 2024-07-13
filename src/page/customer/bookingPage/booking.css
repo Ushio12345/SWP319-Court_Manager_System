@@ -102,7 +102,7 @@
     margin: 10px 5px 0 0;
     background-color: #002e86;
 }
- 
+
 /* booking.css */
 
 /* order */
@@ -215,7 +215,7 @@
 }
 
 .input-field:focus {
-    border-color: #0D6EFD;
+    border-color: #0d6efd;
 }
 
 .input-group {
@@ -234,7 +234,7 @@
 }
 
 .submit-button {
-    background-color: #4CAF50;
+    background-color: #4caf50;
     color: white;
     padding: 12px 20px;
     border: none;
@@ -246,7 +246,7 @@
 }
 
 .submit-button:hover {
-    background-color: #0D6EFD;
+    background-color: #0d6efd;
 }
 
 .error-message {
@@ -254,4 +254,68 @@
     font-size: 14px;
     margin-top: 5px;
 }
-
+.detail-yard-title .rate i {
+    color: orangered;
+}
+@media (max-width: 1200px) {
+    .newYardinBooking .slick-slide {
+        padding: 10px;
+    }
+}
+@media (max-width: 1054px) {
+    .yard-service .nameServices {
+        font-size: 14px;
+    }
+}
+@media (max-width: 994px) {
+    .detail-yard-title {
+        font-size: 15px;
+    }
+}
+@media (max-width: 956px) {
+    .yard-service .nameServices {
+        font-size: 12px;
+    }
+}
+@media (max-width: 930px) {
+    .detail-yard-title {
+        font-size: 13px;
+    }
+}
+@media (max-width: 768px) {
+    .detail-yard {
+        padding: 250px 0 0 0 !important;
+    }
+    .yard-left {
+        margin-bottom: 20px;
+        height: 450px !important;
+        border-radius: 10px;
+    }
+    .yard-right {
+        margin-bottom: 20px;
+    }
+    .yard-right img {
+        border-radius: 30px;
+    }
+}
+@media (max-width: 579px) {
+    .detail-yard-title {
+        font-size: 13px;
+    }
+    .bookingPage {
+        width: 100vh;
+    }
+    .feedback {
+        width: 70% !important;
+    }
+}
+@media (max-width: 576px) {
+    .detail-yard-title {
+        font-size: 13px;
+    }
+}
+@media (max-width: 480px) {
+    .yard {
+        padding: 60px 44px;
+    }
+}

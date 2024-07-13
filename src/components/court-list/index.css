@@ -81,7 +81,6 @@ label.star:before {
 .yard .card-yard-content a {
     font-size: 17px;
     border: 2px solid black;
-    border-radius: 10px;
     padding: 5px 10px;
 }
 
@@ -91,44 +90,6 @@ label.star:before {
     transition: 0.5s;
 }
 
-.yard[data-index="1"] .list-yard {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    grid-gap: 20px;
-}
-.yard[data-index="1"] .list-yard h1::before {
-    position: absolute;
-    content: "";
-    top: 50%;
-    left: 10%;
-    background-color: black;
-    width: 20%;
-    height: 3px;
-}
-.yard[data-index="1"] .list-yard h1::after {
-    position: absolute;
-    content: "";
-    top: 50%;
-    right: 10%;
-    background-color: black;
-    width: 20%;
-    height: 3px;
-}
-.yard[data-index="1"] .list-yard .card-yard:nth-child(2),
-.yard[data-index="1"] .list-yard .card-yard:nth-child(3) {
-    display: flex;
-    align-items: center;
-}
-.yard[data-index="1"] .list-yard .card-yard .card-yard-img {
-    overflow: hidden;
-}
-.yard[data-index="1"] .list-yard .card-yard .card-yard-img:nth-child(2),
-.yard[data-index="1"] .list-yard .card-yard .card-yard-img:nth-child(3) {
-    width: 50%;
-}
-.yard[data-index="1"] .list-yard .card-yard:nth-child(1) {
-    grid-row: 1/3;
-}
 .yard h1 {
     font-size: 30px;
 }
@@ -180,4 +141,9 @@ label.star:before {
     transform: translateY(-50%);
     color: #999;
     cursor: pointer;
+}
+@media (max-width: 580px) {
+    .yard {
+        padding: 40px 40px !important;
+    }
 }

@@ -33,8 +33,8 @@ const CardYard = ({ court }) => {
             <div className="card-yard-img ">
                 {court.imageUrl && <img src={court.imageUrl} alt="Ảnh Sân" />} {/* Kiểm tra imageUrl trước khi sử dụng */}
             </div>
-            <div className="card-yard-content">
-                <h6 style={{fontSize: '16px'}}>
+            <div className="card-yard-content" style={{ height: "37%" }}>
+                <h6 style={{ fontSize: "16px" }}>
                     <b>{court.courtName}</b>
                 </h6>
                 <p>
@@ -49,9 +49,12 @@ const CardYard = ({ court }) => {
                 <p className="" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <b>Đánh giá:</b> <div className="rate-start">{renderStars(court.rate)}</div>
                 </p>
-                <a href="#" onClick={handleBookingClick} style={{ color: "black" }}>
+            </div>
+            <div>
+                {" "}
+                <button className="btn btn-primary p-2  w-50" onClick={handleBookingClick} style={{ color: "white", backgroundColor: "#002e86" }}>
                     Đặt Ngay
-                </a>
+                </button>
             </div>
         </div>
     );

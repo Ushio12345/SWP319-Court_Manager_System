@@ -3,12 +3,14 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { addDays, format, eachDayOfInterval, parse, differenceInHours } from "date-fns";
 import { sl, vi } from "date-fns/locale";
-import "../../customer/bookingPage/formBooking/slot.css";
-import "../../../css/style.css";
-import axiosInstance from "../../../config/axiosConfig";
-import { Button, Modal } from "react-bootstrap";
-import "../staff.css";
-import { showAlert } from "../../../utils/alertUtils";
+import axiosInstance from "../../config/axiosConfig";
+import { showAlert } from "../../utils/alertUtils";
+import Header from "../../components/header";
+import Footer from "../../components/footer";
+import "../playing-schedule/index.css";
+import "../../css/style.css";
+import "../../page/staff/staff.css";
+
 // Register the Vietnamese locale with react-datepicker
 registerLocale("vi", vi);
 
@@ -20,7 +22,113 @@ export default class PlayingSchedule extends Component {
             startDate: new Date(),
             endDate: addDays(new Date(), 6),
             daysOfWeek: [],
-            slots: [],
+            slots: [
+                {
+                    "slotId": "TL0000044",
+                    "slotName": "Slot 1",
+                    "startTime": "07:30",
+                    "endTime": "08:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000045",
+                    "slotName": "Slot 2",
+                    "startTime": "08:00",
+                    "endTime": "09:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000046",
+                    "slotName": "Slot 3",
+                    "startTime": "09:00",
+                    "endTime": "10:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000047",
+                    "slotName": "Slot 4",
+                    "startTime": "10:00",
+                    "endTime": "11:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000048",
+                    "slotName": "Slot 5",
+                    "startTime": "11:00",
+                    "endTime": "12:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000049",
+                    "slotName": "Slot 6",
+                    "startTime": "12:00",
+                    "endTime": "13:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000050",
+                    "slotName": "Slot 7",
+                    "startTime": "13:00",
+                    "endTime": "14:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000051",
+                    "slotName": "Slot 8",
+                    "startTime": "14:00",
+                    "endTime": "15:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000052",
+                    "slotName": "Slot 9",
+                    "startTime": "15:00",
+                    "endTime": "16:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000053",
+                    "slotName": "Slot 10",
+                    "startTime": "16:00",
+                    "endTime": "17:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000054",
+                    "slotName": "Slot 11",
+                    "startTime": "17:00",
+                    "endTime": "18:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000055",
+                    "slotName": "Slot 12",
+                    "startTime": "18:00",
+                    "endTime": "19:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000056",
+                    "slotName": "Slot 13",
+                    "startTime": "19:00",
+                    "endTime": "20:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000057",
+                    "slotName": "Slot 14",
+                    "startTime": "20:00",
+                    "endTime": "21:00",
+                    "userId": "U0000027"
+                },
+                {
+                    "slotId": "TL0000193",
+                    "slotName": "Slot 15",
+                    "startTime": "21:00",
+                    "endTime": "22:00",
+                    "userId": "U0000027"
+                }
+            ],
             waitingCheckInSlots: [],
             pendingSlots: [],
             completedSlots: [],
@@ -43,10 +151,29 @@ export default class PlayingSchedule extends Component {
             selectedSlotInfo: null,
             selectedCustomer: null,
             facilities: [],
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+                roles: [],
+            },
         };
     }
 
     componentDidMount() {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user) {
+            this.setState({
+                isLoggedIn: true,
+                user: {
+                    username: user.fullName,
+                    avatar: user.imageUrl,
+                    roles: user.roles,
+                },
+            });
+        }
+
         this.updateDaysOfWeek(this.state.startDate, this.state.endDate);
         this.fetchCourts();
     }
@@ -400,181 +527,74 @@ export default class PlayingSchedule extends Component {
         }
     }
 
+    handleLogout = () => {
+        localStorage.removeItem("user");
+
+        this.setState({
+            isLoggedIn: false,
+            user: {
+                username: "",
+                avatar: "",
+                roles: [],
+            },
+        });
+
+        window.location.href = "/";
+    };
+
     render() {
-        const { courtOfStaff } = this.state;
-        const { daysOfWeek, selectedSlots, slots } = this.state;
-        const selectedSlotDetails = Object.entries(selectedSlots).flatMap(([day, slotIds]) =>
-            slotIds.map((slotId) => {
-                const slot = slots.find((s) => s.slotId === slotId); // Tìm slot theo slotId
-                return `${slot ? slot.slotName : "Unknown Slot"}`; // Kiểm tra nếu slot tồn tại
-            })
-        );
-        const { facilities } = this.state;
-
-        if (!courtOfStaff) {
-            return <div>Đang tải thông tin của cơ sở</div>;
-        }
-
-        const renderStars = (rate) => {
-            const totalStars = 5;
-            const stars = [];
-            for (let i = 1; i <= totalStars; i++) {
-                if (i <= rate) {
-                    stars.push(<span key={i} className="fa fa-star checked" style={{ color: "#ffc107" }}></span>);
-                } else {
-                    stars.push(<span key={i} className="fa fa-star" style={{ color: "#000000" }}></span>);
-                }
-            }
-            return stars;
-        };
+        const { daysOfWeek, isLoggedIn, user } = this.state;
 
         return (
-            <div>
-                <section className="detail-yard">
-                    {console.log(this.state.showModal)}
-                    {console.log(this.state.bookingDetails)}
-                    <h1>{courtOfStaff.courtName}</h1>
-                    <div className="detail-yard-title">
-                        <div className="address">
-                            <p>
-                                <i className="fa-solid fa-location-dot" /> Địa chỉ:
-                                <span> {courtOfStaff.address}</span>
-                            </p>
-                        </div>
-                        <div className="rate">
-                            <p>
-                                Đánh giá: {renderStars(courtOfStaff.rate)} {courtOfStaff.rate}/5 <i className="fa-solid fa-star" /> (0  Đánh giá)
-                            </p>
-                        </div>
-                    </div>
-                    <div className="detail-yard-info row">
-                        <div className="yard-left col-lg-6">
-                            <h3>Thông tin sân</h3>
-                            <p>
-                                Số sân: <span>{courtOfStaff.yards.length}</span>
-                            </p>
-                            <p>
-                                Giờ hoạt động: <span>{courtOfStaff.openTime} - {courtOfStaff.closeTime}</span>
-                            </p>
-                            <div className="yard-service row">
-                                <h4>Dịch vụ tiện ích</h4>
-                                {facilities.length > 0 ? (
-                                    facilities.map((facility, index) => (
-                                        <div className="col-lg-6" key={index}>
-                                            <i className={`fa-solid ${facility.facilityIcon}`} /> {facility.facilityName}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>Trống</p>
-                                )}
-                            </div>
-                        </div>
-                        <div className="yard-right col-lg-6">
-                            <img className="h-100" src={courtOfStaff.imageUrl} alt />
-                        </div>
-                    </div>
+            <div className="GuestPage">
+                <section className="header">
+                    <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
                 </section>
-                <div className="checkin-form">
-                    <form className="order row">
-                        <div className="select-slot p-3">
-                            <div className="orderPage-body">
-                                <div className="tab-content" id="pills-tabContent">
-                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                        <div className="btn slot-time pastTime" style={{ width: '100px', height: '40px' }}><b>Đã hết giờ</b></div>
-                                        <div className="btn slot-time completed" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã hoàn thành</b></div>
-                                        <div className="btn slot-time waiting-check-in" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Chờ check-in</b></div>
-                                        <div className="btn slot-time pending" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã đặt</b></div>
-                                        <div className="btn slot-time cancel" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã hủy</b></div>
-                                        <div className="btn slot-time" style={{ width: '100px', height: '40px' }}><b>Trống</b></div>
-                                    </div>
-                                    <select
-                                        className="form-select my-3"
-                                        aria-label="Default select example"
-                                        value={this.state.selectedYard}
-                                        onChange={this.handleYardChange}
-                                    >
-                                        <option value="">Chọn sân</option>
-                                        {courtOfStaff?.yards
-                                            ?.slice() // Create a shallow copy to avoid mutating the original array
-                                            .sort((a, b) => a.yardName.localeCompare(b.yardName)) // Sort by yardName in ascending order
-                                            .map((yard, index) => (
-                                                <option key={index} value={yard.yardId}>
-                                                    {yard.yardName}
-                                                </option>
-                                            ))}
-                                    </select>
-                                    <div>
-                                        <div className="overflow-x-auto tableCheckIn">
-                                            <table className="table table-borderless">
-                                                <thead>
-                                                    <tr>
-                                                        <th className="">Slot</th>
-                                                        {daysOfWeek?.map((day, index) => (
-                                                            <th key={index}>{day}</th>
-                                                        ))}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {this.state.slots.map((slot, slotIndex) => (
-                                                        <tr key={slot.slotId}>
-                                                            <td>{slot.slotName}</td>
-                                                            {daysOfWeek.map((_, dayIndex) => (
-                                                                <td key={dayIndex} className="slot-times-column">
-                                                                    <div
-                                                                        className={`slot-time ${this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) ? "waiting-check-in" : ""}
-                                                                        ${this.isToday(daysOfWeek[dayIndex]) && !this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) 
-                                                                             && this.isPastTime(daysOfWeek[dayIndex], slot.startTime, slot) ? "pastTime" : ""}
-                                                                        ${this.isCompletedSlot(daysOfWeek[dayIndex], slot.slotId) ? "completed" : ""}
-                                                                        ${this.isPendingSlot(daysOfWeek[dayIndex], slot.slotId) ? "pending" : ""}
-                                                                        ${this.isCancelledSLot(daysOfWeek[dayIndex], slot.slotId) ? "cancel" : ""}`}
-                                                                        onClick={() => this.handleShowModal(slot, daysOfWeek[dayIndex])}
-                                                                    >
-                                                                        {`${slot.startTime} - ${slot.endTime}`}
-                                                                    </div>
-                                                                </td>
+                <div>
+                    
+                    <div className="checkin-form">
+                        <form className="order row">
+                            <div className="select-slot p-3">
+                                <div className="orderPage-body">
+                                    <div className="tab-content" id="pills-tabContent">                                      
+                                        <div>
+                                            <div className="overflow-x-auto tableCheckIn">
+                                                <table className="table table-borderless">
+                                                    <thead>
+                                                        <tr>
+                                                            <th className="">Slot</th>
+                                                            {daysOfWeek?.map((day, index) => (
+                                                                <th key={index}>{day}</th>
                                                             ))}
                                                         </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                                    </thead>
+                                                    <tbody>
+                                                        {this.state.slots.map((slot, slotIndex) => (
+                                                            <tr key={slot.slotId}>
+                                                                <td>{slot.slotName}</td>
+                                                                {daysOfWeek.map((_, dayIndex) => (
+                                                                    <td key={dayIndex} className="slot-times-column">
+                                                                        <div
+                                                                            className="slot-time"
+                                                                        >
+                                                                            {`${slot.startTime} - ${slot.endTime}`}
+                                                                        </div>
+                                                                    </td>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
-                    <Modal show={this.state.showModal} onHide={() => this.setState({ showModal: false })} centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Thông tin check-in</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <b>Khách hàng: </b> {this.state.selectedCustomer?.fullName} <br />
-                            <b>Email: </b> {this.state.selectedCustomer?.email} <br />
-                            <b>Ngày check-in: </b> {this.state.bookingDetails?.date} <br />
-                            <b>Sân: </b> {this.state.bookingDetails?.yardSchedule?.yard?.yardName} <br />
-                            <b>Slot: </b> {this.state.selectedSlotInfo?.slotName}<br />
-                            <b>Thời gian: </b> {this.state.selectedSlotInfo?.startTime} - {this.state.selectedSlotInfo?.endTime} <br />
-                        </Modal.Body>
-                        <Modal.Footer>
-                        {this.state.bookingDetails?.status === 'Đang chờ check-in' && ( this.isToday(this.state.bookingDetails?.date) && this.isPastTime(this.state.bookingDetails?.date, this.state.selectedSlotInfo?.startTime, this.state.selectedSlotInfo) ) && (
-                                <Button variant="danger" onClick={() => this.handleCancelCheckIn(this.state.bookingDetails?.detailId)}>
-                                    Hủy
-                                </Button>
-                            )}
-                            {this.state.bookingDetails?.status === 'Đang chờ check-in' && this.isToday(this.state.bookingDetails?.date) 
-                            && !this.isPastTime(this.state.bookingDetails?.date, this.state.selectedSlotInfo?.startTime, this.state.selectedSlotInfo) && (
-                                <Button variant="primary" onClick={() => this.handleCheckIn(this.state.bookingDetails?.detailId)}>
-                                    Check-in
-                                </Button>
-                            )}
-                            <Button variant="secondary" style={ {alignContent: 'center'} } onClick={() => this.setState({ showModal: false })}>
-                                Đóng
-                            </Button>  
-                        </Modal.Footer>
-                    </Modal>
+                        </form>
+                    </div>
                 </div>
+                <Footer />
             </div>
-
         );
     }
 }
