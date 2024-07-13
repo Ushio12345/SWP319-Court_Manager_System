@@ -102,18 +102,20 @@ export default function Admin() {
     return (
         <div className="py-5">
             <h3 className="text-center pb-3">Danh sách quản trị viên</h3>
-            <table className="table table-striped">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Ảnh đại diện</th>
-                        <th>ID</th>
-                        <th>Tên admin</th>
-                        <th>Email</th>
-                    </tr>
-                </thead>
-                <tbody>{renderAdmin()}</tbody>
-            </table>
+            <div className="overflow-x-auto">
+                <table className="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Ảnh đại diện</th>
+                            <th>ID</th>
+                            <th>Tên admin</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>{renderAdmin()}</tbody>
+                </table>
+            </div>
             {renderPagination()}
         </div>
     );

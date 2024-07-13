@@ -93,7 +93,9 @@ label.star:before {
 .yard h1 {
     font-size: 30px;
 }
-
+.card-yard-content {
+    height: 40% !important;
+}
 .filter {
     display: flex;
     align-items: center;

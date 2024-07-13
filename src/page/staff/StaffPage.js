@@ -3,7 +3,7 @@ import "../../css/style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import CheckInPage from "./staffPageComponents/CheckInPage";
-
+import { Link } from "react-router-dom";
 export default class StaffPage extends Component {
     constructor(props) {
         super(props);
@@ -123,14 +123,14 @@ export default class StaffPage extends Component {
                                             <span className="title">Quản Lý Check-In</span>
                                         </a>
                                     </li>
-                                    <a className="w-75 logout m-auto " href="/">
+                                    {/* <Link className="w-75 logout m-auto p-2 " to="/">
                                         <span className="icon">
                                             <i className="fas fa-sign-out-alt" />
                                         </span>
                                         <span className="title" onClickCapture={this.handleLogout}>
                                             Đăng xuất
                                         </span>
-                                    </a>
+                                    </Link> */}
                                 </ul>
                             </div>
                         </div>
