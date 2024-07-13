@@ -324,7 +324,7 @@ export default class Order extends Component {
                                     aria-labelledby={`${tab}-tab`}
                                 >
                                     {currentBookingPage.length > -1 ? (
-                                        <div>
+                                        <div className="overflow-x-auto">
                                             <table className="table table-hover table-borderless">
                                                 <thead>
                                                     <tr>

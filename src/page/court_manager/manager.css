@@ -6,7 +6,7 @@
     margin-top: 20px;
 }
 .manager .body-manager .manager-right .dash-num .dash-num-item-left {
-    width: 70%;
+    width: 80%;
 }
 .manager .body-manager .manager-right .dash-num .dash-num-item-left h3 {
     font-size: 30px;
@@ -134,14 +134,14 @@
 .services-for-court {
     margin-top: 50px;
 }
-.manager-left {
+/* .manager-left {
     transition: width 0.3s ease;
 }
 
 .manager-left.closed {
     width: 70px !important;
     overflow: hidden;
-}
+} */
 
 .toggle-button {
     cursor: pointer;

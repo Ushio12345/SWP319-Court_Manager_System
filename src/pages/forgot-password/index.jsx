@@ -1,9 +1,9 @@
-import Footer from '../../components/footer/index.jsx';
-import '../forgot-password/index.css';
+import Footer from "../../components/footer/index.jsx";
+import "../forgot-password/index.css";
 import HeaderLoginForm from "../../components/header-login-form/index.jsx";
-import { useState } from 'react';
-import { showAlert } from '../../utils/alertUtils'; 
-
+import { useState } from "react";
+import { showAlert } from "../../utils/alertUtils";
+import "../login/index.css";
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
@@ -11,7 +11,7 @@ const ForgotPassword = () => {
     const setParams = (event) => {
         if (event.target.name === "email") {
             setEmail(event.target.value);
-        } 
+        }
     };
 
     const email_verify = (event) => {
@@ -48,13 +48,13 @@ const ForgotPassword = () => {
         })
             .then((response) => {
                 if (response.ok) {
-                    window.location.href="/verify-token";
+                    window.location.href = "/verify-token";
                 } else {
-                    response.json().then(data => {
-                        if (response.status === 401 && data.message === 'Người dùng không tồn tại.') {
-                            showAlert('error', 'Lỗi', 'Email này không tồn tại trong hệ thống', 'top-end');
+                    response.json().then((data) => {
+                        if (response.status === 401 && data.message === "Người dùng không tồn tại.") {
+                            showAlert("error", "Lỗi", "Email này không tồn tại trong hệ thống", "top-end");
                         } else {
-                            showAlert('error', 'Lỗi', 'Vui lòng thử lại !', 'top-end');
+                            showAlert("error", "Lỗi", "Vui lòng thử lại !", "top-end");
                         }
                     });
                 }
@@ -65,7 +65,7 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="form">
+        <div className="form-forgotPass">
             <HeaderLoginForm title="Quên mật khẩu" />
             <div className="login-form" id="Login-form">
                 <div className="login-left">
@@ -86,9 +86,7 @@ const ForgotPassword = () => {
                             />
                             <i className="fa-solid fa-user" />
                         </div>
-                        {emailError && (
-                            <p className="text-danger">{emailError}</p>
-                        )}
+                        {emailError && <p className="text-danger">{emailError}</p>}
                         <div>
                             <button className="btn btn-primary p-2" type="submit">
                                 Tiếp tục

@@ -16,22 +16,6 @@ p {
 }
 
 .button {
-    width: 200px;
-    height: 50px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.5s;
-    font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-}
-
-.banner-intro h1,
-.yard h1 {
-    color: black !important;
-}
-.button {
     background-image: linear-gradient(to right, #8360c3, #2ebf91);
     color: white;
     text-decoration: none;
@@ -259,6 +243,9 @@ label.star:before {
 .yard .card-yard-content p {
     font-size: 13px;
     text-align: left;
+}
+.yard .card-yard-content b {
+    font-size: 14px;
 }
 .yard .card-yard-content a {
     font-size: 17px;
@@ -610,13 +597,6 @@ ul li {
     margin: 0;
     font-weight: 600;
 }
-.login {
-    display: flex;
-    align-items: center;
-    padding: 10px 15px;
-    margin: 0 5px;
-    justify-content: flex-end;
-}
 
 .user {
     display: flex;
@@ -819,7 +799,7 @@ table {
 
 /* login */
 
-.form {
+/* .form {
     background-image: url("../../public/asserts/img/4a331c1398d3d7a67ecba739d2e8bb43.jpg");
     background-repeat: no-repeat;
     background-size: cover;
@@ -950,7 +930,7 @@ form h1 {
 
 .register-link {
     margin-top: 15px;
-}
+} */
 
 .manager button {
     margin: 0 10px 0 0;
@@ -1060,6 +1040,21 @@ form h1 {
     .yard h1 {
         font-size: 20px;
     }
+    .header .header-bot a {
+        font-size: 11px;
+    }
+    .auth-buttons {
+        display: flex;
+        margin-left: 0;
+        margin: 26px 0;
+    }
+}
+@media (max-width: 768px) {
+    .auth-buttons {
+        display: flex;
+        margin-left: 0;
+        margin: 26px 0;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1071,7 +1066,7 @@ form h1 {
 
 @media (max-width: 620px) {
     .yard h1 {
-        font-size: 22px;
+        font-size: 18px;
     }
     .yard h1::before {
         left: 2%;
@@ -1110,6 +1105,9 @@ form h1 {
     #court-list {
         padding: 90px;
     }
+    .yard h1 {
+        font-size: 16px;
+    }
 }
 @media (max-width: 430px) {
     .banner-intro {
@@ -1120,6 +1118,9 @@ form h1 {
     }
     .yard .card-yard-content p {
         font-size: 11px;
+    }
+    .yard h1 {
+        font-size: 14px;
     }
 }
 
