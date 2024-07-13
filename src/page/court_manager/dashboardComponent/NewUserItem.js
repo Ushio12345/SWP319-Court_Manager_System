@@ -1,38 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../../config/axiosConfig";
+import { showAlert } from "../../../utils/alertUtils";
+import { handleTokenError } from "../../../utils/tokenErrorHandle";
 
-export default function NewUserItem({ newUser }) {
-    const getRoleBackgroundColor = (role) => {
-        switch (role) {
-            case "Khách":
-                return "lightgreen";
-            case "Chủ sân":
-                return "lightcoral";
-            default:
-                return "lightgray";
-        }
+const NewUserItem = () => {
+    const [newUsers, setNewUsers] = useState([]);
+
+    useEffect(() => {
+        fetchNewUsers();
+    }, []);
+
+    const fetchNewUsers = () => {
+        axiosInstance
+            .get("/member/users")
+            .then((res) => {
+                if (res.status === 200) {
+                    const reversedUsers = res.data.reverse().slice(0, 10);
+                    setNewUsers(reversedUsers);
+                } else {
+                    showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
+                    console.error("Response không thành công:", res.status);
+                }
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                    handleTokenError();
+                }
+                console.error("Lỗi fetch users:", error);
+            });
     };
 
     return (
         <div>
-            <div>
-                <div className="newUser-body-item">
+            {newUsers.map((user) => (
+                <div key={user.id} className="newUser-body-item my-3">
                     <div className="newUser-body-right">
                         <div className="newUser-avatar">
-                            <img src={newUser.avatarUrl} alt="User Avatar" />
+                            <img src={user.profileAvatar} alt="User Avatar" style={{ width: 200, height: 50 }} />
                         </div>
                         <div className="newUser-body-infoUser">
-                            <div className="newUser-name">{newUser.name}</div>
-                            <div className="newUser-email">{newUser.email}</div>
+                            <div className="newUser-name">{user.fullName}</div>
+                            <div className="newUser-email">{user.email}</div>
                         </div>
                     </div>
-                    <div
-                        className="newUser-role"
-                        style={{ backgroundColor: getRoleBackgroundColor(newUser.role), padding: "5px", borderRadius: "5px" }}
-                    >
-                        {newUser.role}
+                    <div className="newUser-role" style={{ backgroundColor: getRoleBackgroundColor(user.role), padding: "5px", borderRadius: "5px" }}>
+                        {user.role}
                     </div>
                 </div>
-            </div>
+            ))}
         </div>
     );
-}
+};
+
+const getRoleBackgroundColor = (role) => {
+    switch (role) {
+        case "Khách":
+            return "lightgreen";
+        case "Chủ sân":
+            return "lightcoral";
+        default:
+            return "lightgray";
+    }
+};
+
+export default NewUserItem;

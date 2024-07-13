@@ -6,50 +6,9 @@ import CourtItem from "./dashboardComponent/CourtItem";
 import NewOrder from "./dashboardComponent/NewOrder";
 
 export default function Dashboard() {
-    const newUsers = [
-        {
-            name: "Hoàng Mạnh Dũng",
-            email: "dunghoangne@gmail.com",
-            avatarUrl: "https://i.pravatar.cc/150?img=4",
-            role: "Khách",
-        },
-        {
-            name: "Lê Ngọc Ánh",
-            email: "anhngocLe@gmail.com",
-            avatarUrl: "https://i.pravatar.cc/150?img=5",
-            role: "Khách",
-        },
-        {
-            name: "Nguyễn Văn Bách",
-            email: "nguyenbach123@gmail.com",
-            avatarUrl: "https://i.pravatar.cc/150?img=10",
-            role: "Chủ sân",
-        },
-        {
-            name: "Phạm Thị Lan",
-            email: "lanpham@gmail.com",
-            avatarUrl: "https://i.pravatar.cc/150?img=12",
-            role: "Khách",
-        },
-        {
-            name: "Trần Văn Tân",
-            email: "tantran@gmail.com",
-            avatarUrl: "https://i.pravatar.cc/150?img=15",
-            role: "Khách",
-        },
-        {
-            name: "Nguyễn Thị Hồng",
-            email: "hongnguyen@gmail.com",
-            avatarUrl: "https://i.pravatar.cc/150?img=20",
-            role: "Khách",
-        },
-    ];
-
-    const filteredUsers = newUsers.filter((user) => user.role === "Khách").slice(0, 5);
-
     return (
         <div className="dashboard_manager">
-            <div className="dash-num grid grid-cols-4 md:grid-cols-4 sm:grid-cols-2 gap-4">
+            <div className="dash-num grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-2 gap-4">
                 <div className="dash-num-item">
                     <div className="dash-num-item-left">
                         <h4>50</h4>
@@ -88,28 +47,16 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-rows-4 grid-flow-col gap-4 my-4">
-                <div className="newUser newCus row-span-4">
+            <div className="grid grid-rows-4 sm:grid-rows-3 grid-flow-col gap-4 my-4">
+                <div className="newUser newCus md:row-span-4 sm:col-span-4">
                     <div className="newUser-title">Danh sách khách hàng mới</div>
-                    {filteredUsers.map((user) => (
-                        <NewUserItem key={user.email} newUser={user} />
-                    ))}
+                    <NewUserItem />
                 </div>
 
-                <div className="hotTime col-span-2 row-span-2 bg-white ">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr>
-                                <th className="text-start">Tên slot - Thời gian</th>
-                                <th>Số lượt đặt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <HotTime />
-                        </tbody>
-                    </table>
+                <div className="hotTime md:col-span-2 sm:col-span-4 sm:row-span-1 md:row-span-2 bg-white ">
+                    <HotTime />
                 </div>
-                <div className="courtOfManager row-span-2 col-span-2">
+                <div className="courtOfManager md:row-span-2 sm:row-span-1  sm:col-span-4 md:col-span-2">
                     <div className="newUser-title">Danh sách sân hiện có</div>
                     <CourtItem />
                 </div>

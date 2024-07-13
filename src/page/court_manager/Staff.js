@@ -298,7 +298,7 @@ export default class Staff extends Component {
                     <button type="button" className="btn btn-primary w-25 my-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         Tạo tài khoản nhân viên
                     </button>
-                    <div className="">
+                    <div className="overflow-x-auto">
                         <table className="table table-hover">
                             <thead>
                                 <tr>

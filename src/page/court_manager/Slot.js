@@ -210,48 +210,50 @@ export default class Slot extends Component {
                     </div>
                 </div>
 
-                <table className="table table-hover mt-2">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Mã slot</th>
-                            <th>Tên</th>
-                            <th>Thời gian</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentSlots.length === 0 ? (
+                <div className="overflow-x-auto">
+                    <table className="table table-hover mt-2">
+                        <thead>
                             <tr>
-                                <td colSpan="7" className="text-center">
-                                    Danh sách slot trống
-                                </td>
+                                <th>STT</th>
+                                <th>Mã slot</th>
+                                <th>Tên</th>
+                                <th>Thời gian</th>
+                                <th>Thao tác</th>
                             </tr>
-                        ) : (
-                            currentSlots.map((slot, index) => (
-                                <tr className="" key={slot.slotId}>
-                                    <td className="text-center">{indexOfFirstSlot + index + 1}</td>
-                                    <td className="text-center">{slot.slotId}</td>
-                                    <td className="text-center">{slot.slotName}</td>
-                                    <td className="text-center">{`${slot.startTime} - ${slot.endTime}`}</td>
-                                    <td className="d-flex btn-action">
-                                        <button
-                                            className="btn btn-warning mr-2"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#updateSlot"
-                                            onClick={() => this.setState({ slot: slot, isDetailView: false })}
-                                        >
-                                            <i className="fa fa-pen-to-square"></i>
-                                        </button>
-                                        <button className="btn btn-danger" onClick={() => this.handleDeleteSlot(slot.slotId)}>
-                                            <i className="fa fa-trash"></i>
-                                        </button>
+                        </thead>
+                        <tbody>
+                            {currentSlots.length === 0 ? (
+                                <tr>
+                                    <td colSpan="7" className="text-center">
+                                        Danh sách slot trống
                                     </td>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            ) : (
+                                currentSlots.map((slot, index) => (
+                                    <tr className="" key={slot.slotId}>
+                                        <td className="text-center">{indexOfFirstSlot + index + 1}</td>
+                                        <td className="text-center">{slot.slotId}</td>
+                                        <td className="text-center">{slot.slotName}</td>
+                                        <td className="text-center">{`${slot.startTime} - ${slot.endTime}`}</td>
+                                        <td className="d-flex btn-action">
+                                            <button
+                                                className="btn btn-warning mr-2"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#updateSlot"
+                                                onClick={() => this.setState({ slot: slot, isDetailView: false })}
+                                            >
+                                                <i className="fa fa-pen-to-square"></i>
+                                            </button>
+                                            <button className="btn btn-danger" onClick={() => this.handleDeleteSlot(slot.slotId)}>
+                                                <i className="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
                 {/* Nút phân trang */}
                 <nav className="">

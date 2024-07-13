@@ -257,7 +257,7 @@ export default class Order extends Component {
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
         return (
-            <div className="historyPage">
+            <div className=" orderManager historyPage">
                 <div className="orderPage-body">
                     <div className="select-court d-flex" style={{ alignItems: "center" }}>
                         <label className="me-3">Chọn cơ sở: </label>
