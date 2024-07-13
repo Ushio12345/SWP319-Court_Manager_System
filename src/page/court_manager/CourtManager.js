@@ -35,6 +35,7 @@ export default class CourtManager extends Component {
         this.checkLoginStatus();
         this.fetchCourts();
     }
+
     toggleMenu = () => {
         this.setState((prevState) => ({
             isOpen: !prevState.isOpen,
@@ -220,49 +221,36 @@ export default class CourtManager extends Component {
                                 </ul>
                             </div>
                         </div>
-                        <div className="manager-right">
-                            <div className="tab-content">
-                                <div className="tab-pane fade show active" id="dsDashboard" role="tabpanel">
+                        <div className={`manager-right ${isOpen ? "" : "expanded"}`}>
+                            <div className="tab-content" id="nav-tabContent">
+                                <div className="tab-pane fade show active" id="dsDashboard">
                                     <Dashboard />
                                 </div>
-
-                                {/* ----------------------Coso------------------------------------- */}
-
-                                <div className="tab-pane fade" id="dsCoSo" role="tabpanel">
+                                <div className="tab-pane fade" id="dsOrder">
+                                    <Order selectedCourtId={selectedCourtId} />
+                                </div>
+                                <div className="tab-pane fade" id="dsStaff">
+                                    <Staff selectedCourtId={selectedCourtId} />
+                                </div>
+                                <div className="tab-pane fade" id="dsCoSo">
                                     <Court />
                                 </div>
-                                <div className="tab-pane fade" id="dsOrder" role="tabpanel">
-                                    <Order />
-                                </div>
-
-                                {/* ---------------------------------------kết thúc Coso------------------------------------------------- */}
-
-                                {/* ----------------------Staff---------------------------------------------------------------------- */}
-
-                                <div className="tab-pane fade" id="dsStaff" role="tabpanel">
-                                    <Staff managerId={user.userId} />
-                                </div>
-
-                                {/* ---------------------------------------kết thúc staff------------------------------------------------- */}
-                                <div className="tab-pane fade" id="dsYard" role="tabpanel">
+                                <div className="tab-pane fade" id="dsYard">
                                     <Yard selectedCourtId={selectedCourtId} />
                                 </div>
-                                <div className="tab-pane fade" id="dsServices" role="tabpanel">
+                                <div className="tab-pane fade" id="dsSlot">
+                                    <Slot />
+                                </div>
+                                <div className="tab-pane fade" id="dsServices">
                                     <Services />
                                 </div>
-                                <div className="tab-pane fade" id="dsSlot" role="tabpanel">
-                                    <Slot fetchCourts={this.fetchCourts} selectedCourtId={selectedCourtId} />
-                                </div>
-                                <div className="tab-pane fade" id="dsPrice" role="tabpanel">
-                                    <PriceBoardManager fetchCourts={this.fetchCourts} selectedCourtId={selectedCourtId} />
+                                <div className="tab-pane fade" id="dsPrice">
+                                    <PriceBoardManager />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
-                <div className="footer-Manager">
-                    <p>© Badminton Court Management - Team 4 - SWP391</p>
-                </div>
             </div>
         );
     }

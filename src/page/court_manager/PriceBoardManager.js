@@ -183,53 +183,55 @@ export default class PriceBoardManager extends Component {
         const currentBoards = priceBoard.slice(indexOfFirstBoard, indexOfLastBoard);
 
         return currentBoards.map((price) => (
-            <table className="table table-striped table-hover" key={price.priceListId}>
-                <thead>
-                    <tr>
-                        <th colSpan={5}>
-                            <div className="">
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div>Bảng giá số {price.priceListId}</div>
-                                    <div>
-                                        <button
-                                            type="button"
-                                            className="btn btn-primary"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#showCourt"
-                                            onClick={() => this.setState({ priceListId: price.priceListId })}
-                                        >
-                                            <i className="fa-solid fa-plus"></i>
-                                        </button>
+            <div className="overflow-x-auto">
+                <table className="table table-striped table-hover" key={price.priceListId}>
+                    <thead>
+                        <tr>
+                            <th colSpan={5}>
+                                <div className="">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                        <div>Bảng giá số {price.priceListId}</div>
+                                        <div>
+                                            <button
+                                                type="button"
+                                                className="btn btn-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#showCourt"
+                                                onClick={() => this.setState({ priceListId: price.priceListId })}
+                                            >
+                                                <i className="fa-solid fa-plus"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>Loại lịch</th>
-                        <th>Lịch đơn</th>
-                        <th>Lịch cố định</th>
-                        <th>Lịch linh hoạt</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className="text-center">Giá/Slot</td>
-                        <td className="text-center">{price.singleBookingPrice.toLocaleString('vi-VN')} VND</td>
-                        <td className="text-center">{price.fixedBookingPrice.toLocaleString('vi-VN')} VND</td>
-                        <td className="text-center">{price.flexibleBookingPrice.toLocaleString('vi-VN')} VND</td>
-                        <td className="d-flex justify-content-between">
-                            <button className="btn btn-warning" onClick={() => this.handleEditPriceBoard(price)}>
-                                <i className="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button className="btn btn-danger" onClick={() => this.handleDeletePriceBoard(price.priceListId)}>
-                                <i className="fa-solid fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Loại lịch</th>
+                            <th>Lịch đơn</th>
+                            <th>Lịch cố định</th>
+                            <th>Lịch linh hoạt</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td className="text-center">Giá/Slot</td>
+                            <td className="text-center">{price.singleBookingPrice.toLocaleString("vi-VN")} VND</td>
+                            <td className="text-center">{price.fixedBookingPrice.toLocaleString("vi-VN")} VND</td>
+                            <td className="text-center">{price.flexibleBookingPrice.toLocaleString("vi-VN")} VND</td>
+                            <td className="d-flex justify-content-between">
+                                <button className="btn btn-warning" onClick={() => this.handleEditPriceBoard(price)}>
+                                    <i className="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button className="btn btn-danger" onClick={() => this.handleDeletePriceBoard(price.priceListId)}>
+                                    <i className="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         ));
     };
 

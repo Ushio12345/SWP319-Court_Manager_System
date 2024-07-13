@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { showAlert, showConfirmAlert } from "../../utils/alertUtils";
 import axiosInstance from "../../config/axiosConfig";
-
+import { Modal, Button, Form } from "bootstrap/dist/js/bootstrap.bundle.min";
 import { handleTokenError } from "../../utils/tokenErrorHandle";
 import "./manager.css";
 import { event } from "jquery";
@@ -24,6 +24,8 @@ export default class Yard extends Component {
         currentPage: 1,
         itemsPerPage: 5,
         searchSlot: "",
+        showAddModal: false,
+        showEditModal: false,
     };
     componentDidMount() {
         this.fetchCourts();
@@ -304,7 +306,7 @@ export default class Yard extends Component {
 
     renderYardWithCourt = () => {
         return this.state.yards.map((yard) => (
-            <div key={yard.yardId} className="d-flex align-items-center">
+            <div key={yard.yardId} className="d-flex align-items-center justify-center">
                 <button
                     className={`yardBtn btn m-2 p-2 ${this.state.selectedYard === yard.yardId ? "active" : ""}`}
                     onClick={() => this.handleYardClick(yard.yardId)}
@@ -334,7 +336,7 @@ export default class Yard extends Component {
                     {slot.startTime} - {slot.endTime}
                 </td>
                 <td className="text-center">
-                    <button className="btn btn-danger" onClick={() => this.deleteSlotForYard(slot.slotId)}>
+                    <button className="btn btn-danger w-100 m-auto" onClick={() => this.deleteSlotForYard(slot.slotId)}>
                         Xóa
                     </button>
                 </td>
@@ -467,7 +469,7 @@ export default class Yard extends Component {
         return (
             <div className="yardManager pt-4">
                 <div>
-                    <div className="flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
+                    <div className="flex opAndInputYard" style={{ alignItems: "center", justifyContent: "space-between" }}>
                         <div className="select-court d-flex" style={{ alignItems: "center", justifyContent: "space-between" }}>
                             <label className="me-3">Chọn cơ sở: </label>
                             <select className="" style={{ height: 40 }} onChange={this.handleCourtChange}>
@@ -491,7 +493,7 @@ export default class Yard extends Component {
                                 </span>
                             </div>
                         </div> */}
-                        <div className="w-50 input-group d-flex ">
+                        <div className="w-50 input-group d-flex " id="edit-update-yard">
                             <input
                                 className=" bg-light form-control "
                                 style={{
@@ -507,12 +509,14 @@ export default class Yard extends Component {
                                 value={this.state.newYard.yardName}
                                 onChange={(e) => this.setState({ newYard: { ...this.state.newYard, yardName: e.target.value } })}
                             />
-                            <button type="button" className=" btn btn-outline-primary w-25 m-0" onClick={this.handleAddYard}>
-                                Thêm sân
-                            </button>
-                            <button class="btn btn-outline-success w-25 " type="button " onClick={this.handleEditYard}>
-                                Chỉnh sửa
-                            </button>
+                            <div className="d-flex edit-update-yard">
+                                <button type="button" className=" btn btn-outline-primary p-0  m-0" onClick={this.handleAddYard}>
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                                <button class="btn btn-outline-success " type="button " onClick={this.handleEditYard}>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -523,28 +527,30 @@ export default class Yard extends Component {
                     </div>
                     {selectedYard && (
                         <div className="row">
-                            <div className="yardWithCourtID col-lg-3 ">
-                                {this.renderYardWithCourt()}
-                                <button className="btn btn-danger w-100 " onClick={() => this.handleDeleteYard(this.state.selectedYard)}>
+                            <div className="yardWithCourtID col-sm-3 ">
+                                <div className="yardItem">{this.renderYardWithCourt()}</div>
+                                <button className="btn btn-danger w-100 m-auto " onClick={() => this.handleDeleteYard(this.state.selectedYard)}>
                                     Xóa sân
                                 </button>
                             </div>
-                            <div className="col-lg-9">
-                                <table className="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th colSpan={5}>Thông tin các slot trong sân ID: {selectedYard} </th>
-                                        </tr>
-                                        <tr>
-                                            <th>STT</th>
-                                            <th>Tên slot</th>
-                                            <th className="text-center">Thời gian</th>
+                            <div className="col-sm-9" id="slotInYard">
+                                <div className="overflow-x-auto">
+                                    <table className="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th colSpan={5}>Thông tin các slot trong sân ID: {selectedYard} </th>
+                                            </tr>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Tên slot</th>
+                                                <th className="text-center">Thời gian</th>
 
-                                            <th className="text-center">Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>{this.renderSlotInYard()}</tbody>
-                                </table>
+                                                <th className="text-center">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>{this.renderSlotInYard()}</tbody>
+                                    </table>
+                                </div>
                             </div>
                             {this.renderPagination()}
                         </div>
