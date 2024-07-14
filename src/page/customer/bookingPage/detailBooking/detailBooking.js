@@ -164,19 +164,21 @@ const DetailBooking = () => {
 
         window.location.href = "/";
     };
-    // Calculate total pages
-    const totalPages = Math.ceil(bookingDetailsList.length / itemsPerPage);
+    const totalPages = booking.bookingType !== "Lịch linh hoạt" ? Math.ceil(bookingDetailsList.length / itemsPerPage) : 0;
 
-    // Get current items
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = bookingDetailsList
-        .sort((a, b) => a.yardSchedule.slot.slotName.localeCompare(b.yardSchedule.slot.slotName))
-        .slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems =
+        booking.bookingType !== "Lịch linh hoạt"
+            ? bookingDetailsList
+                  .sort((a, b) => a.yardSchedule.slot.slotName.localeCompare(b.yardSchedule.slot.slotName))
+                  .slice(indexOfFirstItem, indexOfLastItem)
+            : [];
 
     const handleClick = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
+
     return (
         <div className="orderDetailPage">
             <Header isLoggedIn={isLoggedIn} user={user} handleLogout={handleLogout} />
@@ -248,18 +250,15 @@ const DetailBooking = () => {
                                         ))}
                                     </tbody>
                                 </table>
-                                <div className="pagination">
-                                    {Array.from({ length: totalPages }, (_, index) => (
-                                        <button
-                                            key={index}
-                                            onClick={() => handleClick(index + 1)}
-                                            className={currentPage === index + 1 ? "active" : ""}
-                                            style={{ padding: "5px 10px", backgroundColor: "#002e86", margin: "0 10px", color: "white" }}
-                                        >
-                                            {index + 1}
-                                        </button>
-                                    ))}
-                                </div>
+                                {booking.bookingType !== "Lịch linh hoạt" && totalPages > 1 && (
+                                    <div className="pagination">
+                                        {Array.from({ length: totalPages }, (_, i) => (
+                                            <button key={i + 1} onClick={() => handleClick(i + 1)}>
+                                                {i + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <>

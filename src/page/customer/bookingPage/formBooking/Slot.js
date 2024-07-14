@@ -53,7 +53,6 @@ export default class Slot extends Component {
         const user = JSON.parse(localStorage.getItem("user"));
 
         this.checkUserLoginStatus();
-        this.fetchFlexibleBookings();
         this.fetchPriceList();
     }
 
@@ -73,7 +72,7 @@ export default class Slot extends Component {
             this.fetchSlots();
             this.fetchStatusSlots("PENDING", "pendingSlots");
             this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
-        }
+        }    
     }
 
     fetchSlots = () => {
@@ -164,6 +163,9 @@ export default class Slot extends Component {
     };
 
     handleTabChange = (tab) => {
+        if (tab === 'linhhoat') {
+            this.fetchFlexibleBookings();
+        }
         this.setState({ selectedTab: tab, selectedSlots: {}, selectedDay: null, errorMessage: "", bookingDetailsList: [] });
     };
 
