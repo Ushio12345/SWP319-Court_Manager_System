@@ -33,7 +33,7 @@ export default class CourtItem extends Component {
                     {this.state.courts.map((court) => (
                         <div className="d-flex m-2" key={court.courtId} style={{ alignItems: "center", justifyContent: "space-between" }}>
                             <div className="imgCourt w-12">
-                                <img src="https://i.pravatar.cc/150" />
+                                <img src="court.imageUrl"></img>
                             </div>
                             <div className="courtName">{court.courtName}</div>
                         </div>

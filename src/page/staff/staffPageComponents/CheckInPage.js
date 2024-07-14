@@ -59,10 +59,10 @@ export default class CheckInPage extends Component {
         if (prevState.selectedYard !== this.state.selectedYard) {
             this.fetchSlots();
             this.fetchBookingDetails();
-            this.fetchStatusSlots('PENDING', 'pendingSlots');
-            this.fetchStatusSlots('WAITING_FOR_CHECK_IN', 'waitingCheckInSlots');
-            this.fetchStatusSlots('COMPLETED', 'completedSlots');
-            this.fetchStatusSlots('CANCELLED', 'cancelledSlots');
+            this.fetchStatusSlots("PENDING", "pendingSlots");
+            this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
+            this.fetchStatusSlots("COMPLETED", "completedSlots");
+            this.fetchStatusSlots("CANCELLED", "cancelledSlots");
         }
     }
 
@@ -113,14 +113,15 @@ export default class CheckInPage extends Component {
     };
 
     fetchFacilities = () => {
-        axiosInstance.get(`court/facilities-of-court/${this.state.courtOfStaff.courtId}`)
-            .then(response => {
+        axiosInstance
+            .get(`court/facilities-of-court/${this.state.courtOfStaff.courtId}`)
+            .then((response) => {
                 this.setState({ facilities: response.data });
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("There was an error fetching the facilities!", error);
             });
-    }
+    };
 
     fetchStatusSlots = (status, list) => {
         const formattedDates = this.state.daysOfWeek.map((day) => day.split(" ")[0]);
@@ -236,21 +237,16 @@ export default class CheckInPage extends Component {
             return false;
         }
 
-
         // Tìm bookingDetails có slotId trùng khớp
-        const checkInDto = bookingDetails[formattedDayKey]?.find(
-            (checkInDto) => checkInDto.bookingDetails.yardSchedule.slot.slotId === slotId
-        );
+        const checkInDto = bookingDetails[formattedDayKey]?.find((checkInDto) => checkInDto.bookingDetails.yardSchedule.slot.slotId === slotId);
 
-        console.log("CheckInDto: ", checkInDto)
+        console.log("CheckInDto: ", checkInDto);
 
         if (!checkInDto) {
             return null;
         }
 
-        const bookingDetail = checkInDto.bookingDetails.find(
-            (detail) => detail.yardSchedule.slot.slotId === slotId
-        );
+        const bookingDetail = checkInDto.bookingDetails.find((detail) => detail.yardSchedule.slot.slotId === slotId);
 
         if (!bookingDetail) {
             return null; // Return null if no bookingDetail matches the slotId
@@ -258,17 +254,16 @@ export default class CheckInPage extends Component {
 
         // Kiểm tra trạng thái của bookingDetail
         switch (bookingDetail.status) {
-            case 'Đang chờ xử lý':
-                return 'pending';
-            case 'Đang chờ check-in':
-                return 'waiting-check-in';
-            case 'Đã hoàn thành':
-                return 'completed';
+            case "Đang chờ xử lý":
+                return "pending";
+            case "Đang chờ check-in":
+                return "waiting-check-in";
+            case "Đã hoàn thành":
+                return "completed";
             default:
                 return null; // Trả về null hoặc giá trị thích hợp khác nếu trạng thái không khớp
         }
-
-    }
+    };
 
     isPastTime(day, startTime, slot) {
         const currentTime = new Date();
@@ -288,9 +283,11 @@ export default class CheckInPage extends Component {
         }
 
         // Find the matching bookingDetails based on slotId
-        const matchedCheckIn = bookingDetailsList[formattedDayKey].find(checkInDto => checkInDto?.bookingDetails?.yardSchedule?.slot?.slotId === slot.slotId);
+        const matchedCheckIn = bookingDetailsList[formattedDayKey].find(
+            (checkInDto) => checkInDto?.bookingDetails?.yardSchedule?.slot?.slotId === slot.slotId
+        );
         if (!matchedCheckIn) {
-            console.error('No matching checkInDto found for the given slot');
+            console.error("No matching checkInDto found for the given slot");
             return slotStartTime < currentTime;
         }
 
@@ -298,14 +295,13 @@ export default class CheckInPage extends Component {
         const status = matchedCheckIn.bookingDetails.status;
 
         // Do not apply pastTime if the status is pending, waiting-check-in, or completed
-        if (status === 'Đang chờ xử lý' || status === 'Đã hoàn thành' || status === 'Đã hủy') {
+        if (status === "Đang chờ xử lý" || status === "Đã hoàn thành" || status === "Đã hủy") {
             return false;
         }
 
         // Otherwise, check if the slotStartTime is in the past relative to currentTime
         return slotStartTime < currentTime;
     }
-
 
     isToday(day) {
         const parsedDate = parse(day.split(" ")[0], "dd/MM/yyyy", new Date());
@@ -345,14 +341,16 @@ export default class CheckInPage extends Component {
             return;
         }
 
-        const matchedCheckIn = bookingDetailsList[formattedDayKey]?.find((checkInDto) => checkInDto?.bookingDetails?.yardSchedule?.slot?.slotId === slot.slotId);
+        const matchedCheckIn = bookingDetailsList[formattedDayKey]?.find(
+            (checkInDto) => checkInDto?.bookingDetails?.yardSchedule?.slot?.slotId === slot.slotId
+        );
 
         if (matchedCheckIn) {
             const customer = matchedCheckIn.customer;
             const bookingDetailsFound = matchedCheckIn.bookingDetails;
             this.setState({ showModal: true, selectedCustomer: customer, selectedSlotInfo: slot, bookingDetails: bookingDetailsFound });
         } else {
-            console.error('No matching checkInDto found for the given slot');
+            console.error("No matching checkInDto found for the given slot");
         }
     };
 
@@ -363,42 +361,42 @@ export default class CheckInPage extends Component {
     handleCheckIn = async (detailId) => {
         try {
             const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/check-in`);
-            if (confirmResponse.data.message === 'Check-in thành công') {
-                showAlert('success', 'Thông báo', 'Check-in thành công !', 'top-end');
+            if (confirmResponse.data.message === "Check-in thành công") {
+                showAlert("success", "Thông báo", "Check-in thành công !", "top-end");
                 this.handleCloseModal();
                 this.fetchSlots();
                 this.fetchBookingDetails();
-                this.fetchStatusSlots('PENDING', 'pendingSlots');
-                this.fetchStatusSlots('WAITING_FOR_CHECK_IN', 'waitingCheckInSlots');
-                this.fetchStatusSlots('COMPLETED', 'completedSlots');
-                this.fetchStatusSlots('CANCELLED', 'cancelledSlots');
+                this.fetchStatusSlots("PENDING", "pendingSlots");
+                this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
+                this.fetchStatusSlots("COMPLETED", "completedSlots");
+                this.fetchStatusSlots("CANCELLED", "cancelledSlots");
             } else {
-                showAlert('error', 'Thông báo', 'Check-in không thành công !', 'top-end')
+                showAlert("error", "Thông báo", "Check-in không thành công !", "top-end");
             }
         } catch (error) {
-            console.error('Failed to check-in', error);
+            console.error("Failed to check-in", error);
         }
     };
 
     handleCancelCheckIn = async (detailId) => {
         try {
             const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/cancel`);
-            if (confirmResponse.data.message === 'Hủy đơn thành công') {
-                showAlert('success', 'Thông báo', 'Đã hủy đơn thành công !', 'top-end');
+            if (confirmResponse.data.message === "Hủy đơn thành công") {
+                showAlert("success", "Thông báo", "Đã hủy đơn thành công !", "top-end");
                 this.handleCloseModal();
                 this.fetchSlots();
                 this.fetchBookingDetails();
-                this.fetchStatusSlots('PENDING', 'pendingSlots');
-                this.fetchStatusSlots('WAITING_FOR_CHECK_IN', 'waitingCheckInSlots');
-                this.fetchStatusSlots('COMPLETED', 'completedSlots');
-                this.fetchStatusSlots('CANCELLED', 'cancelledSlots');
+                this.fetchStatusSlots("PENDING", "pendingSlots");
+                this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
+                this.fetchStatusSlots("COMPLETED", "completedSlots");
+                this.fetchStatusSlots("CANCELLED", "cancelledSlots");
             } else {
-                showAlert('error', 'Thông báo', 'Hủy đơn không thành công !', 'top-end')
+                showAlert("error", "Thông báo", "Hủy đơn không thành công !", "top-end");
             }
         } catch (error) {
-            console.error('Failed to cancel', error);
+            console.error("Failed to cancel", error);
         }
-    }
+    };
 
     render() {
         const { courtOfStaff } = this.state;
@@ -429,7 +427,7 @@ export default class CheckInPage extends Component {
         };
 
         return (
-            <div>
+            <div className="staffPageManager">
                 <section className="detail-yard">
                     {console.log(this.state.showModal)}
                     {console.log(this.state.bookingDetails)}
@@ -443,7 +441,7 @@ export default class CheckInPage extends Component {
                         </div>
                         <div className="rate">
                             <p>
-                                Đánh giá: {renderStars(courtOfStaff.rate)} {courtOfStaff.rate}/5 <i className="fa-solid fa-star" /> (0  Đánh giá)
+                                Đánh giá: {renderStars(courtOfStaff.rate)} {courtOfStaff.rate}/5 <i className="fa-solid fa-star" /> (0 Đánh giá)
                             </p>
                         </div>
                     </div>
@@ -454,7 +452,10 @@ export default class CheckInPage extends Component {
                                 Số sân: <span>{courtOfStaff.yards.length}</span>
                             </p>
                             <p>
-                                Giờ hoạt động: <span>{courtOfStaff.openTime} - {courtOfStaff.closeTime}</span>
+                                Giờ hoạt động:{" "}
+                                <span>
+                                    {courtOfStaff.openTime} - {courtOfStaff.closeTime}
+                                </span>
                             </p>
                             <div className="yard-service row">
                                 <h4>Dịch vụ tiện ích</h4>
@@ -479,13 +480,28 @@ export default class CheckInPage extends Component {
                         <div className="select-slot p-3">
                             <div className="orderPage-body">
                                 <div className="tab-content" id="pills-tabContent">
-                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                        <div className="btn slot-time pastTime" style={{ width: '100px', height: '40px' }}><b>Đã hết giờ</b></div>
-                                        <div className="btn slot-time completed" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã hoàn thành</b></div>
-                                        <div className="btn slot-time waiting-check-in" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Chờ check-in</b></div>
-                                        <div className="btn slot-time pending" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã đặt</b></div>
-                                        <div className="btn slot-time cancel" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã hủy</b></div>
-                                        <div className="btn slot-time" style={{ width: '100px', height: '40px' }}><b>Trống</b></div>
+                                    <div style={{ display: "flex", justifyContent: "center" }}>
+                                        <div className="btn slot-time pastTime" style={{ width: "15%", height: "40px" }}>
+                                            <b>Đã hết giờ</b>
+                                        </div>
+                                        <div className="btn slot-time completed" style={{ width: "15%", height: "40px", alignContent: "center" }}>
+                                            <b>Đã hoàn thành</b>
+                                        </div>
+                                        <div
+                                            className="btn slot-time waiting-check-in"
+                                            style={{ width: "15%", height: "40px", alignContent: "center" }}
+                                        >
+                                            <b>Chờ check-in</b>
+                                        </div>
+                                        <div className="btn slot-time pending" style={{ width: "15%", height: "40px", alignContent: "center" }}>
+                                            <b>Đã đặt</b>
+                                        </div>
+                                        <div className="btn slot-time cancel" style={{ width: "15%", height: "40px", alignContent: "center" }}>
+                                            <b>Đã hủy</b>
+                                        </div>
+                                        <div className="btn slot-time" style={{ width: "15%", height: "40px" }}>
+                                            <b>Trống</b>
+                                        </div>
                                     </div>
                                     <select
                                         className="form-select my-3"
@@ -505,38 +521,49 @@ export default class CheckInPage extends Component {
                                     </select>
                                     <div>
                                         <div className="overflow-x-auto tableCheckIn">
-                                            <table className="table table-borderless">
-                                                <thead>
-                                                    <tr>
-                                                        <th className="">Slot</th>
-                                                        {daysOfWeek?.map((day, index) => (
-                                                            <th key={index}>{day}</th>
-                                                        ))}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {this.state.slots.map((slot, slotIndex) => (
-                                                        <tr key={slot.slotId}>
-                                                            <td>{slot.slotName}</td>
-                                                            {daysOfWeek.map((_, dayIndex) => (
-                                                                <td key={dayIndex} className="slot-times-column">
-                                                                    <div
-                                                                        className={`slot-time ${this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) ? "waiting-check-in" : ""}
-                                                                        ${this.isToday(daysOfWeek[dayIndex]) && !this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) 
-                                                                             && this.isPastTime(daysOfWeek[dayIndex], slot.startTime, slot) ? "pastTime" : ""}
+                                            <div className="">
+                                                <table className="table table-borderless">
+                                                    <thead>
+                                                        <tr>
+                                                            <th className="">Slot</th>
+                                                            {daysOfWeek?.map((day, index) => (
+                                                                <th key={index}>{day}</th>
+                                                            ))}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {this.state.slots.map((slot, slotIndex) => (
+                                                            <tr key={slot.slotId}>
+                                                                <td>{slot.slotName}</td>
+                                                                {daysOfWeek.map((_, dayIndex) => (
+                                                                    <td key={dayIndex} className="slot-times-column">
+                                                                        <div
+                                                                            className={`slot-time ${
+                                                                                this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId)
+                                                                                    ? "waiting-check-in"
+                                                                                    : ""
+                                                                            }
+                                                                        ${
+                                                                            this.isToday(daysOfWeek[dayIndex]) &&
+                                                                            !this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                            this.isPastTime(daysOfWeek[dayIndex], slot.startTime, slot)
+                                                                                ? "pastTime"
+                                                                                : ""
+                                                                        }
                                                                         ${this.isCompletedSlot(daysOfWeek[dayIndex], slot.slotId) ? "completed" : ""}
                                                                         ${this.isPendingSlot(daysOfWeek[dayIndex], slot.slotId) ? "pending" : ""}
                                                                         ${this.isCancelledSLot(daysOfWeek[dayIndex], slot.slotId) ? "cancel" : ""}`}
-                                                                        onClick={() => this.handleShowModal(slot, daysOfWeek[dayIndex])}
-                                                                    >
-                                                                        {`${slot.startTime} - ${slot.endTime}`}
-                                                                    </div>
-                                                                </td>
-                                                            ))}
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                                                            onClick={() => this.handleShowModal(slot, daysOfWeek[dayIndex])}
+                                                                        >
+                                                                            {`${slot.startTime} - ${slot.endTime}`}
+                                                                        </div>
+                                                                    </td>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -552,24 +579,41 @@ export default class CheckInPage extends Component {
                             <b>Email: </b> {this.state.selectedCustomer?.email} <br />
                             <b>Ngày check-in: </b> {this.state.bookingDetails?.date} <br />
                             <b>Sân: </b> {this.state.bookingDetails?.yardSchedule?.yard?.yardName} <br />
-                            <b>Slot: </b> {this.state.selectedSlotInfo?.slotName}<br />
+                            <b>Slot: </b> {this.state.selectedSlotInfo?.slotName}
+                            <br />
                             <b>Thời gian: </b> {this.state.selectedSlotInfo?.startTime} - {this.state.selectedSlotInfo?.endTime} <br />
                         </Modal.Body>
                         <Modal.Footer>
-                        {this.state.bookingDetails?.status === 'Đang chờ check-in' && ( this.isToday(this.state.bookingDetails?.date) && this.isPastTime(this.state.bookingDetails?.date, this.state.selectedSlotInfo?.startTime, this.state.selectedSlotInfo) ) && (
-                                <Button variant="danger" onClick={() => this.handleCancelCheckIn(this.state.bookingDetails?.detailId)}>
-                                    Hủy
-                                </Button>
-                            )}
-                            {this.state.bookingDetails?.status === 'Đang chờ check-in' && this.isToday(this.state.bookingDetails?.date) 
-                            && !this.isPastTime(this.state.bookingDetails?.date, this.state.selectedSlotInfo?.startTime, this.state.selectedSlotInfo) && (
-                                <Button variant="primary" onClick={() => this.handleCheckIn(this.state.bookingDetails?.detailId)}>
-                                    Check-in
-                                </Button>
-                            )}
-                            <Button variant="secondary" style={ {alignContent: 'center'} } onClick={() => this.setState({ showModal: false })}>
+                            {this.state.bookingDetails?.status === "Đang chờ check-in" &&
+                                this.isToday(this.state.bookingDetails?.date) &&
+                                this.isPastTime(
+                                    this.state.bookingDetails?.date,
+                                    this.state.selectedSlotInfo?.startTime,
+                                    this.state.selectedSlotInfo
+                                ) && (
+                                    <Button variant="danger" onClick={() => this.handleCancelCheckIn(this.state.bookingDetails?.detailId)}>
+                                        Hủy
+                                    </Button>
+                                )}
+                            {this.state.bookingDetails?.status === "Đang chờ check-in" &&
+                                this.isToday(this.state.bookingDetails?.date) &&
+                                !this.isPastTime(
+                                    this.state.bookingDetails?.date,
+                                    this.state.selectedSlotInfo?.startTime,
+                                    this.state.selectedSlotInfo
+                                ) && (
+                                    <Button variant="primary" onClick={() => this.handleCheckIn(this.state.bookingDetails?.detailId)}>
+                                        Check-in
+                                    </Button>
+                                )}
+                            <Button
+                                className="p-2"
+                                variant="secondary"
+                                style={{ alignContent: "center" }}
+                                onClick={() => this.setState({ showModal: false })}
+                            >
                                 Đóng
-                            </Button>  
+                            </Button>
                         </Modal.Footer>
                     </Modal>
                 </div>

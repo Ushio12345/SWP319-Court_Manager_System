@@ -102,18 +102,20 @@ export default function UserList() {
     return (
         <div className="py-5">
             <h3 className="py-3 text-center">Danh sách thông tin khách hàng</h3>
-            <table className="table table-striped">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Ảnh đại diện</th>
-                        <th>ID</th>
-                        <th>Tên người dùng</th>
-                        <th>Email</th>
-                    </tr>
-                </thead>
-                <tbody>{renderUserAccount()}</tbody>
-            </table>
+            <div className="overflow-x-auto">
+                <table className="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Ảnh đại diện</th>
+                            <th>ID</th>
+                            <th>Tên người dùng</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>{renderUserAccount()}</tbody>
+                </table>
+            </div>
             {renderPagination()}
         </div>
     );

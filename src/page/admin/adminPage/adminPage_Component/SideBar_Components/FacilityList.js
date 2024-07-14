@@ -54,7 +54,7 @@ export default function FacilityList() {
     return (
         <div className="container   ">
             <h3 className="text-center p-3">Danh sách các cơ sở cầu lông</h3>
-            <div className="mb-3 w-25">
+            <div className="mb-3 w-75">
                 <input
                     type="text"
                     className="form-control"

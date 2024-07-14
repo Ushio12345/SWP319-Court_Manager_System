@@ -30,7 +30,9 @@ body {
     padding: 0px;
     font-family: "Roboto Condensed", sans-serif;
 }
-
+.checkin-form table {
+    min-width: 1000px;
+}
 .order .select-slot {
     background-color: #f5f5f5;
     border-radius: 10px;
@@ -43,7 +45,53 @@ body {
     justify-content: space-between;
     border-radius: 10px;
 }
-
-.btn {
+.staffPageManager .icon {
+    font-size: 20px !important;
+}
+.staffPageManager .btn {
     padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+@media (max-width: 817px) {
+    .staffPageManager .btn {
+        font-size: 11px;
+    }
+}
+@media (max-width: 769px) {
+    .staffPageManager .detail-yard {
+        padding: 100px 0 0 0 !important;
+    }
+}
+@media (max-width: 748px) {
+    .staffPageManager .detail-yard .detail-yard-title {
+        display: block;
+    }
+    .staffPageManager .detail-yard .detail-yard-title div {
+        margin-bottom: 10px;
+    }
+    .staffPageManager b {
+        font-size: 12px;
+    }
+}
+@media (max-width: 690px) {
+    .staffPageManager b {
+        font-size: 10px;
+    }
+    .staffPageManager .yard-service {
+        font-size: 12px;
+    }
+}
+@media (max-width: 600px) {
+}
+@media (max-width: 550px) {
+    .staffPageManager b {
+        font-size: 8px;
+    }
+    .staffPageManager h3,
+    .staffPageManager p,
+    .staffPageManager .yard-left span {
+        font-size: 11px !important;
+    }
 }

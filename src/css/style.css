@@ -221,6 +221,7 @@ label.star:before {
     border-radius: 20px;
     overflow: hidden;
     font-weight: 400;
+    height: 420px !important;
 }
 .yard .card-yard:hover {
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
@@ -419,96 +420,6 @@ label.star:before {
 }
 
 /* -----Manager------------ */
-
-img {
-    display: block;
-    width: 100%;
-}
-
-ul li {
-    list-style: none;
-}
-
-.manager .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    width: 100%;
-    box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px;
-    background-color: rgba(39, 38, 38, 0.9058823529);
-    z-index: 5;
-    height: 60px;
-    position: fixed;
-}
-
-.manager .topbar .logo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    justify-content: center;
-}
-.manager .topbar .logo .logo-img {
-    width: 150px;
-}
-.manager .topbar .logo .nameapp p {
-    margin: 0;
-    font-weight: 700;
-    color: white;
-}
-.manager .topbar .search {
-    position: relative;
-    width: 40%;
-    height: 30px;
-}
-.manager .topbar .search i {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-}
-.manager .topbar .search input {
-    width: 100%;
-    border: 1px solid black;
-    border-radius: 10px;
-    padding-left: 20px;
-    height: 30px;
-}
-
-.manager .topbar .user {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    justify-content: center;
-}
-.manager .topbar .user p {
-    margin-bottom: 0;
-    margin-left: 30px;
-}
-.manager .topbar .user img {
-    width: 50px;
-    border-radius: 50%;
-}
-.manager .body-manager {
-    display: flex;
-    flex: 1;
-}
-.manager .body-manager .link {
-    font-weight: 700;
-}
-.manager .body-manager .manager-right {
-    flex: 1;
-
-    padding: 70px;
-}
-
-.manager .body-manager .manager-left {
-    padding: 80px 0;
-    width: 20%;
-    background-color: rgba(39, 38, 38, 0.9058823529);
-    transition: width 0.3s;
-}
 
 .manager .body-manager .manager-left .manager-left-title {
     display: flex;
@@ -957,7 +868,7 @@ form h1 {
 }
 
 .list-yard .slick-slide {
-    padding: 20px;
+    padding: 10px;
 }
 .showAllYard {
     padding-top: 20px;
