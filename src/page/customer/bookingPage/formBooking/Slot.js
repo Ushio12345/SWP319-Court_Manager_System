@@ -53,7 +53,6 @@ export default class Slot extends Component {
         const user = JSON.parse(localStorage.getItem("user"));
 
         this.checkUserLoginStatus();
-        this.fetchFlexibleBookings();
         this.fetchPriceList();
     }
 
@@ -73,7 +72,7 @@ export default class Slot extends Component {
             this.fetchSlots();
             this.fetchStatusSlots("PENDING", "pendingSlots");
             this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
-        }
+        }    
     }
 
     fetchSlots = () => {
@@ -164,6 +163,9 @@ export default class Slot extends Component {
     };
 
     handleTabChange = (tab) => {
+        if (tab === 'linhhoat') {
+            this.fetchFlexibleBookings();
+        }
         this.setState({ selectedTab: tab, selectedSlots: {}, selectedDay: null, errorMessage: "", bookingDetailsList: [] });
     };
 
@@ -345,6 +347,7 @@ export default class Slot extends Component {
     isSlotBooked = (dayKey, slotId) => {
         const { pendingSlots, waitingCheckInSlots } = this.state;
 
+
         const parsedDate = parse(dayKey.split(" ")[0], "dd/MM/yyyy", new Date());
         const formattedDayKey = format(parsedDate, "yyyy-MM-dd");
 
@@ -353,16 +356,17 @@ export default class Slot extends Component {
             return false;
         }
 
+
         // Lấy ra các bookingDetails từ pendingSlots và waitingCheckInSlots
-        const pendingBookingDetails = pendingSlots[formattedDayKey].flatMap((checkInDto) => checkInDto.bookingDetails);
-        const waitingCheckInBookingDetails = waitingCheckInSlots[formattedDayKey].flatMap((checkInDto) => checkInDto.bookingDetails);
+        const pendingBookingDetails = pendingSlots[formattedDayKey].flatMap(checkInDto => checkInDto.bookingDetails);
+        const waitingCheckInBookingDetails = waitingCheckInSlots[formattedDayKey].flatMap(checkInDto => checkInDto.bookingDetails);
 
         console.log("Pending Booking Details:", pendingBookingDetails);
         console.log("Waiting Check-In Booking Details:", waitingCheckInBookingDetails);
 
         // Kiểm tra xem slotId có trong các yardSchedules không
-        const isPendingSlot = pendingBookingDetails.some((bookingDetails) => bookingDetails.yardSchedule.slot.slotId === slotId);
-        const isWaitingCheckInSlot = waitingCheckInBookingDetails.some((bookingDetails) => bookingDetails.yardSchedule.slot.slotId === slotId);
+        const isPendingSlot = pendingBookingDetails.some(bookingDetails => bookingDetails.yardSchedule.slot.slotId === slotId);
+        const isWaitingCheckInSlot = waitingCheckInBookingDetails.some(bookingDetails => bookingDetails.yardSchedule.slot.slotId === slotId);
 
         return isPendingSlot || isWaitingCheckInSlot;
     };
@@ -709,16 +713,10 @@ export default class Slot extends Component {
                                             </div>
                                         ))}
                                 </div>
-                                <div style={{ display: "flex", justifyContent: "center" }}>
-                                    <div className="btn slot-time pastTime" style={{ width: "100px", height: "40px", alignContent: "center" }}>
-                                        <b>Đã hết giờ</b>
-                                    </div>
-                                    <div className="btn slot-time booked" style={{ width: "100px", height: "40px", alignContent: "center" }}>
-                                        <b>Đã đặt</b>
-                                    </div>
-                                    <div className="btn slot-time selected" style={{ width: "100px", height: "40px", pointerEvents: "none" }}>
-                                        Đang chọn
-                                    </div>
+                                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <div className="btn slot-time pastTime" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã hết giờ</b></div>
+                                    <div className="btn slot-time booked" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã đặt</b></div>
+                                    <div className="btn slot-time selected" style={{ width: '100px', height: '40px', pointerEvents: 'none' }}>Đang chọn</div>
                                 </div>
                                 <div className="w-25 m-auto">
                                     <button onClick={this.handleButtonClick} className="btn btn-primary">

@@ -5,17 +5,15 @@ const axiosInstance = axios.create({
     baseURL: "http://167.99.67.127:8080",
 });
 
-axiosInstance.interceptors.request.use(
-    (config) => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        const token = user ? user.accessToken : null;
+axiosInstance.interceptors.request.use((config) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = user ? user.accessToken : null;
 
-        if (token) {
-            config.headers["Authorization"] = `Bearer ${token}`;
-        }
-        return config;
+    if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
     }
-);
+    return config;
+});
 
 axiosInstance.interceptors.response.use(
     (response) => response,

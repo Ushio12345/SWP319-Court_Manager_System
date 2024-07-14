@@ -92,6 +92,13 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                     </Link>
                                                 </li>
                                                 <li>
+                                                    {isLoggedIn && (
+                                                        <Link to="/playing-schedule" onClick={hideDropdown}>
+                                                            <i className="fa-solid fa-calendar"></i> Lịch chơi
+                                                        </Link>
+                                                    )}
+                                                </li>
+                                                <li>
                                                     {isLoggedIn && user.roles.includes("manager") ? (
                                                         <Link to="/court-manager" onClick={hideDropdown}>
                                                             <i className="fa-solid fa-shop"></i> Cơ sở của tôi
