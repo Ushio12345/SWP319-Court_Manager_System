@@ -37,7 +37,7 @@ export default function Dashboard() {
 
     return (
         <div className="admin-db container py-5">
-            <div className="admin-tk grid grid-cols-4 sm:grid-cols-4 gap-4">
+            <div className="admin-tk grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="tk-item">
                     <div className="tk-icon">
                         <i className="fa-regular fa-eye"></i>
@@ -76,7 +76,7 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="listItem grid grid-cols-2 md:grid-cols-2 gap-4 my-4">
+            <div className="listItem grid lg:grid-cols-2 md:grid-cols-1 gap-4 my-4">
                 <div>
                     <h4>Danh sách tài khoản mới</h4>
                     <NewUserItem />
@@ -87,7 +87,7 @@ export default function Dashboard() {
                 </div>
             </div>
             {/* Biểu đồ lượt truy cập */}
-            <div className="chart-container my-4 bg-white">
+            <div className="chart-container my-4 bg-white w-full " style={{ height: 400, width: "100%" }}>
                 <Line data={data} options={options} />
             </div>
         </div>

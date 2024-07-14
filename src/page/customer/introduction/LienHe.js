@@ -62,7 +62,7 @@ export default class LienHe extends Component {
     render() {
         const { isLoggedIn, user, errors } = this.state;
         return (
-            <div>
+            <div className="lienhePage">
                 <Header isLoggedIn={isLoggedIn} user={user} handleLogout={this.handleLogout} />
                 <div className="" style={{ paddingTop: 100 }}>
                     <section className="introduction">
@@ -83,7 +83,7 @@ export default class LienHe extends Component {
                             </button>
                         </div>
                         <div className="container ">
-                            <div className="intro-number grid lg:grid-cols-4 md:grid-cols-3 gap-4 sm:lg:grid-cols-2 ">
+                            <div className="intro-number grid  grid-cols-2 lg:grid-cols-4 md:grid-cols-2 gap-4 sm:lg:grid-cols-2 ">
                                 <div className="intro-number-item  ">
                                     <div className="intro-number-item-icon">
                                         <i class="fa-solid fa-envelope"></i>
@@ -125,7 +125,7 @@ export default class LienHe extends Component {
                     </section>
 
                     <div className=" contact-form row container m-auto">
-                        <div className="container col-lg-6">
+                        <div className="container col-md-6">
                             <form>
                                 <p className="text-start mb-2">
                                     Chúng tôi mong muốn lắng nghe những ý kiến của quý khách. Vui lòng gửi mọi nhận xét, thắc mắc theo thông tin bên
@@ -153,11 +153,10 @@ export default class LienHe extends Component {
                                 <button className="btn btn-primary m-0 p-2">Gửi biểu mẫu</button>
                             </form>
                         </div>
-                        <div className="col-lg-6">
+                        <div className="col-md-6" id="map">
                             <h3>Trụ sở của chúng tôi</h3>
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.6099415304993!2d106.80730807476706!3d10.841132857997396!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752731176b07b1%3A0xb752b24b379bae5e!2sFPT%20University%20HCMC!5e0!3m2!1sen!2s!4v1719335922052!5m2!1sen!2s"
-                                width={600}
                                 height={450}
                                 style={{ border: 0 }}
                                 allowFullScreen

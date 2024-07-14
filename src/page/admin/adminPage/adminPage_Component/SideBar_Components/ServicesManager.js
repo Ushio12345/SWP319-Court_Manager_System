@@ -62,9 +62,12 @@ export default class ServicesManager extends Component {
     renderServices = () => {
         return this.state.services.map((ser) => (
             <div className="d-flex" style={{ alignContent: "center", justifyContent: "space-between", padding: "10px 5px" }} key={ser.facilityId}>
-                <div className="d-flex" style={{ alignContent: "center", justifyContent: "space-between", padding: "10px 5px" }}>
+                <div
+                    className="d-flex align-items-center w-75 "
+                    style={{ alignContent: "center", justifyContent: "flex-start", padding: "10px 5px" }}
+                >
                     <i className={ser.facilityIcon}></i>
-                    <p className="ms-3">{ser.facilityName}</p>
+                    <p className="ms-3 serName">{ser.facilityName}</p>
                 </div>
                 <div className="w-50 d-flex justify-end">
                     <button className="btn btn-warning p-2 w-25" onClick={() => this.openModal("edit", ser)}>
@@ -173,7 +176,7 @@ export default class ServicesManager extends Component {
                         </button>
                     </div>
                     <div className="list-services">
-                        <div>{this.renderServices()}</div>
+                        <div className="">{this.renderServices()}</div>
                     </div>
                 </div>
                 {/* Modal */}

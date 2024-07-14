@@ -18,6 +18,7 @@ export default class AdminPage extends Component {
                 avatar: "",
                 email: "",
             },
+            isSidebarOpen: false,
         };
     }
 
@@ -51,9 +52,14 @@ export default class AdminPage extends Component {
         });
         window.location.href = "/";
     };
+    toggleSidebar = () => {
+        this.setState((prevState) => ({
+            isSidebarOpen: !prevState.isSidebarOpen,
+        }));
+    };
 
     render() {
-        const { isLoggedIn, user } = this.state;
+        const { isLoggedIn, user, isSidebarOpen } = this.state;
 
         return (
             <div className="admin">
@@ -67,6 +73,7 @@ export default class AdminPage extends Component {
                                     aria-controls="logo-sidebar"
                                     type="button"
                                     className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                                    onClick={() => this.setState({ isSidebarOpen: !this.state.isSidebarOpen })}
                                 >
                                     <span className="sr-only">Open sidebar</span>
                                     <svg
@@ -83,6 +90,7 @@ export default class AdminPage extends Component {
                                         />
                                     </svg>
                                 </button>
+
                                 <a href="/adminPage" className="flex ms-2 md:me-24">
                                     <img src={logoImg} className="h-8 me-3 w-100" style={{ height: "70px" }} />
                                     <span
@@ -107,7 +115,7 @@ export default class AdminPage extends Component {
                     </div>
                 </nav>
 
-                <SideBar />
+                <SideBar isOpen={isSidebarOpen} />
 
                 <div className="p-4 sm:ml-64 mt-5">
                     <div class="tab-content" id="pills-tabContent">

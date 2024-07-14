@@ -320,3 +320,35 @@ li {
 .contact-form {
     padding: 200px 0;
 }
+.lienhePage iframe {
+    width: 100% !important;
+}
+@media (max-width: 1024px) {
+    .lienhePage .contact-form {
+        padding: 500px 0 100px 0;
+    }
+}
+@media (max-width: 768px) {
+    #map {
+        margin-top: 20px;
+    }
+    .intro-number-item-content p {
+        font-size: 13px;
+    }
+    .intro-number-item-content h4 {
+        font-size: 14px;
+    }
+    .lienhePage .introduction h4 {
+        font-size: 17px;
+    }
+}
+@media (max-width: 424px) {
+    .intro-number-item {
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .intro-number-item-icon {
+        height: 60px;
+        width: 60px;
+    }
+}
