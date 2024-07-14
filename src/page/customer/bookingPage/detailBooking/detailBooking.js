@@ -141,8 +141,8 @@ const DetailBooking = () => {
                 total: totalPriceUSD,
                 currency: "USD",
                 description: "Payment via PayPal",
-                cancelUrl: "http://167.99.67.127/detailBooking",
-                successUrl: "http://167.99.67.127/detailBooking",
+                cancelUrl: "http://localhost:3000/detailBooking",
+                successUrl: "http://localhost:3000/detailBooking",
             });
             setPaymentUrl(response.data);
             window.location.href = response.data;
