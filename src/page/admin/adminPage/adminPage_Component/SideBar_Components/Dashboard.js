@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import NewUserItem from "./dashboardComponent/NewUserItem";
 import NewCourtItem from "./dashboardComponent/NewCourtItem";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
-
+import axiosInstance from "../../../../../config/axiosConfig";
+import { handleTokenError } from "../../../../../utils/tokenErrorHandle";
+import { showAlert, Button } from "../../../../../utils/alertUtils";
+import { FaUser } from "react-icons/fa";
+import { PiCourtBasketballFill } from "react-icons/pi";
+import { FaHouseUser } from "react-icons/fa";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Dashboard() {
@@ -22,6 +27,49 @@ export default function Dashboard() {
         ],
     };
 
+    const [court, setCourts] = useState([]);
+    const [numCourt, setNumCourt] = useState([0]);
+    const [user, setUser] = useState([]);
+    const [countCustomer, setCountCustomer] = useState([]);
+    useEffect(() => {
+        fetchCourt();
+        fetchUserAccount();
+    }, []);
+
+    const fetchCourt = () => {
+        axiosInstance
+            .get("/court/all")
+            .then((res) => {
+                if (res.status === 200) {
+                    setCourts(res.data);
+                    setNumCourt(res.data.length);
+                }
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                    handleTokenError();
+                } else {
+                    console.error("Error fetching courts:", error);
+                }
+            });
+    };
+    const fetchUserAccount = () => {
+        axiosInstance
+            .get("/member/users")
+            .then((res) => {
+                if (res.status === 200) {
+                    setUser(res.data);
+                    setCountCustomer(res.data.length);
+                }
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                    handleTokenError();
+                } else {
+                    console.error("Error fetching courts:", error);
+                }
+            });
+    };
     const options = {
         responsive: true,
         plugins: {
@@ -49,16 +97,16 @@ export default function Dashboard() {
                 </div>
                 <div className="tk-item">
                     <div className="tk-icon">
-                        <i className="fa-regular fa-eye"></i>
+                        <PiCourtBasketballFill />
                     </div>
                     <div className="tk-number">
-                        <h4>50</h4>
+                        <h4>{numCourt}</h4>
                         <p>Tổng số cơ sở</p>
                     </div>
                 </div>
                 <div className="tk-item">
                     <div className="tk-icon">
-                        <i className="fa-regular fa-eye"></i>
+                        <FaHouseUser />
                     </div>
                     <div className="tk-number">
                         <h4>12</h4>
@@ -67,10 +115,10 @@ export default function Dashboard() {
                 </div>
                 <div className="tk-item">
                     <div className="tk-icon">
-                        <i className="fa-regular fa-eye"></i>
+                        <FaUser />
                     </div>
                     <div className="tk-number">
-                        <h4>150</h4>
+                        <h4>{countCustomer}</h4>
                         <p>Khách hàng </p>
                     </div>
                 </div>

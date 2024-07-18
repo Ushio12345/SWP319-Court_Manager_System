@@ -107,6 +107,10 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                         <Link to="/staff" onClick={hideDropdown}>
                                                             <i className="fa-solid fa-shop"></i> Quản lý check-in
                                                         </Link>
+                                                    ) : isLoggedIn && user.roles.includes("admin") ? (
+                                                        <Link to="/admin" onClick={hideDropdown}>
+                                                            <i className="fa-solid fa-shop"></i> Trang Admin
+                                                        </Link>
                                                     ) : (
                                                         <Link
                                                             onClick={() => {
@@ -199,10 +203,10 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseTermsModal}>
+                    <Button variant="secondary" onClick={handleCloseTermsModal} className="p-2">
                         Đóng
                     </Button>
-                    <Button variant="primary" onClick={handleAcceptTerms}>
+                    <Button variant="primary" onClick={handleAcceptTerms} className="p-2">
                         Chấp nhận và tiếp tục
                     </Button>
                 </Modal.Footer>

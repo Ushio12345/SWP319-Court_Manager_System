@@ -11,7 +11,10 @@ export default class Staff extends Component {
             email: "",
             password: "",
             fullName: "",
-            role: ["staff", "customer"],
+            roles: [
+                { roleId: 4, roleName: "staff" },
+                { roleId: 3, roleName: "customer" },
+            ],
             managerId: this.props.managerId,
         },
         selectedStaffId: null,
@@ -39,10 +42,12 @@ export default class Staff extends Component {
 
     fetchAllStaff = () => {
         axiosInstance
-            .get("/member/all-staff")
+            .get("/member/users")
             .then((res) => {
                 if (res.status === 200) {
-                    this.setState({ staffs: res.data });
+                    const allUsers = res.data;
+                    const staffUsers = allUsers.filter((user) => user.roles.some((role) => role.roleName === "staff"));
+                    this.setState({ staffs: staffUsers });
                 } else {
                     this.setState({ staffs: [] });
                     showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
@@ -116,19 +121,20 @@ export default class Staff extends Component {
         axiosInstance
             .post("/auth/signup", this.state.newStaff)
             .then((response) => {
-                console.log("Response from API:", response.data);
-                this.fetchAllStaff();
-                showAlert("success", "", "Tài khoản nhân viên được thêm thành công", "top-end");
                 this.setState({
                     staffs: [...this.state.staffs, response.data],
                     newStaff: {
                         email: "",
                         password: "",
                         fullName: "",
-                        role: ["staff", "customer"],
+                        roles: [
+                            { roleId: 4, roleName: "staff" },
+                            { roleId: 3, roleName: "customer" },
+                        ],
                         managerId: this.props.managerId,
                     },
                 });
+                showAlert("success", "", "Tài khoản nhân viên được thêm thành công", "top-end");
             })
             .catch((error) => {
                 handleTokenError(error);
@@ -260,9 +266,9 @@ export default class Staff extends Component {
                 <ul className="pagination">
                     {pageNumbers.map((number) => (
                         <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
-                            <button onClick={() => this.handlePageChange(number)} className="page-link">
+                            <a onClick={() => this.handlePageChange(number)} className="page-link">
                                 {number}
-                            </button>
+                            </a>
                         </li>
                     ))}
                 </ul>

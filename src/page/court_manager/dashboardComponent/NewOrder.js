@@ -3,7 +3,7 @@ import axiosInstance from "../../../config/axiosConfig";
 import { showAlert } from "../../../utils/alertUtils";
 import { handleTokenError } from "../../../utils/tokenErrorHandle";
 
-const NewOrder = () => {
+const NewOrder = ({ setOrderCount, setTotalRevenue }) => {
     const [orders, setOrders] = useState([]);
 
     useEffect(() => {
@@ -15,46 +15,70 @@ const NewOrder = () => {
             .get("/booking/bookings-of-courts")
             .then((res) => {
                 if (res.status === 200) {
-                    console.log("Data from API:", res.data);
-                    setOrders(res.data);
+                    const ordersData = res.data;
+                    const sortedOrders = sortOrdersByDate(ordersData);
+                    calculateMonthlyRevenue(sortedOrders);
+                    const latestOrders = getLatestOrders(sortedOrders);
+                    setOrders(latestOrders);
                 } else {
                     showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
-                    console.error("Response không thành công:", res.status);
                 }
             })
             .catch((error) => {
                 if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
                     handleTokenError();
                 }
-                console.error("Lỗi fetch orders:", error);
             });
+    };
+
+    const sortOrdersByDate = (ordersData) => {
+        let allOrders = [];
+        Object.keys(ordersData).forEach((courtId) => {
+            allOrders = [...allOrders, ...ordersData[courtId]];
+        });
+
+        return allOrders.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+    };
+
+    const getLatestOrders = (sortedOrders) => {
+        return sortedOrders.slice(0, 5);
+    };
+
+    const calculateMonthlyRevenue = (orders) => {
+        const currentMonth = new Date().getMonth() + 1;
+        const currentYear = new Date().getFullYear();
+        let totalRevenue = 0;
+        let totalOrders = 0;
+
+        orders.forEach((order) => {
+            const [day, month, year] = order.bookingDate.split(" ")[0].split("/").map(Number);
+            const bookingDate = new Date(year, month - 1, day);
+            const bookingMonth = bookingDate.getMonth() + 1;
+            const bookingYear = bookingDate.getFullYear();
+
+            if (bookingMonth === currentMonth && bookingYear === currentYear) {
+                totalRevenue += order.totalPrice;
+                totalOrders += 1;
+            }
+        });
+
+        setTotalRevenue(totalRevenue);
+        setOrderCount(totalOrders);
     };
 
     const getStatusColor = (status) => {
         switch (status) {
             case "Đang chờ check-in":
-                return "bg-warning";
+                return "bg-warning text-white";
             case "Đã hủy":
-                return "bg-danger";
+                return "bg-danger text-white";
             case "Đã hoàn thành":
-                return "bg-success";
+                return "bg-success text-white";
             case "Đang chờ xử lý":
-                return "bg-primary";
-
+                return "bg-primary text-white";
             default:
                 return "";
         }
-    };
-
-    const getBookingDetails = (details) => {
-        return details.map((detail) => (
-            <tr key={detail.detailId}>
-                <td>{detail.date}</td>
-                <td>{detail.yardSchedule.slot.slotName}</td>
-                <td>{detail.status}</td>
-                <td>{detail.price}</td>
-            </tr>
-        ));
     };
 
     return (
@@ -64,30 +88,28 @@ const NewOrder = () => {
                     <thead className="table-light">
                         <tr>
                             <th>Mã đơn</th>
-                            <th>Khách hàng</th>
-                            <th>Loại đặt sân</th>
+                            <th className="text-start">Khách hàng</th>
+                            <th className="text-start">Loại đặt sân</th>
                             <th>Ngày đặt</th>
                             <th>Trạng thái</th>
                             <th>Tổng tiền</th>
-                            <th>Sân</th>
+                            <th className="text-start">Sân</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.keys(orders).map((courtId) =>
-                            orders[courtId].map((order) => (
-                                <tr key={order.bookingId}>
-                                    <td>{order.bookingId}</td>
-                                    <td>{order.customer.fullName}</td>
-                                    <td>{order.bookingType}</td>
-                                    <td>{order.bookingDate}</td>
-                                    <td>
-                                        <div className={"rounded-pill py-1 text-center " + getStatusColor(order.statusEnum)}>{order.statusEnum}</div>
-                                    </td>
-                                    <td>{order.totalPrice}</td>
-                                    <td>{order.court.courtName}</td>
-                                </tr>
-                            ))
-                        )}
+                        {orders.map((order) => (
+                            <tr key={order.bookingId}>
+                                <td className="text-center">{order.bookingId}</td>
+                                <td>{order.customer.fullName}</td>
+                                <td>{order.bookingType}</td>
+                                <td className="text-center">{order.bookingDate}</td>
+                                <td>
+                                    <div className={"rounded-pill py-1 text-center " + getStatusColor(order.statusEnum)}>{order.statusEnum}</div>
+                                </td>
+                                <td className="text-center">{order.totalPrice}</td>
+                                <td>{order.court.courtName}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

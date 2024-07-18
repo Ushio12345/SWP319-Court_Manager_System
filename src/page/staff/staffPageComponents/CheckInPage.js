@@ -591,7 +591,11 @@ export default class CheckInPage extends Component {
                                     this.state.selectedSlotInfo?.startTime,
                                     this.state.selectedSlotInfo
                                 ) && (
-                                    <Button variant="danger" onClick={() => this.handleCancelCheckIn(this.state.bookingDetails?.detailId)}>
+                                    <Button
+                                        variant="danger"
+                                        className="p-2"
+                                        onClick={() => this.handleCancelCheckIn(this.state.bookingDetails?.detailId)}
+                                    >
                                         Hủy
                                     </Button>
                                 )}

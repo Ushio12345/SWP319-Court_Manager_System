@@ -5,13 +5,14 @@ import "./index.css";
 import axiosInstance from "../../../../config/axiosConfig";
 import { showConfirmAlert, showConfirmPayment } from "../../../../utils/alertUtils";
 import axios from "axios";
+import { Link } from "react-router-dom";
 const DetailBooking = () => {
     const [booking, setBooking] = useState(null);
     const [bookingDetailsList, setBookingDetailsList] = useState([]);
     const [paymentUrl, setPaymentUrl] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 3;
+    const itemsPerPage = 4;
     const [user, setUser] = useState({
         username: "",
         avatar: "",
@@ -251,13 +252,35 @@ const DetailBooking = () => {
                                     </tbody>
                                 </table>
                                 {booking.bookingType !== "Lịch linh hoạt" && totalPages > 1 && (
-                                    <div className="pagination">
-                                        {Array.from({ length: totalPages }, (_, i) => (
-                                            <button key={i + 1} onClick={() => handleClick(i + 1)}>
-                                                {i + 1}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    <nav aria-label="Page navigation example">
+                                        <ul className="pagination">
+                                            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => handleClick(currentPage - 1)}>
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                            {Array.from({ length: totalPages }, (_, index) => (
+                                                <li key={index} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                                                    <Link
+                                                        to="#"
+                                                        className="page-link"
+                                                        onClick={() => handleClick(index + 1)}
+                                                        // style={{
+                                                        //     color: "white",
+                                                        //     backgroundColor: currentPage === index + 1 ? "aquamarine" : "#002e86",
+                                                        // }}
+                                                    >
+                                                        {index + 1}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                            <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                                                <Link className="page-link" to="#" aria-label="Next" onClick={() => handleClick(currentPage + 1)}>
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </Link>
+                                            </li>
+                                        </ul>
+                                    </nav>
                                 )}
                             </div>
                         ) : (

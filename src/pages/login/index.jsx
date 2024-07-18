@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import HeaderLoginForm from "../../components/header-login-form";
 import Footer from "../../components/footer";
 import "./index.css";
@@ -187,7 +187,7 @@ const Login = () => {
                         </div>
                         <div className="register-link">
                             <p>
-                                Bạn chưa có tài khoản? <a href="/register">Đăng ký</a>
+                                Bạn chưa có tài khoản? <Link to="/register">Đăng ký</Link>
                             </p>
                         </div>
                     </form>

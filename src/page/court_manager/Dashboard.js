@@ -1,11 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./manager.css";
 import NewUserItem from "./dashboardComponent/NewUserItem";
 import HotTime from "./dashboardComponent/HotTime";
 import CourtItem from "./dashboardComponent/CourtItem";
 import NewOrder from "./dashboardComponent/NewOrder";
+import axiosInstance from "../../config/axiosConfig";
+import { handleTokenError } from "../../utils/tokenErrorHandle";
+import { showAlert, showConfirmAlert } from "../../utils/alertUtils";
 
 export default function Dashboard() {
+    const [courts, setCourts] = useState([]);
+    const [courtCount, setCourtCount] = useState(0);
+    const [orderCount, setOrderCount] = useState(0);
+    const [totalRevenue, setTotalRevenue] = useState(0);
+
+    useEffect(() => {
+        fetchCourts();
+    }, []);
+
+    const fetchCourts = () => {
+        axiosInstance
+            .get("/court/courts-of-owner")
+            .then((res) => {
+                setCourts(res.data);
+                setCourtCount(res.data.length);
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
+                    handleTokenError();
+                }
+                console.error("Lỗi fetch courts:", error);
+            });
+    };
+
     return (
         <div className="dashboard_manager">
             <div className="dash-num grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-2 gap-4">
@@ -20,7 +47,7 @@ export default function Dashboard() {
                 </div>
                 <div className="dash-num-item">
                     <div className="dash-num-item-left">
-                        <h4>3</h4>
+                        <h4>{courtCount}</h4>
                         <p>Số cơ sở</p>
                     </div>
                     <div className="dash-num-item-icon">
@@ -29,8 +56,8 @@ export default function Dashboard() {
                 </div>
                 <div className="dash-num-item">
                     <div className="dash-num-item-left">
-                        <h4>6</h4>
-                        <p>Đơn / ngày</p>
+                        <h4>{orderCount}</h4>
+                        <p>Đơn</p>
                     </div>
                     <div className="dash-num-item-icon">
                         <i className="fa-solid fa-file-invoice" />
@@ -38,8 +65,8 @@ export default function Dashboard() {
                 </div>
                 <div className="dash-num-item">
                     <div className="dash-num-item-left">
-                        <h4>2000000</h4>
-                        <p>Doanh thu / ngày</p>
+                        <h4>{totalRevenue.toLocaleString()}</h4>
+                        <p>Doanh thu </p>
                     </div>
                     <div className="dash-num-item-icon" style={{ color: "black" }}>
                         <i className="fa-solid fa-money-bill" />
@@ -64,7 +91,7 @@ export default function Dashboard() {
 
             <div className="bookingList">
                 <div className="newUser-title">Danh sách đơn đặt mới</div>
-                <NewOrder />
+                <NewOrder setOrderCount={setOrderCount} setTotalRevenue={setTotalRevenue} />
             </div>
         </div>
     );

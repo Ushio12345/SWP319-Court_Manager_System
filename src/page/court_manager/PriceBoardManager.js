@@ -94,7 +94,7 @@ export default class PriceBoardManager extends Component {
     };
 
     handleDeletePriceBoard = (priceListId) => {
-        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa slot này không ?", "Xóa", "center").then((result) => {
+        showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa bảng giá này không ?", "Xóa", "center").then((result) => {
             axiosInstance
                 .delete(`/price-list/${priceListId}`)
                 .then((response) => {
@@ -268,25 +268,15 @@ export default class PriceBoardManager extends Component {
         }
 
         return (
-            <nav aria-label="Page navigation example">
+            <nav>
                 <ul className="pagination">
-                    <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                        <button className="page-link" onClick={() => this.handlePageChange(currentPage - 1)} aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </button>
-                    </li>
                     {pageNumbers.map((number) => (
                         <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
-                            <button className="page-link" onClick={() => this.handlePageChange(number)}>
+                            <a onClick={() => this.handlePageChange(number)} className="page-link">
                                 {number}
-                            </button>
+                            </a>
                         </li>
                     ))}
-                    <li className={`page-item ${currentPage === pageNumbers.length ? "disabled" : ""}`}>
-                        <button className="page-link" onClick={() => this.handlePageChange(currentPage + 1)} aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </button>
-                    </li>
                 </ul>
             </nav>
         );
