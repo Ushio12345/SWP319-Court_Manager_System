@@ -87,11 +87,7 @@ export default class Slot extends Component {
 
     handleUpdateSlot = () => {
         axiosInstance
-            .put("time-slot/updateSlot", this.state.slot, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
+            .put("time-slot/updateSlot", this.state.slot)
             .then((res) => {
                 if (res.status === 200) {
                     this.fetchSlot();
@@ -162,12 +158,11 @@ export default class Slot extends Component {
     };
 
     handleRequestError = (error) => {
-        console.error("Lỗi từ server:", error.response.data);
+        console.error("Lỗi từ server:", error.response ? error.response.data : error);
     };
 
-    // Xử lý thay đổi trang
-    handlePageChange = (event) => {
-        this.setState({ currentPage: Number(event.target.id) });
+    handlePageChange = (number) => {
+        this.setState({ currentPage: number });
     };
 
     render() {
@@ -255,12 +250,11 @@ export default class Slot extends Component {
                     </table>
                 </div>
 
-                {/* Nút phân trang */}
-                <nav className="">
-                    <ul className="pagination ">
+                <nav className="d-flex justify-content-center">
+                    <ul className="pagination">
                         {pageNumbers.map((number) => (
-                            <li key={number} className="page-item">
-                                <button onClick={this.handlePageChange} id={number} className="page-link">
+                            <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
+                                <button onClick={() => this.handlePageChange(number)} className="page-link m-0">
                                     {number}
                                 </button>
                             </li>
@@ -268,110 +262,138 @@ export default class Slot extends Component {
                     </ul>
                 </nav>
 
-                {/* Modal Thêm Mới Slot */}
-                <div className="modal fade" id="addNewSlot" tabIndex="-1" aria-labelledby="addSlotLabel" aria-hidden="true">
+                <div className="modal fade" id="addNewSlot" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h4 className="text-center">Điền thông tin slot</h4>
+                                <h5 className="modal-title" id="exampleModalLabel">
+                                    Thêm slot
+                                </h5>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="slotName">Tên slot</label>
-                                    <input
-                                        id="slotName"
-                                        name="slotName"
-                                        className="form-control"
-                                        placeholder="Nhập tên Slot"
-                                        value={this.state.slot.slotName}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="startTime">Giờ bắt đầu</label>
-                                    <input
-                                        id="startTime"
-                                        name="startTime"
-                                        className="form-control"
-                                        placeholder="Nhập giờ bắt đầu"
-                                        value={this.state.slot.startTime}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="endTime">Giờ kết thúc</label>
-                                    <input
-                                        id="endTime"
-                                        name="endTime"
-                                        className="form-control"
-                                        placeholder="Nhập giờ kết thúc"
-                                        value={this.state.slot.endTime}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
+                                <form>
+                                    <div className="form-group">
+                                        <label>Tên slot</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            name="slotName"
+                                            value={this.state.slot.slotName}
+                                            onChange={this.handleInputChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Thời gian bắt đầu</label>
+                                        <input
+                                            type="time"
+                                            className="form-control"
+                                            name="startTime"
+                                            value={this.state.slot.startTime}
+                                            onChange={this.handleInputChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Thời gian kết thúc</label>
+                                        <input
+                                            type="time"
+                                            className="form-control"
+                                            name="endTime"
+                                            value={this.state.slot.endTime}
+                                            onChange={this.handleInputChange}
+                                            required
+                                        />
+                                    </div>
+                                    {/* <div className="form-group">
+                                        <label>Giá slot</label>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            name="price"
+                                            value={this.state.slot.price}
+                                            onChange={this.handleInputChange}
+                                            required
+                                        />
+                                    </div> */}
+                                </form>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={this.handleAddSlot}>
-                                    Thêm slot
-                                </button>
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                                     Đóng
+                                </button>
+                                <button type="button" className="btn btn-primary" onClick={this.handleAddSlot}>
+                                    Lưu lại
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Update modal */}
-                <div className="modal fade my-5" id="updateSlot" tabIndex="-1" aria-labelledby="updateSlotLabel" aria-hidden="true">
+                <div className="modal fade" id="updateSlot" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h4 className="text-center">Cập nhật thông tin slot</h4>
+                                <h5 className="modal-title" id="exampleModalLabel">
+                                    Chỉnh sửa slot
+                                </h5>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div className="modal-body">
-                                <div className="form-group">
-                                    <label htmlFor="slotName">Tên slot</label>
-                                    <input
-                                        id="slotName"
-                                        name="slotName"
-                                        className="form-control"
-                                        placeholder="Nhập tên Slot"
-                                        value={this.state.slot.slotName}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="startTime">Giờ bắt đầu</label>
-                                    <input
-                                        id="startTime"
-                                        name="startTime"
-                                        className="form-control"
-                                        placeholder="Nhập giờ bắt đầu"
-                                        value={this.state.slot.startTime}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="endTime">Giờ kết thúc</label>
-                                    <input
-                                        id="endTime"
-                                        name="endTime"
-                                        className="form-control"
-                                        placeholder="Nhập giờ kết thúc"
-                                        value={this.state.slot.endTime}
-                                        onChange={this.handleInputChange}
-                                    />
-                                </div>
+                                <form>
+                                    <div className="form-group">
+                                        <label>Tên slot</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            name="slotName"
+                                            value={this.state.slot.slotName}
+                                            onChange={this.handleInputChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Thời gian bắt đầu</label>
+                                        <input
+                                            type="time"
+                                            className="form-control"
+                                            name="startTime"
+                                            value={this.state.slot.startTime}
+                                            onChange={this.handleInputChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Thời gian kết thúc</label>
+                                        <input
+                                            type="time"
+                                            className="form-control"
+                                            name="endTime"
+                                            value={this.state.slot.endTime}
+                                            onChange={this.handleInputChange}
+                                            required
+                                        />
+                                    </div>
+                                    {/* <div className="form-group">
+                                        <label>Giá slot</label>
+                                        <input
+                                            type="number"
+                                            className="form-control"
+                                            name="price"
+                                            value={this.state.slot.price}
+                                            onChange={this.handleInputChange}
+                                            required
+                                        />
+                                    </div> */}
+                                </form>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-primary" onClick={this.handleUpdateSlot}>
-                                    Lưu
-                                </button>
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
                                     Đóng
+                                </button>
+                                <button type="button" className="btn btn-primary" onClick={this.handleUpdateSlot}>
+                                    Lưu lại
                                 </button>
                             </div>
                         </div>

@@ -7,7 +7,7 @@ export default class PriceBpard extends Component {
 
         return (
             <div>
-                <div className="modal-dialog">
+                <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title" id="modalPriceBoard">
@@ -20,15 +20,15 @@ export default class PriceBpard extends Component {
                                 <div>
                                     <div className="d-flex justify-between">
                                         <div>Giá đặt đơn: </div>
-                                        <strong>{priceBoard?.singleBookingPrice?.toLocaleString('vi-VN')} VND</strong>
+                                        <strong>{priceBoard?.singleBookingPrice?.toLocaleString("vi-VN")} VND</strong>
                                     </div>
                                     <div className="d-flex justify-between">
                                         <div>Giá đặt cố định: </div>
-                                        <strong>{priceBoard?.fixedBookingPrice?.toLocaleString('vi-VN')} VND</strong>
+                                        <strong>{priceBoard?.fixedBookingPrice?.toLocaleString("vi-VN")} VND</strong>
                                     </div>
                                     <div className="d-flex justify-between">
                                         <div>Giá đặt linh hoạt:</div>
-                                        <strong>{priceBoard?.flexibleBookingPrice?.toLocaleString('vi-VN')} VND</strong>
+                                        <strong>{priceBoard?.flexibleBookingPrice?.toLocaleString("vi-VN")} VND</strong>
                                     </div>
                                 </div>
                             ) : (

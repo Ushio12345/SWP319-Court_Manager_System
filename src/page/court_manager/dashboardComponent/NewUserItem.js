@@ -33,7 +33,7 @@ const NewUserItem = () => {
     return (
         <div>
             {newUsers.map((user) => (
-                <div key={user.id} className="newUser-body-item my-3">
+                <div key={user.userId} className="newUser-body-item my-3">
                     <div className="newUser-body-right">
                         <div className="newUser-avatar">
                             <img src={user.profileAvatar} alt="User Avatar" style={{ width: 200, height: 50 }} />
@@ -43,8 +43,21 @@ const NewUserItem = () => {
                             <div className="newUser-email">{user.email}</div>
                         </div>
                     </div>
-                    <div className="newUser-role" style={{ backgroundColor: getRoleBackgroundColor(user.role), padding: "5px", borderRadius: "5px" }}>
-                        {user.role}
+                    <div className="newUser-role-container">
+                        {user.roles.map((role, index) => (
+                            <div
+                                key={index}
+                                className="newUser-role text-center"
+                                style={{
+                                    backgroundColor: getRoleBackgroundColor(role.roleName),
+                                    padding: "5px",
+                                    borderRadius: "5px",
+                                    margin: "2px 0",
+                                }}
+                            >
+                                {role.roleName}
+                            </div>
+                        ))}
                     </div>
                 </div>
             ))}
@@ -54,10 +67,12 @@ const NewUserItem = () => {
 
 const getRoleBackgroundColor = (role) => {
     switch (role) {
-        case "Khách":
+        case "customer":
             return "lightgreen";
-        case "Chủ sân":
+        case "manager":
             return "lightcoral";
+        case "admin":
+            return "lightblue";
         default:
             return "lightgray";
     }
