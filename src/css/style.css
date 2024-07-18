@@ -7,7 +7,6 @@
 body {
     background-color: #eeeded !important;
     font-family: "Nyght Serif", sans-serif;
-    width: 80% !important;
 }
 a {
     text-decoration: none !important;
@@ -1041,3 +1040,13 @@ form h1 {
         font-size: 12px;
     }
 }
+/* @media (min-width: 2000px) {
+    .container,
+    .container-lg,
+    .container-md,
+    .container-sm,
+    .container-xl,
+    .container-xxl {
+        max-width: 1700px;
+    }
+} */

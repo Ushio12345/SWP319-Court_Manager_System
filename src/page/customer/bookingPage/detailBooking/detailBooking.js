@@ -142,8 +142,8 @@ const DetailBooking = () => {
                 total: totalPriceUSD,
                 currency: "USD",
                 description: "Payment via PayPal",
-                cancelUrl: "http://localhost:3000/detailBooking",
-                successUrl: "http://localhost:3000/detailBooking",
+                cancelUrl: "https://forbad.online/detailBooking",
+                successUrl: "https://forbad.online/detailBooking",
             });
             setPaymentUrl(response.data);
             window.location.href = response.data;

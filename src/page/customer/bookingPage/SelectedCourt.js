@@ -56,11 +56,6 @@ export default class selectedCourt extends Component {
                                 <span> {court.address}</span>
                             </p>
                         </div>
-                        <div className="rate">
-                            <p>
-                                Đánh giá: {renderStars(court.rate)} {court.rate}/5 <i className="fa-solid fa-star" /> (0 Đánh giá)
-                            </p>
-                        </div>
                     </div>
                     <div className="detail-yard-info row">
                         <div className="yard-left col-md-6">

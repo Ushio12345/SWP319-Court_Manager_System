@@ -11,10 +11,7 @@ export default class Staff extends Component {
             email: "",
             password: "",
             fullName: "",
-            roles: [
-                { roleId: 4, roleName: "staff" },
-                { roleId: 3, roleName: "customer" },
-            ],
+            role: ["staff", "customer"],
             managerId: this.props.managerId,
         },
         selectedStaffId: null,
@@ -31,23 +28,21 @@ export default class Staff extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.managerId !== prevProps.managerId) {
-            this.setState({
+            this.setState((prevState) => ({
                 newStaff: {
-                    ...this.state.newStaff,
+                    ...prevState.newStaff,
                     managerId: this.props.managerId,
                 },
-            });
+            }));
         }
     }
 
     fetchAllStaff = () => {
         axiosInstance
-            .get("/member/users")
+            .get("/member/all-staff")
             .then((res) => {
                 if (res.status === 200) {
-                    const allUsers = res.data;
-                    const staffUsers = allUsers.filter((user) => user.roles.some((role) => role.roleName === "staff"));
-                    this.setState({ staffs: staffUsers });
+                    this.setState({ staffs: res.data });
                 } else {
                     this.setState({ staffs: [] });
                     showAlert("error", "Lỗi !", "Không lấy được dữ liệu", "top-end");
@@ -127,10 +122,7 @@ export default class Staff extends Component {
                         email: "",
                         password: "",
                         fullName: "",
-                        roles: [
-                            { roleId: 4, roleName: "staff" },
-                            { roleId: 3, roleName: "customer" },
-                        ],
+                        role: ["staff", "customer"],
                         managerId: this.props.managerId,
                     },
                 });
@@ -152,9 +144,9 @@ export default class Staff extends Component {
                     .delete(deleteUrl)
                     .then((res) => {
                         if (res.status === 200) {
-                            this.fetchAllStaff();
                             this.fetchStaffWithCourt();
                             showAlert("success", "", "Đã xóa nhân viên thành công", "top-end");
+
                             selectedCourtId ? this.fetchStaffWithCourt(selectedCourtId) : this.fetchAllStaff();
                         } else {
                             showAlert("error", "Lỗi !", "Xóa nhân viên không thành công", "top-end");
@@ -277,6 +269,7 @@ export default class Staff extends Component {
     };
     render() {
         const { newStaff, selectedCourtId, searchInput } = this.state;
+        const { managerId } = this.props;
 
         return (
             <div className="staffManager py-4">

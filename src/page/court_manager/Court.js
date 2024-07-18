@@ -246,7 +246,6 @@ export default class extends Component {
                                         <p>
                                             <strong>Ngày bắt đầu hoạt động:</strong> {this.state.newCourt.beginDate}
                                         </p>
-                                        <div>{this.renderStars(this.state.newCourt.rate)}</div>
                                     </div>
                                 </div>
                             </div>

@@ -25,6 +25,7 @@ export default class CourtManager extends Component {
                 userId: "",
             },
             courts: [],
+
             selectedCourtId: "",
             dropdownVisible: false,
             isOpen: true,
@@ -92,7 +93,7 @@ export default class CourtManager extends Component {
 
     render() {
         const { isLoggedIn, user, courts, selectedCourtId, dropdownVisible, isOpen } = this.state;
-        console.log(user.userId);
+        console.log("userId", user.userId);
         return (
             <div className="court_managerPage">
                 <section className="manager">
@@ -230,7 +231,7 @@ export default class CourtManager extends Component {
                                     <Order selectedCourtId={selectedCourtId} />
                                 </div>
                                 <div className="tab-pane fade" id="dsStaff">
-                                    <Staff selectedCourtId={selectedCourtId} />
+                                    <Staff selectedCourtId={selectedCourtId} managerId={user.userId} />
                                 </div>
                                 <div className="tab-pane fade" id="dsCoSo">
                                     <Court />
