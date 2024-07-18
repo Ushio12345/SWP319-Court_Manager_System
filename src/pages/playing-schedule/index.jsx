@@ -4,11 +4,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import { addDays, format, eachDayOfInterval, parse, differenceInHours } from "date-fns";
 import { sl, vi } from "date-fns/locale";
 import axiosInstance from "../../config/axiosConfig";
-import { showAlert } from "../../utils/alertUtils";
+import { showAlert, showConfirmPayment } from "../../utils/alertUtils";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import "../playing-schedule/index.css";
 import { Button, Modal } from "react-bootstrap";
+import axios from "axios";
 
 // Register the Vietnamese locale with react-datepicker
 registerLocale("vi", vi);
@@ -140,6 +141,7 @@ export default class PlayingSchedule extends Component {
             selectedSlotInfo: null,
             selectedCourtInfo: null,
             selectedFeedbackInfo: null,
+            selectedPaymentInfo: null,
             bookingDetails: null,
             isLoggedIn: false,
             user: {
@@ -190,6 +192,9 @@ export default class PlayingSchedule extends Component {
             .post(`/booking/${status}/slots`, formattedDates)
             .then((response) => {
                 this.setState({ [list]: response.data });
+                if (this.state.waitingCheckInSlots) {
+                    this.checkAndAutoCancelCheckIn();
+                }
             })
             .catch((error) => {
                 console.error("There was an error fetching the slots!", error);
@@ -320,12 +325,13 @@ export default class PlayingSchedule extends Component {
         if (matchedplayingScheduleDto) {
             const court = matchedplayingScheduleDto.court;
             const bookingDetailsFound = matchedplayingScheduleDto.bookingDetails;
+            const payment = matchedplayingScheduleDto.payment;
             const feedback = null;
 
             if (matchedplayingScheduleDto.feedback) {
                 feedback = matchedplayingScheduleDto.feedback;
             }
-            this.setState({ showModal: true, selectedCourtInfo: court, selectedSlotInfo: slot, bookingDetails: bookingDetailsFound, selectedFeedbackInfo: feedback });
+            this.setState({ showModal: true, selectedCourtInfo: court, selectedSlotInfo: slot, bookingDetails: bookingDetailsFound, selectedFeedbackInfo: feedback, selectedPaymentInfo: payment });
         } else {
             console.error('No matching checkInDto found for the given slot');
         }
@@ -352,22 +358,143 @@ export default class PlayingSchedule extends Component {
         window.location.href = "/";
     };
 
-    handleCancelCheckIn = async (detailId) => {
+    convertStringDateTimeToDateTime(dateString, timeString) {
+        // Convert date string from "dd/MM/yyyy" to "yyyy-MM-dd"
+        const [day, month, year] = dateString.split('/').map(Number);
+        const formattedDate = new Date(year, month - 1, day, ...timeString.split(':').map(Number));
+
+        // Format the date to "YYYY-MM-DD HH:mm"
+        const yearFormatted = formattedDate.getFullYear();
+        const monthFormatted = String(formattedDate.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const dayFormatted = String(formattedDate.getDate()).padStart(2, '0');
+        const hoursFormatted = String(formattedDate.getHours()).padStart(2, '0');
+        const minutesFormatted = String(formattedDate.getMinutes()).padStart(2, '0');
+
+        const combinedDateTime = `${yearFormatted}-${monthFormatted}-${dayFormatted} ${hoursFormatted}:${minutesFormatted}`;
+
+        return new Date(combinedDateTime);
+    }
+
+    getExchangeRate = async () => {
+        const API_KEY = "a2ebea95ae9c3ce5ae387b15";
+        const BASE_URL = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`;
+
         try {
-            const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/cancel`);
-            if (confirmResponse.data.message === 'Hủy đơn thành công') {
+            const response = await axios.get(BASE_URL);
+            if (response.status === 200) {
+                const exchangeRates = response.data.conversion_rates;
+                // Lấy tỷ giá VND
+                const exchangeRateVND = exchangeRates.VND;
+                return exchangeRateVND;
+            } else {
+                console.error("Failed to fetch exchange rates:", response.statusText);
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching exchange rates:", error);
+            return null;
+        }
+    };
+
+    handleCancelCheckIn = async (bookingDetails, payment) => {
+        try {
+            const bookingDateTime = this.convertStringDateTimeToDateTime(bookingDetails.date, bookingDetails.yardSchedule.slot.startTime);
+            const currentDateTime = new Date();
+
+            // Calculate the difference in milliseconds
+            const differenceInMillis = bookingDateTime - currentDateTime;
+
+            // Convert milliseconds to hours
+            const hoursDifference = Math.floor(differenceInMillis / (1000 * 60 * 60));
+
+            let confirmResponse = null;
+
+            if (hoursDifference >= 24) {
+                if (payment) {
+                    const exchangeRate = await this.getExchangeRate();
+                    if (!exchangeRate) {
+                        throw new Error("Failed to get exchange rate");
+                    }
+
+                    const saleId = payment.saleId;
+                    const refundAmount = bookingDetails.price / exchangeRate;
+
+                    const result = await showConfirmPayment("Thông báo", "Bạn có chắc muốn hủy đơn này ?", "warning", "Chắc chắn", "Trở lại", "center");
+                    if (result.isConfirmed) {
+                        const refundResponse = await axiosInstance.post(`/paypal/refund/${saleId}/${refundAmount}`);
+                        if (refundResponse.data.message === "Refund successful") {
+                            console.log("Refund successful.");
+                            confirmResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/cancel`);
+                        } else {
+                            throw new Error("Refund failed");
+                        }
+                    }
+                } else {
+                    const result = await showConfirmPayment("Thông báo", "Bạn có chắc muốn hủy đơn này ?", "warning", "Chắc chắn", "Trở lại", "center");
+                    if (result.isConfirmed) {
+                        confirmResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/cancel`);
+                    }
+                }
+            } else {
+                const result = await showConfirmPayment("Lưu ý", `Bạn chỉ cách thời gian check in ${hoursDifference} tiếng (nhỏ hơn 24 tiếng)! Bạn sẽ không được hoàn lại tiền nếu hủy đơn này.`, "warning", "Đồng ý", "Trở lại", "center");
+                if (result.isConfirmed) {
+                    confirmResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/cancel`);
+                }
+            }
+
+            if (confirmResponse && confirmResponse.data.message === 'Hủy đơn thành công') {
                 showAlert('success', 'Thông báo', 'Đã hủy đơn thành công !', 'top-end');
                 this.handleCloseModal();
                 this.fetchStatusSlots('WAITING_FOR_CHECK_IN', 'waitingCheckInSlots');
                 this.fetchStatusSlots('COMPLETED', 'completedSlots');
                 this.fetchStatusSlots('CANCELLED', 'cancelledSlots');
-            } else {
-                showAlert('error', 'Thông báo', 'Hủy đơn không thành công !', 'top-end')
+            } else if (!confirmResponse) {
+                showAlert('error', 'Thông báo', 'Hủy đơn không thành công !', 'top-end');
             }
         } catch (error) {
             console.error('Failed to cancel', error);
+            showAlert('error', 'Thông báo', 'Đã xảy ra lỗi trong quá trình hủy đơn!', 'top-end');
         }
     }
+
+
+    checkAndAutoCancelCheckIn = () => {
+        const currentDate = new Date();
+        // Định dạng ngày hiện tại thành chuỗi YYYY-MM-DD
+        const today = currentDate.toISOString().split('T')[0];
+
+        // Lấy ra giá trị tương ứng với ngày hôm nay
+        const waitingCheckInSlotsForToday = this.state.waitingCheckInSlots[today] || [];
+
+        waitingCheckInSlotsForToday.forEach(checkInDto => {
+
+            const slotStartTime = checkInDto?.bookingDetails?.yardSchedule?.slot?.startTime;
+
+            if (slotStartTime) {
+                const [slotHour, slotMinute] = slotStartTime.split(':').map(Number);
+                const slotStartDateTime = new Date(currentDate);
+                slotStartDateTime.setHours(slotHour, slotMinute, 0, 0); // Cập nhật giờ và phút cho đối tượng Date
+
+                // So sánh thời gian slot với giờ hiện tại
+                if (slotStartDateTime < currentDate) {
+                    this.autoCancelCheckIn(checkInDto?.bookingDetails?.detailId); // Gọi hàm tự động hủy check-in
+                }
+            }
+        });
+    };
+
+    autoCancelCheckIn = async (detailId) => {
+        try {
+            const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/cancel`);
+            if (confirmResponse.data.message === "Hủy đơn thành công") {
+                this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
+                this.fetchStatusSlots("COMPLETED", "completedSlots");
+                this.fetchStatusSlots("CANCELLED", "cancelledSlots");
+            }
+        } catch (error) {
+            console.error("Failed to cancel", error);
+        }
+    };
 
     handleRatingClick = (rating) => {
         this.setState({ rating, isRated: true });
@@ -415,7 +542,6 @@ export default class PlayingSchedule extends Component {
                                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                                         <div className="btn slot-time completed" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã chơi</b></div>
                                         <div className="btn slot-time waiting-check-in" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Chờ check-in</b></div>
-                                        <div className="btn slot-time cancel" style={{ width: '100px', height: '40px', alignContent: 'center' }}><b>Đã hủy</b></div>
                                     </div>
                                     {/* Nút để next sang tuần sau */}
                                     <button className="navigation-button" onClick={this.handleNextWeek}>Tuần sau</button>
@@ -445,21 +571,18 @@ export default class PlayingSchedule extends Component {
                                                                     {daysOfWeek.map((day, dayIndex) => {
                                                                         const isWaitingCheckIn = this.isWaitingCheckInSlot(day, slot.slotId);
                                                                         const isCompleted = this.isCompletedSlot(day, slot.slotId);
-                                                                        const isCancelled = this.isCancelledSlot(day, slot.slotId);
 
                                                                         const status = isWaitingCheckIn ? "waiting-check-in" :
-                                                                            isCompleted ? "completed" :
-                                                                                isCancelled ? "cancel" : null;
+                                                                            isCompleted ? "completed" : null;
 
                                                                         return (
                                                                             <td key={dayIndex} className="slot-times-column">
                                                                                 <div
                                                                                     className={`slot-time ${isWaitingCheckIn ? "waiting-check-in" : ""}
-                                                                                                          ${isCompleted ? "completed" : ""}
-                                                                                                          ${isCancelled ? "cancel" : ""}`}
+                                                                                                          ${isCompleted ? "completed" : ""}`}
                                                                                     onClick={() => this.handleShowModal(status, slot, daysOfWeek[dayIndex])}
                                                                                 >
-                                                                                    {(isWaitingCheckIn || isCompleted || isCancelled) ? (
+                                                                                    {(isWaitingCheckIn || isCompleted) ? (
                                                                                         `${slot.startTime} - ${slot.endTime}`
                                                                                     ) : (
                                                                                         ""
@@ -506,11 +629,11 @@ export default class PlayingSchedule extends Component {
                                     </Modal.Body>
                                     <Modal.Footer>
                                         {this.state.bookingDetails?.status === 'Đang chờ check-in' && (
-                                            <Button variant="danger" onClick={() => this.handleCancelCheckIn(this.state.bookingDetails?.detailId)}>
+                                            <Button variant="danger" style={{ padding: '10px' }} onClick={() => this.handleCancelCheckIn(this.state.bookingDetails, this.state.selectedPaymentInfo)}>
                                                 Hủy đơn
                                             </Button>
                                         )}
-                                        <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
+                                        <Button variant="secondary" style={{ padding: '10px' }} onClick={() => this.setState({ showModal: false })}>
                                             Đóng
                                         </Button>
                                     </Modal.Footer>

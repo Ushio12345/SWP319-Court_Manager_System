@@ -349,8 +349,8 @@ export default class Order extends Component {
                                                                 value={this.state.priceOrder}
                                                                 onChange={(e) => this.setState({ priceOrder: e.target.value })}
                                                             >
-                                                                <option value="asc">Giá ASC (VND)</option>
-                                                                <option value="desc">Giá DESC (VND)</option>
+                                                                <option value="asc">Giá tăng dần (VND)</option>
+                                                                <option value="desc">Giá giảm dần (VND)</option>
                                                             </select>
                                                         </th>
                                                         <th className="text-start">
@@ -359,8 +359,8 @@ export default class Order extends Component {
                                                                 value={this.state.sortOrder}
                                                                 onChange={(e) => this.setState({ sortOrder: e.target.value })}
                                                             >
-                                                                <option value="asc">Ngày đặt ASC</option>
-                                                                <option value="desc">Ngày đặt DESC</option>
+                                                                <option value="asc">Ngày đặt tăng dần</option>
+                                                                <option value="desc">Ngày đặt giảm dần</option>
                                                             </select>
                                                         </th>
                                                         <th className="text-center">Thao tác</th>

@@ -94,7 +94,7 @@ const Register = () => {
         }
 
         // If validations pass, proceed with login
-        fetch("http://167.99.67.127:8080/auth/signup", {
+        fetch("https://forbad.online:8443/auth/signup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -127,7 +127,7 @@ const Register = () => {
     const handleGoogleLogin = (event) => {
         event.preventDefault();
 
-        fetch("http://167.99.67.127:8080/auth/google")
+        fetch("https://forbad.online:8443/auth/google")
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -153,7 +153,7 @@ const Register = () => {
 
         const sendCodeToBackend = async () => {
             try {
-                const response = await fetch("http://167.99.67.127:8080/auth/google/callback", {
+                const response = await fetch("https://forbad.online:8443/auth/google/callback", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
