@@ -135,7 +135,9 @@
 .manager .login {
     position: relative;
 }
-
+.manager .dash-num-item-left h4 {
+    font-size: 35px;
+}
 .user-infor-dropdown li a {
     padding: 10px 0 10px 10px;
 }

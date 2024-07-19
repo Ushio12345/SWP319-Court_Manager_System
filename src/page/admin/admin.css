@@ -8,6 +8,9 @@
 .admin {
     font-size: 13px;
 }
+.admin h4 {
+    font-size: 30px;
+}
 .admin .nav-item.active .nav-link {
     background-color: #f3f4f6;
     font-weight: bold;

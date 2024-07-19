@@ -223,6 +223,10 @@ label.star:before {
     font-weight: 400;
     height: 420px !important;
 }
+.yard .card-yard h6 {
+    font-size: 17px;
+}
+
 .yard .card-yard:hover {
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
         rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
@@ -242,11 +246,11 @@ label.star:before {
 }
 
 .yard .card-yard-content p {
-    font-size: 13px;
+    font-size: 17px;
     text-align: left;
 }
 .yard .card-yard-content b {
-    font-size: 14px;
+    font-size: 17px;
 }
 .yard .card-yard-content a {
     font-size: 17px;
@@ -1028,7 +1032,7 @@ form h1 {
         font-size: 12px;
     }
     .yard .card-yard-content p {
-        font-size: 11px;
+        font-size: 15px;
     }
     .yard h1 {
         font-size: 14px;
