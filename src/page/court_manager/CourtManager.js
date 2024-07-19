@@ -113,7 +113,7 @@ export default class CourtManager extends Component {
                             </label> */}
                         </div>
                         <div className="login" onClick={this.toggleDropdown}>
-                            <img src={user.avatar} alt="User Avatar" style={{ width: 50, borderRadius: "50%" }} />
+                            <img src={user.avatar} alt="User Avatar" style={{ width: 50, borderRadius: "50%", marginRight: 10 }} />
                             <p className="user-name">{user.username}</p>
                             {dropdownVisible && (
                                 <div className="dropdownItem">

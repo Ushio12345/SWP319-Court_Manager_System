@@ -68,16 +68,16 @@ export default function UserDropdown({ user, handleLogout, isLoggedIn }) {
                                     Về trang chủ
                                 </Link>
                             </li>
-                            <li className="hover:bg-gray-100">
-                                <a
-                                    href=""
+                            <li className="hover:bg-gray-100 my-2">
+                                <Link
+                                    to=""
                                     className="flex align-items-center justify-center rounded py-2 text-sm"
                                     role="menuitem"
                                     style={{ backgroundColor: "#002e86", color: "white" }}
                                     onClick={handleLogout}
                                 >
                                     Đăng xuất
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </div>

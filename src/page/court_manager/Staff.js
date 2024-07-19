@@ -144,10 +144,10 @@ export default class Staff extends Component {
                     .delete(deleteUrl)
                     .then((res) => {
                         if (res.status === 200) {
-                            this.fetchStaffWithCourt();
                             showAlert("success", "", "Đã xóa nhân viên thành công", "top-end");
 
                             selectedCourtId ? this.fetchStaffWithCourt(selectedCourtId) : this.fetchAllStaff();
+                            this.fetchStaffWithCourt();
                         } else {
                             showAlert("error", "Lỗi !", "Xóa nhân viên không thành công", "top-end");
                             console.error("Response không thành công:", res.status);
@@ -166,10 +166,10 @@ export default class Staff extends Component {
         axiosInstance
             .post(`/court/${courtId}/add-staff/${selectedStaffId}`)
             .then((res) => {
+                this.fetchStaffWithCourt(courtId);
                 showAlert("success", "", "Cập nhật sân làm việc cho nhân viên này thành công", "top-end");
                 const updatedStaffs = this.state.staffs.map((staff) => {
                     if (staff.userId === selectedStaffId) {
-                        this.fetchStaffWithCourt();
                         return { ...staff, courtId: courtId };
                     }
                     return staff;

@@ -34,7 +34,7 @@ const CardYard = ({ court }) => {
             </div>
             <div className="card-yard-content" style={{ height: "37%" }}>
                 <h6 style={{ fontSize: "16px" }}>
-                    <b>{court.courtName}</b>
+                    <h6>{court.courtName}</h6>
                 </h6>
                 <p>
                     <b>Địa chỉ:</b> {court.address}
