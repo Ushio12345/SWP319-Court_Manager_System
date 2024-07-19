@@ -12,20 +12,20 @@ import { FaHouseUser } from "react-icons/fa";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export default function Dashboard() {
-    const data = {
-        labels: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"],
-        datasets: [
-            {
-                label: "Lượt truy cập",
-                data: [12, 19, 3, 5, 2, 3, 7],
-                borderColor: "rgba(75, 192, 192, 1)",
-                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                borderWidth: 2,
-                pointBackgroundColor: "rgba(75, 192, 192, 1)",
-                pointBorderColor: "#fff",
-            },
-        ],
-    };
+    // const data = {
+    //     labels: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"],
+    //     datasets: [
+    //         {
+    //             label: "Lượt truy cập",
+    //             data: [12, 19, 3, 5, 2, 3, 7],
+    //             borderColor: "rgba(75, 192, 192, 1)",
+    //             backgroundColor: "rgba(75, 192, 192, 0.2)",
+    //             borderWidth: 2,
+    //             pointBackgroundColor: "rgba(75, 192, 192, 1)",
+    //             pointBorderColor: "#fff",
+    //         },
+    //     ],
+    // };
 
     const [court, setCourts] = useState([]);
     const [numCourt, setNumCourt] = useState([0]);
@@ -135,9 +135,9 @@ export default function Dashboard() {
                 </div>
             </div>
             {/* Biểu đồ lượt truy cập */}
-            <div className="chart-container my-4 bg-white w-full " style={{ height: 400, width: "100%" }}>
+            {/* <div className="chart-container my-4 bg-white w-full " style={{ height: 400, width: "100%" }}>
                 <Line data={data} options={options} />
-            </div>
+            </div> */}
         </div>
     );
 }

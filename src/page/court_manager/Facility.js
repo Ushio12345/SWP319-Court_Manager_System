@@ -24,12 +24,7 @@ const Facility = ({ globalCourtId }) => {
                 setfacilitiesOfCourt(response.data);
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                } else {
-                    showAlert("error", "Lỗi !", "Lấy dữ liệu không thành công", "top-end");
-                }
-                handleRequestError(error);
+                throw error;
             });
     };
 
@@ -40,12 +35,7 @@ const Facility = ({ globalCourtId }) => {
                 setFacilities(response.data);
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                } else {
-                    showAlert("error", "Lỗi !", "Lấy dữ liệu không thành công", "top-end");
-                }
-                handleRequestError(error);
+                throw error;
             });
     };
 
@@ -56,12 +46,7 @@ const Facility = ({ globalCourtId }) => {
                 setFacilities(response.data);
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                } else {
-                    showAlert("error", "Lỗi !", "Lấy dữ liệu không thành công", "top-end");
-                }
-                handleRequestError(error);
+                throw error;
             });
     };
 
@@ -72,22 +57,8 @@ const Facility = ({ globalCourtId }) => {
                 setFacilities(response.data);
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                } else {
-                    showAlert("error", "Lỗi !", "Lấy dữ liệu không thành công", "top-end");
-                }
-                handleRequestError(error);
+                throw error;
             });
-    };
-
-    const handleRequestError = (error) => {
-        if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-            handleTokenError();
-            showAlert("error", "Lỗi !", "Token hết hạn", "top-end");
-        } else {
-            console.error("Lỗi từ server:", error.response?.data);
-        }
     };
 
     return (

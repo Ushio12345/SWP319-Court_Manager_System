@@ -66,7 +66,7 @@ const CourtList = () => {
     });
 
     const settings = {
-        dots: true,
+        // dots: true,
         infinite: true,
         autoplay: true,
         autoplaySpeed: 3000,
@@ -81,8 +81,8 @@ const CourtList = () => {
                     slidesToShow: 2,
                     slidesToScroll: 3,
                     infinite: true,
-                    dots: true,
-                    arrows: true,
+                    // dots: true,
+                    // arrows: true,
                 },
             },
             {
@@ -90,8 +90,8 @@ const CourtList = () => {
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 2,
-                    dots: true,
-                    arrows: true,
+                    // dots: true,
+                    // arrows: true,
                 },
             },
             {
@@ -99,8 +99,8 @@ const CourtList = () => {
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
-                    dots: true,
-                    arrows: true,
+                    // dots: true,
+                    // arrows: true,
                 },
             },
             {
@@ -108,8 +108,8 @@ const CourtList = () => {
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
-                    dots: true,
-                    arrows: true,
+                    // dots: true,
+                    // arrows: true,
                 },
             },
         ],
@@ -131,8 +131,6 @@ const CourtList = () => {
                     slidesToScroll: 3,
                     rows: 3,
                     slidesPerRow: 1,
-                    infinite: true,
-                    dots: true,
                 },
             },
             {

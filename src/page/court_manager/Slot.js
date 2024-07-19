@@ -34,10 +34,7 @@ export default class Slot extends Component {
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                }
-                this.handleRequestError(error);
+                throw error;
             });
     };
 
@@ -75,13 +72,10 @@ export default class Slot extends Component {
             })
             .catch((error) => {
                 if (error.response && error.response.status === 401) {
-                    if (error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                        handleTokenError();
-                    } else if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
+                    if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
 showAlert("error", "Lỗi!", "Slot với tên này đã có trong danh sách.", "top-end");
                     }
                 }
-                this.handleRequestError(error);
             });
     };
 
@@ -108,9 +102,7 @@ showAlert("error", "Lỗi!", "Slot với tên này đã có trong danh sách.", 
             })
             .catch((error) => {
                 if (error.response && error.response.status === 401) {
-                    if (error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                        handleTokenError();
-                    } else if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
+                    if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
                         showAlert("error", "Lỗi!", "Slot với tên này đã có trong danh sách.", "top-end");
                     }
                 }
@@ -132,16 +124,7 @@ showAlert("error", "Lỗi!", "Slot với tên này đã có trong danh sách.", 
                         }
                     })
                     .catch((error) => {
-                        if (
-                            error.response &&
-                            error.response.status === 401 &&
-                            error.response.data.message === "Token không hợp lệ hoặc đã hết hạn."
-                        ) {
-                            handleTokenError();
-                        } else {
-                            showAlert("error", "", "Xóa slot không thành công", "top-end");
-                        }
-                        console.error("Response không thành công:", error);
+                        throw error;
                     });
             }
         });
