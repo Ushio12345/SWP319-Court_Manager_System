@@ -107,6 +107,10 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                                                         <Link to="/staff" onClick={hideDropdown}>
                                                             <i className="fa-solid fa-shop"></i> Quản lý check-in
                                                         </Link>
+                                                    ) : isLoggedIn && user.roles.includes("admin") ? (
+                                                        <Link to="/admin" onClick={hideDropdown}>
+                                                            <i className="fa-solid fa-shop"></i> Trang Admin
+                                                        </Link>
                                                     ) : (
                                                         <Link
                                                             onClick={() => {
@@ -176,8 +180,7 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
 
                     <h5>4. Chính sách bảo mật</h5>
                     <p>
-                        Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn và chỉ sử dụng nó cho các mục đích liên quan đến dịch vụ của chúng tôi. Bạn
-                        có thể tham khảo thêm về chính sách bảo mật của chúng tôi tại đây (liên kết đến chính sách bảo mật).
+                        Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn và chỉ sử dụng nó cho các mục đích liên quan đến dịch vụ của chúng tôi. 
                     </p>
 
                     <h5>5. Thay đổi điều khoản và điều kiện</h5>
@@ -199,10 +202,10 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseTermsModal}>
+                    <Button variant="secondary" onClick={handleCloseTermsModal} className="p-2">
                         Đóng
                     </Button>
-                    <Button variant="primary" onClick={handleAcceptTerms}>
+                    <Button variant="primary" onClick={handleAcceptTerms} className="p-2">
                         Chấp nhận và tiếp tục
                     </Button>
                 </Modal.Footer>

@@ -5,7 +5,7 @@
 }
 
 .fromOrder {
-    padding: 300px 0 40px 0;
+    padding: 120px 0 40px 0;
 }
 .detailOrder .button-function button {
 }
@@ -31,7 +31,10 @@
 .fromOrder .infoOfBooking {
     border-top: 5px dotted rgba(128, 128, 128, 0.263);
 }
-
+.orderDetailPage .pagination button.active {
+    background-color: #002e86 !important;
+    color: black;
+}
 @media (max-width: 768px) {
     .fromOrder .info-customer {
         margin: 20px 0 0 0;

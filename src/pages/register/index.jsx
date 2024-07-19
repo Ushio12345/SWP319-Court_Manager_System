@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import HeaderLoginForm from "../../components/header-login-form";
 import Footer from "../../components/footer";
 import "./index.css";
@@ -193,7 +193,7 @@ const Register = () => {
 
     return (
         <div className="form-register">
-            <HeaderLoginForm />
+            <HeaderLoginForm title="Đăng kí tài khoản" />
             <div className="login-form" id="Login-form">
                 <div className="login-left">
                     <img src="asserts/img/logo-cau-long-dep-01.png" alt="Logo" />
@@ -275,7 +275,7 @@ const Register = () => {
                         </div>
                         <div className="register-link">
                             <p>
-                                Bạn đã có tài khoản? <a href="/login">Đăng nhập</a>
+                                Bạn đã có tài khoản? <Link to="/login">Đăng nhập</Link>
                             </p>
                         </div>
                     </form>

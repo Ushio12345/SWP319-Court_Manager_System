@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { Link } from "react-router-dom";
 export default function UserDropdown({ user, handleLogout, isLoggedIn }) {
     const [dropdownVisible, setDropdownVisible] = useState(false);
 
@@ -60,13 +60,13 @@ export default function UserDropdown({ user, handleLogout, isLoggedIn }) {
                                 </li>
                             )}
                             <li className="hover:bg-gray-100">
-                                <a
-                                    href="#"
+                                <Link
+                                    to="/"
                                     className="block py-2 text-sm text-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                                     role="menuitem"
                                 >
-                                    Xóa tài khoản
-                                </a>
+                                    Về trang chủ
+                                </Link>
                             </li>
                             <li className="hover:bg-gray-100">
                                 <a

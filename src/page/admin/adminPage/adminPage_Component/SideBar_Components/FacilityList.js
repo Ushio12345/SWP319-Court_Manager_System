@@ -57,7 +57,7 @@ export default function FacilityList() {
             <div className="mb-3 w-75">
                 <input
                     type="text"
-                    className="form-control"
+                    className="form-control w-50"
                     aria-describedby="helpId"
                     placeholder="Nhập tên sân cần tìm"
                     value={searchTerm}
@@ -77,7 +77,7 @@ export default function FacilityList() {
                                 Địa chỉ
                             </th>
                             <th>Giờ hoạt động</th>
-                            <th>Đánh giá</th>
+                            {/* <th>Đánh giá</th> */}
                             <th>Số sân</th>
                         </tr>
                     </thead>
@@ -94,7 +94,7 @@ export default function FacilityList() {
                                 <td>
                                     {facility.openTime} - {facility.closeTime}
                                 </td>
-                                <td className="text-center">{facility.rate}</td>
+                                {/* <td className="text-center">{facility.rate}</td> */}
                                 <td className="text-center">{facility.yards ? facility.yards.length : 0}</td>
                             </tr>
                         ))}

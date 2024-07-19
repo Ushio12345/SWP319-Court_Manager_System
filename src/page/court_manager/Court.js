@@ -246,7 +246,7 @@ export default class extends Component {
                                         <p>
                                             <strong>Ngày bắt đầu hoạt động:</strong> {this.state.newCourt.beginDate}
                                         </p>
-                                        <div>{this.renderStars(this.state.newCourt.rate)}</div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -396,6 +396,7 @@ export default class extends Component {
                                 <div className="form-group">
                                     <label htmlFor="openTime">Giờ mở cửa</label>
                                     <input
+                                        type="time"
                                         id="openTime"
                                         name="openTime"
                                         className="form-control"
@@ -408,6 +409,7 @@ export default class extends Component {
                                 <div className="form-group">
                                     <label htmlFor="closeTime">Giờ đóng cửa</label>
                                     <input
+                                        type="time"
                                         id="closeTime"
                                         name="closeTime"
                                         className="form-control"

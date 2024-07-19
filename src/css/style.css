@@ -7,6 +7,7 @@
 body {
     background-color: #eeeded !important;
     font-family: "Nyght Serif", sans-serif;
+    width: 80% !important;
 }
 a {
     text-decoration: none !important;
@@ -1038,5 +1039,11 @@ form h1 {
 @media (max-width: 420px) {
     .yard h1 {
         font-size: 12px;
+    }
+}
+
+@media (min-width: 1536px) {
+    .container {
+        max-width: 80% !important;
     }
 }

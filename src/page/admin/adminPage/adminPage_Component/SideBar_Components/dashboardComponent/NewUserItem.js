@@ -4,12 +4,14 @@ import axiosInstance from "../../../../../../config/axiosConfig";
 export default function NewUserItem() {
     const [users, setUsers] = useState([]);
 
-    const getRoleBackgroundColor = (role) => {
-        switch (role) {
-            case "Khách":
+    const getRoleBackgroundColor = (roleName) => {
+        switch (roleName) {
+            case "customer":
                 return "lightgreen";
-            case "Chủ sân":
+            case "manager":
                 return "lightcoral";
+            case "admin":
+                return "lightblue";
             default:
                 return "lightgray";
         }
@@ -36,7 +38,7 @@ export default function NewUserItem() {
     }, []);
 
     return (
-        <div className="">
+        <div>
             {users.slice(-5).map((user) => (
                 <div
                     key={user.userId}
@@ -56,17 +58,20 @@ export default function NewUserItem() {
                             </div>
                         </div>
                     </div>
-                    <div
-                        className="newUser-role"
-                        style={{
-                            backgroundColor: getRoleBackgroundColor(user.role),
-                            padding: "5px 10px",
-                            borderRadius: "5px",
-                            textAlign: "center",
-                            marginTop: "10px",
-                        }}
-                    >
-                        {user.role}
+                    <div className="newUser-role" style={{ display: "flex", gap: "5px", marginTop: "10px" }}>
+                        {user.roles.map((role) => (
+                            <div
+                                key={role.roleId}
+                                style={{
+                                    backgroundColor: getRoleBackgroundColor(role.roleName),
+                                    padding: "5px 10px",
+                                    borderRadius: "5px",
+                                    textAlign: "center",
+                                }}
+                            >
+                                {role.roleName}
+                            </div>
+                        ))}
                     </div>
                 </div>
             ))}
