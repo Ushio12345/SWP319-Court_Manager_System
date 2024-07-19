@@ -17,7 +17,7 @@ const NewOrder = ({ setOrderCount, setTotalRevenue }) => {
                 if (res.status === 200) {
                     const ordersData = res.data;
                     const sortedOrders = sortOrdersByDate(ordersData);
-                    calculateMonthlyRevenue(sortedOrders);
+                    priceOrderByMonth(sortedOrders);
                     const latestOrders = getLatestOrders(sortedOrders);
                     setOrders(latestOrders);
                 } else {
@@ -44,7 +44,7 @@ const NewOrder = ({ setOrderCount, setTotalRevenue }) => {
         return sortedOrders.slice(0, 5);
     };
 
-    const calculateMonthlyRevenue = (orders) => {
+    const priceOrderByMonth = (orders) => {
         const currentMonth = new Date().getMonth() + 1;
         const currentYear = new Date().getFullYear();
         let totalRevenue = 0;

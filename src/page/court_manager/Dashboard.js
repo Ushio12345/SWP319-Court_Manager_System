@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./manager.css";
-import NewUserItem from "./dashboardComponent/NewUserItem";
+import axiosInstance from "../../config/axiosConfig";
 import HotTime from "./dashboardComponent/HotTime";
 import CourtItem from "./dashboardComponent/CourtItem";
 import NewOrder from "./dashboardComponent/NewOrder";
-import axiosInstance from "../../config/axiosConfig";
+
 import { handleTokenError } from "../../utils/tokenErrorHandle";
-import { showAlert, showConfirmAlert } from "../../utils/alertUtils";
 
 export default function Dashboard() {
     const [courts, setCourts] = useState([]);
@@ -74,11 +73,11 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-rows-4 sm:grid-rows-3 grid-flow-col gap-4 my-4">
-                <div className="newUser newCus md:row-span-4 sm:col-span-4">
+            <div className="grid  grid-flow-col gap-4 my-4">
+                {/* <div className="newUser newCus md:row-span-4 sm:col-span-4">
                     <div className="newUser-title">Danh sách khách hàng mới</div>
                     <NewUserItem />
-                </div>
+                </div> */}
 
                 <div className="hotTime md:col-span-2 sm:col-span-4 sm:row-span-1 md:row-span-2 bg-white ">
                     <HotTime />
