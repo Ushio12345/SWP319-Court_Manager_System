@@ -50,9 +50,7 @@ export default class Staff extends Component {
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                }
+                throw error;
             });
     };
 
@@ -69,9 +67,7 @@ export default class Staff extends Component {
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                }
+                throw error;
             });
     };
 
@@ -92,12 +88,9 @@ export default class Staff extends Component {
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                } else {
-                    this.setState({ staffs: [] });
-                    // showAlert("info", "Lỗi !", "Danh sách trống", "top-end");
-                }
+                this.setState({ staffs: [] });
+                // showAlert("info", "Lỗi !", "Danh sách trống", "top-end");
+                throw error;
             });
     };
 
@@ -126,6 +119,7 @@ export default class Staff extends Component {
                         managerId: this.props.managerId,
                     },
                 });
+                this.fetchAllStaff();
                 showAlert("success", "", "Tài khoản nhân viên được thêm thành công", "top-end");
             })
             .catch((error) => {
@@ -168,6 +162,7 @@ export default class Staff extends Component {
             .then((res) => {
                 this.fetchStaffWithCourt(courtId);
                 showAlert("success", "", "Cập nhật sân làm việc cho nhân viên này thành công", "top-end");
+                this.fetchAllStaff();
                 const updatedStaffs = this.state.staffs.map((staff) => {
                     if (staff.userId === selectedStaffId) {
                         return { ...staff, courtId: courtId };
@@ -175,9 +170,10 @@ export default class Staff extends Component {
                     return staff;
                 });
                 this.setState({ staffs: updatedStaffs, selectedStaffId: null });
+                this.fetchAllStaff();
             })
             .catch((error) => {
-                showAlert("error", "", "Nhân viên đã tồn tại", "top-end");
+                showAlert("error", "", "Nhân viên này đã có trong cơ sở", "top-end");
             });
     };
 

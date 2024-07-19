@@ -31,9 +31,18 @@ export default class CourtItem extends Component {
             <div>
                 <div className="">
                     {this.state.courts.map((court) => (
-                        <div className="d-flex m-2" key={court.courtId} style={{ alignItems: "center", justifyContent: "space-between" }}>
+                        <div
+                            className="d-flex my-3"
+                            key={court.courtId}
+                            style={{
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+                                padding: 10,
+                            }}
+                        >
                             <div className="imgCourt w-12">
-                                <img src="court.imageUrl"></img>
+                                <img src={court.imageUrl}></img>
                             </div>
                             <div className="courtName">{court.courtName}</div>
                         </div>

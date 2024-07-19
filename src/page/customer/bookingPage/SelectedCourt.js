@@ -29,19 +29,6 @@ export default class selectedCourt extends Component {
             return <div>No court information available</div>;
         }
 
-        const renderStars = (rate) => {
-            const totalStars = 5;
-            const stars = [];
-            for (let i = 1; i <= totalStars; i++) {
-                if (i <= rate) {
-                    stars.push(<span key={i} className="fa fa-star checked" style={{ color: "#ffc107" }}></span>);
-                } else {
-                    stars.push(<span key={i} className="fa fa-star" style={{ color: "#000000" }}></span>);
-                }
-            }
-            return stars;
-        };
-
         return (
             <div>
                 <section className="detail-yard">

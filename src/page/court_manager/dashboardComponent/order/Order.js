@@ -341,83 +341,90 @@ export default class Order extends Component {
                                                                 <option value="Lịch đơn">Lịch đơn</option>
                                                                 <option value="Lịch cố định">Lịch cố định</option>
                                                                 <option value="Lịch linh hoạt">Lịch linh hoạt</option>
-                                                        </select>
-                                                    </th>
-                                                    <th className="text-start">
-                                                        <select className="form-control"
-                                                        value={this.state.priceOrder}
-                                                        onChange={(e) => this.setState({priceOrder: e.target.value})}>
-                                                            <option value="asc">Giá từ nhỏ tới lớn (VND)</option>
-                                                            <option value="desc">Giá từ lớn tới nhỏ (VND)</option>
-                                                        </select>
-                                                    </th>
-                                                    <th className="text-start">
-                                                        <select className="form-control"
-                                                        value={this.state.sortOrder}
-                                                        onChange={(e) => this.setState({sortOrder : e.target.value})}>
-                                                            <option value="asc">Ngày đặt cũ nhất</option>
-                                                            <option value="desc">Ngày đặt mới nhất</option>
-
-                                                        </select>
-                                                    </th>
-                                                    <th className="text-center">Thao tác</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {currentBookingPage
-                                                .sort((a, b) => {
-                                                    if(sortOrder === 'asc'){
-                                                        return new Date(a.bookingDate) - new Date(b.bookingDate)}
-                                                    else{
-                                                        return new Date(b.bookingDate) - new Date(a.bookingDate)}
-                                                    }
-                                                )
-                                                .sort((a,b) => {
-                                                    if(priceOrder === 'asc'){
-                                                        return  a.totalPrice - b.totalPrice;
-                                                    }
-                                                    else{
-                                                        return b.totalPrice - a.totalPrice;
-                                                    }
-                                                })
-                                                .map((booking, index) => (
-                                                    <tr key={booking.bookingId}>
-                                                        <td className="text-start">{index + 1}</td>
-                                                        <td className="text-start">{booking.bookingId}</td>
-                                                        <td className="text-start">
-                                                            <p>{booking.customer.fullName}</p>
-                                                            <p className="text-xs text-gray-600 dark:text-gray-400">{booking.customer.email}</p></td>
-                                                        <td className="text-start">{booking.bookingType}</td>
-                                                        <td className="text-start">{booking.totalPrice.toLocaleString('vi-VN')}</td>
-                                                        <td className="text-start">{booking.bookingDate}</td>
-                                                        <td className="d-flex btn-action">                                                           
-                                                            <button
-                                                                className="btn btn-info mr-2 p-2"
-                                                                onClick={() => this.handleShowModal(booking)}
+                                                            </select>
+                                                        </th>
+                                                        <th className="text-start">
+                                                            <select
+                                                                className="form-control"
+                                                                value={this.state.priceOrder}
+                                                                onChange={(e) => this.setState({ priceOrder: e.target.value })}
                                                             >
-                                                                Chi tiết
-                                                            </button>
-                                                            {booking.statusEnum === "Đang chờ xử lý" && (
-                                                                <>
-                                                                    <button
-                                                                        className="btn btn-success mr-2 p-2"
-                                                                        onClick={() => this.handleConfirmBooking(booking.bookingId)}
-                                                                    >
-                                                                        Xác nhận
-                                                                    </button>
-                                                                    <button className="btn btn-danger p-2"
-                                                                        onClick={() => this.handleCancelBooking(booking)}>
-                                                                        Hủy
-                                                                    </button>
-                                                                </>
-                                                            )}
-                                                        </td>
+                                                                <option value="asc">Giá tăng dần (VND)</option>
+                                                                <option value="desc">Giá giảm dần (VND)</option>
+                                                            </select>
+                                                        </th>
+                                                        <th className="text-start">
+                                                            <select
+                                                                className="form-control"
+                                                                value={this.state.sortOrder}
+                                                                onChange={(e) => this.setState({ sortOrder: e.target.value })}
+                                                            >
+                                                                <option value="asc">Ngày đặt tăng dần</option>
+                                                                <option value="desc">Ngày đặt giảm dần</option>
+                                                            </select>
+                                                        </th>
+                                                        <th className="text-center">Thao tác</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                        {this.renderPagination()}
-                                    </div>
+                                                </thead>
+                                                <tbody>
+                                                    {currentBookingPage
+                                                        .sort((a, b) => {
+                                                            if (sortOrder === "asc") {
+                                                                return new Date(a.bookingDate) - new Date(b.bookingDate);
+                                                            } else {
+                                                                return new Date(b.bookingDate) - new Date(a.bookingDate);
+                                                            }
+                                                        })
+                                                        .sort((a, b) => {
+                                                            if (priceOrder === "asc") {
+                                                                return a.totalPrice - b.totalPrice;
+                                                            } else {
+                                                                return b.totalPrice - a.totalPrice;
+                                                            }
+                                                        })
+                                                        .map((booking, index) => (
+                                                            <tr key={booking.bookingId}>
+                                                                <td className="text-start">{index + 1}</td>
+                                                                <td className="text-start">{booking.bookingId}</td>
+                                                                <td className="text-start">
+                                                                    <p>{booking.customer.fullName}</p>
+                                                                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                                                                        {booking.customer.email}
+                                                                    </p>
+                                                                </td>
+                                                                <td className="text-start">{booking.bookingType}</td>
+                                                                <td className="text-start">{booking.totalPrice.toLocaleString("vi-VN")}</td>
+                                                                <td className="text-start">{booking.bookingDate}</td>
+                                                                <td className="d-flex btn-action">
+                                                                    <button
+                                                                        className="btn btn-info mr-2 p-2"
+                                                                        onClick={() => this.handleShowModal(booking)}
+                                                                    >
+                                                                        <i class="fa-solid fa-circle-info"></i>
+                                                                    </button>
+                                                                    {booking.statusEnum === "Đang chờ xử lý" && (
+                                                                        <>
+                                                                            <button
+                                                                                className="btn btn-success mr-2 p-2"
+                                                                                onClick={() => this.handleConfirmBooking(booking.bookingId)}
+                                                                            >
+                                                                                <i class="fa-solid fa-check-to-slot"></i>
+                                                                            </button>
+                                                                            <button
+                                                                                className="btn btn-danger p-2"
+                                                                                onClick={() => this.handleCancelBooking(booking)}
+                                                                            >
+                                                                                <i class="fa-solid fa-xmark"></i>
+                                                                            </button>
+                                                                        </>
+                                                                    )}
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                </tbody>
+                                            </table>
+                                            {this.renderPagination()}
+                                        </div>
                                     ) : (
                                         <div className="no-bookings text-center">
                                             <FontAwesomeIcon icon={faInbox} size="3x" />
@@ -525,7 +532,7 @@ export default class Order extends Component {
                                 )}
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
+                                <Button variant="secondary" style={{padding: '10px'}} onClick={() => this.setState({ showModal: false })}>
                                     Đóng
                                 </Button>
                             </Modal.Footer>

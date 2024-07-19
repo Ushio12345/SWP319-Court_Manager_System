@@ -9,19 +9,6 @@ const CardYard = ({ court }) => {
         navigate("/bookingPage", { state: { court } });
     };
 
-    // const renderStars = (rate) => {
-    //     const totalStars = 5; // Tổng số ngôi sao
-    //     const stars = [];
-    //     for (let i = 1; i <= totalStars; i++) {
-    //         if (i <= rate) {
-    //             stars.push(<span key={i} className="fa fa-star checked" style={{ color: "#ffc107" }}></span>);
-    //         } else {
-    //             stars.push(<span key={i} className="fa fa-star" style={{ color: "#000000" }}></span>);
-    //         }
-    //     }
-    //     return stars;
-    // };
-
     // Kiểm tra xem court có tồn tại và có thuộc tính imageUrl không
     if (!court || !court.imageUrl) {
         return null; // Trả về null nếu không có dữ liệu hợp lệ
@@ -45,9 +32,6 @@ const CardYard = ({ court }) => {
                 <p>
                     <b>Giờ mở cửa:</b> {court.openTime} - {court.closeTime}
                 </p>
-                {/* <p className="" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <b>Đánh giá:</b> <div className="rate-start">{renderStars(court.rate)}</div>
-                </p> */}
             </div>
             <div>
                 {" "}

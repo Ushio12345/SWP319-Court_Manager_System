@@ -131,9 +131,6 @@ export default function Booking() {
                     </div>
                 </div>
             </section>
-            <section className="feedback container w-50">
-                <Feedback />
-            </section>
             <section className="newYardinBooking">
                 <div className="container">
                     <h1 className="mt-5" style={{ fontSize: "40px" }}>

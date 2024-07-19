@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { addDays, format, eachDayOfInterval, parse, differenceInHours } from "date-fns";
+import { addDays, format, eachDayOfInterval, parse, differenceInHours, isEqual } from "date-fns";
 import { vi } from "date-fns/locale";
 import axiosInstance from "../../../../config/axiosConfig";
 import NapGio from "./NapGio";
-import { showConfirmPayment } from "../../../../utils/alertUtils";
+import { alert, showAlert, showConfirmPayment } from "../../../../utils/alertUtils";
 import "./slot.css";
 import PriceBpard from "./PriceBpard";
 import HuyGio from "./HuyGio";
@@ -39,6 +39,7 @@ export default class Slot extends Component {
             availableHours: "",
             priceBoard: [],
             activeTab: "dangky",
+            pendingAndWaitingBookingDetailsList: []
         };
     }
 
@@ -54,13 +55,13 @@ export default class Slot extends Component {
 
         this.checkUserLoginStatus();
         this.fetchPriceList();
-        this.fetchFlexibleBookings();
     }
 
     checkUserLoginStatus() {
         const user = JSON.parse(localStorage.getItem("user"));
         if (user) {
             this.setState({ isLoggedIn: true, user: user });
+            this.fetchPendingAndWaitingBookingDetails();
         }
     }
 
@@ -71,6 +72,11 @@ export default class Slot extends Component {
 
         if (prevState.selectedYard !== this.state.selectedYard) {
             this.fetchSlots();
+            this.fetchStatusSlots("PENDING", "pendingSlots");
+            this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
+        }
+
+        if (prevState.daysOfWeek !== this.state.daysOfWeek) {
             this.fetchStatusSlots("PENDING", "pendingSlots");
             this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
         }
@@ -114,6 +120,17 @@ export default class Slot extends Component {
                 console.error("There was an error fetching the booked slots!", error);
             });
     };
+
+    fetchPendingAndWaitingBookingDetails =() => {
+        axiosInstance
+            .get(`/booking-details`)
+            .then((response) => {
+                this.setState({ pendingAndWaitingBookingDetailsList: response.data });
+            })
+            .catch((error) => {
+                console.error("There was an error fetching the data !", error);
+            });
+    }
 
     fetchPriceList = () => {
         axiosInstance
@@ -164,10 +181,14 @@ export default class Slot extends Component {
     };
 
     handleTabChange = (tab) => {
-        if (tab === "linhhoat") {
+        if (tab === 'linhhoat') {
             this.fetchFlexibleBookings();
         }
-        this.setState({ selectedTab: tab, selectedSlots: {}, selectedDay: null, errorMessage: "", bookingDetailsList: [] });
+        this.setState({
+            selectedTab: tab, selectedSlots: {}, selectedDay: null,
+            errorMessage: "", bookingDetailsList: [], startDate: new Date(),
+            endDate: addDays(new Date(), 6)
+        });
     };
 
     handleSlotSelection = (slot, dayIndex) => {
@@ -180,7 +201,7 @@ export default class Slot extends Component {
 
         if (selectedTab === "lichdon" || selectedTab === "linhhoat") {
             if (selectedDay !== null && selectedDay !== dayIndex && !newSelectedSlots[dayKey].includes(slot)) {
-                this.setState({ errorMessage: "Bạn chỉ có thể chọn nhiều slot trong cùng một ngày." });
+                showAlert('warning', 'Thông báo', 'Bạn chỉ có thể chơi nhiều slot trong cùng ngày với Lịch đơn và Lịch linh hoạt.', 'top')
                 return;
             }
 
@@ -273,6 +294,23 @@ export default class Slot extends Component {
         let data = {};
         const { selectedTab, bookingDetailsList } = this.state;
         const courtId = this.props.court.courtId;
+    
+        let isPendingOrWaiting = false;
+        bookingDetailsList.forEach(bookingDetail => {
+            const date = bookingDetail.date;
+            const slotId = bookingDetail.slotId;
+            const slot = this.state.slots.find((s) => s.slotId === slotId);
+    
+            // Gọi hàm isPendingAndWaitingBookingDetails với ngày và slotId từ bookingDetail
+            isPendingOrWaiting = this.isPendingAndWaitingBookingDetails(date, slotId);
+    
+            if (isPendingOrWaiting) {
+                alert('warning', 'Thông báo', `Đã có lịch đặt với khung giờ ${slot.startTime} - ${slot.endTime}. Hãy kiểm tra lại lịch chơi và đặt lại !`, 'center');
+                return;
+            }
+        });
+
+        if (isPendingOrWaiting) return;
 
         const totalRequiredHours = bookingDetailsList.reduce((total, bookingDetailsRequest) => {
             const slot = this.state.slots.find((s) => s.slotId === bookingDetailsRequest.slotId);
@@ -323,7 +361,7 @@ export default class Slot extends Component {
                                 window.location.href = "/";
                             }
                         });
-                    }
+                    } 
                 })
                 .catch((error) => {
                     console.error("There was an error when booking !", error);
@@ -332,8 +370,10 @@ export default class Slot extends Component {
             axiosInstance
                 .post(url, data)
                 .then((response) => {
-                    localStorage.setItem("booking", JSON.stringify(response.data));
-                    window.location.href = "/detailBooking";
+                    if (response.status === 200) {
+                        localStorage.setItem("booking", JSON.stringify(response.data));
+                        window.location.href = "/detailBooking";
+                    } 
                 })
                 .catch((error) => {
                     console.error("There was an error when booking !", error);
@@ -344,6 +384,23 @@ export default class Slot extends Component {
     handleYardChange = (event) => {
         this.setState({ selectedYard: event.target.value });
     };
+
+    isPendingAndWaitingBookingDetails = (dayKey, slotId) => {
+        const { pendingAndWaitingBookingDetailsList } = this.state;
+
+        const parsedDate = parse(dayKey.split(" ")[0], "dd/MM/yyyy", new Date());
+        const slot = this.state.slots.find((s) => s.slotId === slotId);
+        const slotStartTime = slot.startTime;
+
+        const result = pendingAndWaitingBookingDetailsList.some(detail => {
+            const detailDate = parse(detail.date, "dd/MM/yyyy", new Date());
+            const detailSlotStartTime = detail.yardSchedule.slot.startTime;
+    
+            return isEqual(detailDate, parsedDate) && detailSlotStartTime === slotStartTime;
+        });
+    
+        return result;
+    }
 
     isSlotBooked = (dayKey, slotId) => {
         const { pendingSlots, waitingCheckInSlots } = this.state;
@@ -386,6 +443,43 @@ export default class Slot extends Component {
         const formattedToday = format(today, "yyyy-MM-dd");
         return formattedToday === formattedDayKey;
     }
+
+    isYesterday(day) {
+        const parsedDate = parse(day.split(" ")[0], "dd/MM/yyyy", new Date());
+        const formattedDayKey = format(parsedDate, "yyyy-MM-dd");
+        const today = new Date();
+        const formattedToday = format(today, "yyyy-MM-dd");
+
+        return formattedToday > formattedDayKey;
+    }
+
+    isDaysOfNextMonth(day) {
+        const parsedDate = parse(day.split(" ")[0], "dd/MM/yyyy", new Date());
+        const today = new Date();
+
+        const nextMonth = today.getMonth() === 11 ? 0 : today.getMonth() + 1;
+        const nextMonthYear = today.getMonth() === 11 ? today.getFullYear() + 1 : today.getFullYear();
+
+        const isNextMonth = parsedDate.getMonth() === nextMonth && parsedDate.getFullYear() === nextMonthYear;
+
+        return isNextMonth;
+    }
+
+    handlePreviousWeek = () => {
+        const { startDate, endDate } = this.state;
+        const newStartDate = addDays(startDate, -7);
+        const newEndDate = addDays(endDate, -7);
+
+        this.setState({ startDate: newStartDate, endDate: newEndDate });
+    };
+
+    handleNextWeek = () => {
+        const { startDate, endDate } = this.state;
+        const newStartDate = addDays(startDate, 7);
+        const newEndDate = addDays(endDate, 7);
+
+        this.setState({ startDate: newStartDate, endDate: newEndDate });
+    };
 
     render() {
         const { court } = this.props;
@@ -476,6 +570,23 @@ export default class Slot extends Component {
                                     </option>
                                 ))}
                         </select>
+                        <div className="week-navigation">
+                            {/* Nút để lùi về tuần trước */}
+                            <button type="button" className="navigation-button" onClick={this.handlePreviousWeek}>Tuần trước</button>
+                            <div style={{ display: "flex", justifyContent: "center" }}>
+                                <div className="btn slot-time pastTime" style={{ width: "100px", height: "40px", alignContent: "center" }}>
+                                    <b>Đã hết giờ</b>
+                                </div>
+                                <div className="btn slot-time booked" style={{ width: "100px", height: "40px", alignContent: "center" }}>
+                                    <b>Đã đặt</b>
+                                </div>
+                                <div className="btn slot-time selected" style={{ width: "100px", height: "40px", pointerEvents: "none" }}>
+                                    Đang chọn
+                                </div>
+                            </div>
+                            {/* Nút để next sang tuần sau */}
+                            <button type="button" className="navigation-button" onClick={this.handleNextWeek}>Tuần sau</button>
+                        </div>
                         <div className="tab-content" id="pills-tabContent">
                             <div
                                 className={`tab-pane fade ${selectedTab === "lichdon" ? "show active" : ""}`}
@@ -500,29 +611,28 @@ export default class Slot extends Component {
                                                     {daysOfWeek.map((_, dayIndex) => (
                                                         <td key={dayIndex} className="slot-times-column">
                                                             <div
-                                                                className={`slot-time ${
-                                                                    selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                } ${
-                                                                    this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                    this.isToday(daysOfWeek[dayIndex]) &&
-                                                                    this.isPastTime(slot.startTime)
+                                                                className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                    } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                        this.isToday(daysOfWeek[dayIndex]) &&
+                                                                        this.isPastTime(slot.startTime)
                                                                         ? "pastTime"
                                                                         : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId)
-                                                                        ? "booked"
-                                                                        : ""
-                                                                } ${
-                                                                    this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                            ? "booked"
+                                                                            : ""
+                                                                    } ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
                                                                         ? "pastTime"
                                                                         : ""
-                                                                }`}
+                                                                    }
+                                                                ${this.isYesterday(daysOfWeek[dayIndex]) ? "yesterday" : ""}`}
                                                                 onClick={
-                                                                    !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                    !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                    !this.isDaysOfNextMonth(daysOfWeek[dayIndex]) &&
+                                                                        !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                        !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
                                                                         ? () => this.handleSlotSelection(slot.slotId, dayIndex)
                                                                         : null
                                                                 }
                                                             >
-                                                                {`${slot.startTime} - ${slot.endTime}`}
+                                                                {this.isDaysOfNextMonth(daysOfWeek[dayIndex]) ? "N/A" : `${slot.startTime} - ${slot.endTime}`}
                                                             </div>
                                                         </td>
                                                     ))}
@@ -555,29 +665,28 @@ export default class Slot extends Component {
                                                     {daysOfWeek.map((_, dayIndex) => (
                                                         <td key={dayIndex} className="slot-times-column">
                                                             <div
-                                                                className={`slot-time ${
-                                                                    selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
-                                                                } ${
-                                                                    this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                    this.isToday(daysOfWeek[dayIndex]) &&
-                                                                    this.isPastTime(slot.startTime)
+                                                                className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId) ? "selected" : ""
+                                                                    } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                        this.isToday(daysOfWeek[dayIndex]) &&
+                                                                        this.isPastTime(slot.startTime)
                                                                         ? "pastTime"
                                                                         : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId)
-                                                                        ? "booked"
-                                                                        : ""
-                                                                } ${
-                                                                    this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                            ? "booked"
+                                                                            : ""
+                                                                    } ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
                                                                         ? "pastTime"
                                                                         : ""
-                                                                }`}
+                                                                    }
+                                                                ${this.isYesterday(daysOfWeek[dayIndex]) ? "yesterday" : ""}`}
                                                                 onClick={
-                                                                    !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                    !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                    !this.isDaysOfNextMonth(daysOfWeek[dayIndex]) &&
+                                                                        !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                        !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
                                                                         ? () => this.handleSlotSelection(slot.slotId, dayIndex)
                                                                         : null
                                                                 }
                                                             >
-                                                                {`${slot.startTime} - ${slot.endTime}`}
+                                                                {this.isDaysOfNextMonth(daysOfWeek[dayIndex]) ? "N/A" : `${slot.startTime} - ${slot.endTime}`}
                                                             </div>
                                                         </td>
                                                     ))}
@@ -613,31 +722,30 @@ export default class Slot extends Component {
                                                             {daysOfWeek.map((_, dayIndex) => (
                                                                 <td key={dayIndex} className="slot-times-column">
                                                                     <div
-                                                                        className={`slot-time ${
-                                                                            selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId)
-                                                                                ? "selected"
-                                                                                : ""
-                                                                        } ${
-                                                                            this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                            this.isToday(daysOfWeek[dayIndex]) &&
-                                                                            this.isPastTime(slot.startTime)
+                                                                        className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId)
+                                                                            ? "selected"
+                                                                            : ""
+                                                                            } ${this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                                this.isToday(daysOfWeek[dayIndex]) &&
+                                                                                this.isPastTime(slot.startTime)
                                                                                 ? "pastTime"
                                                                                 : this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId)
-                                                                                ? "booked"
-                                                                                : ""
-                                                                        } ${
-                                                                            this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
+                                                                                    ? "booked"
+                                                                                    : ""
+                                                                            } ${this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime)
                                                                                 ? "pastTime"
                                                                                 : ""
-                                                                        }`}
+                                                                            }
+                                                                        ${this.isYesterday(daysOfWeek[dayIndex]) ? "yesterday" : ""}`}
                                                                         onClick={
-                                                                            !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                            !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
+                                                                            !this.isDaysOfNextMonth(daysOfWeek[dayIndex]) &&
+                                                                                !this.isSlotBooked(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                                !(this.isToday(daysOfWeek[dayIndex]) && this.isPastTime(slot.startTime))
                                                                                 ? () => this.handleSlotSelection(slot.slotId, dayIndex)
                                                                                 : null
                                                                         }
                                                                     >
-                                                                        {`${slot.startTime} - ${slot.endTime}`}
+                                                                        {this.isDaysOfNextMonth(daysOfWeek[dayIndex]) ? "N/A" : `${slot.startTime} - ${slot.endTime}`}
                                                                     </div>
                                                                 </td>
                                                             ))}
@@ -711,17 +819,6 @@ export default class Slot extends Component {
                                                 Ngày: {item.date}: {item.slots.join(", ")}
                                             </div>
                                         ))}
-                                </div>
-                                <div style={{ display: "flex", justifyContent: "center" }}>
-                                    <div className="btn slot-time pastTime" style={{ width: "100px", height: "40px", alignContent: "center" }}>
-                                        <b>Đã hết giờ</b>
-                                    </div>
-                                    <div className="btn slot-time booked" style={{ width: "100px", height: "40px", alignContent: "center" }}>
-                                        <b>Đã đặt</b>
-                                    </div>
-                                    <div className="btn slot-time selected" style={{ width: "100px", height: "40px", pointerEvents: "none" }}>
-                                        Đang chọn
-                                    </div>
                                 </div>
                                 <div className="w-25 m-auto">
                                     <button onClick={this.handleButtonClick} className="btn btn-primary">

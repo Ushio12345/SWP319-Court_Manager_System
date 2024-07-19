@@ -1044,13 +1044,9 @@ form h1 {
         font-size: 12px;
     }
 }
-/* @media (min-width: 2000px) {
-    .container,
-    .container-lg,
-    .container-md,
-    .container-sm,
-    .container-xl,
-    .container-xxl {
-        max-width: 1700px;
+
+@media (min-width: 1536px) {
+    .container {
+        max-width: 80% !important;
     }
-} */
+}

@@ -34,10 +34,7 @@ export default class Slot extends Component {
                 }
             })
             .catch((error) => {
-                if (error.response && error.response.status === 401 && error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                    handleTokenError();
-                }
-                this.handleRequestError(error);
+                throw error;
             });
     };
 
@@ -75,13 +72,10 @@ export default class Slot extends Component {
             })
             .catch((error) => {
                 if (error.response && error.response.status === 401) {
-                    if (error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                        handleTokenError();
-                    } else if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
-                        showAlert("error", "Lỗi!", "Slot với tên này đã có trong danh sách.", "top-end");
+                    if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
+showAlert("error", "Lỗi!", "Slot với tên này đã có trong danh sách.", "top-end");
                     }
                 }
-                this.handleRequestError(error);
             });
     };
 
@@ -108,9 +102,7 @@ export default class Slot extends Component {
             })
             .catch((error) => {
                 if (error.response && error.response.status === 401) {
-                    if (error.response.data.message === "Token không hợp lệ hoặc đã hết hạn.") {
-                        handleTokenError();
-                    } else if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
+                    if (error.response.data.message === "Slot với tên này đã có trong danh sách.") {
                         showAlert("error", "Lỗi!", "Slot với tên này đã có trong danh sách.", "top-end");
                     }
                 }
@@ -132,22 +124,12 @@ export default class Slot extends Component {
                         }
                     })
                     .catch((error) => {
-                        if (
-                            error.response &&
-                            error.response.status === 401 &&
-                            error.response.data.message === "Token không hợp lệ hoặc đã hết hạn."
-                        ) {
-                            handleTokenError();
-                        } else {
-                            showAlert("error", "", "Xóa slot không thành công", "top-end");
-                        }
-                        console.error("Response không thành công:", error);
+                        throw error;
                     });
             }
         });
     };
-
-    handleInputChange = (event) => {
+handleInputChange = (event) => {
         const { name, value } = event.target;
         this.setState((prevState) => ({
             slot: {
@@ -225,7 +207,7 @@ export default class Slot extends Component {
                                 </tr>
                             ) : (
                                 currentSlots.map((slot, index) => (
-                                    <tr className="" key={slot.slotId}>
+<tr className="" key={slot.slotId}>
                                         <td className="text-center">{indexOfFirstSlot + index + 1}</td>
                                         <td className="text-center">{slot.slotId}</td>
                                         <td className="text-center">{slot.slotName}</td>
@@ -274,7 +256,7 @@ export default class Slot extends Component {
                             <div className="modal-body">
                                 <form>
                                     <div className="form-group">
-                                        <label>Tên slot</label>
+<label>Tên slot</label>
                                         <input
                                             type="text"
                                             className="form-control"
@@ -324,7 +306,7 @@ export default class Slot extends Component {
                                     Đóng
                                 </button>
                                 <button type="button" className="btn btn-primary" onClick={this.handleAddSlot}>
-                                    Lưu lại
+Lưu lại
                                 </button>
                             </div>
                         </div>
@@ -376,7 +358,7 @@ export default class Slot extends Component {
                                         />
                                     </div>
                                     {/* <div className="form-group">
-                                        <label>Giá slot</label>
+<label>Giá slot</label>
                                         <input
                                             type="number"
                                             className="form-control"

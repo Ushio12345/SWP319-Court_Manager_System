@@ -158,7 +158,7 @@ export default class HistoryBooking extends Component {
                                 >
                                     {filteredBookings.length > 0 ? (
                                         filteredBookings
-                                            .sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate))
+                                            .sort((a, b) => new Date(a.bookingDate) - new Date(b.bookingDate))
                                             .map((booking) => {
                                                 return <OrderItem key={booking.bookingId} booking={booking} onBookingCancel={this.fetchBookings} />;
                                             })

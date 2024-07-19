@@ -180,8 +180,7 @@ const Header = ({ isLoggedIn, user, handleLogout }) => {
 
                     <h5>4. Chính sách bảo mật</h5>
                     <p>
-                        Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn và chỉ sử dụng nó cho các mục đích liên quan đến dịch vụ của chúng tôi. Bạn
-                        có thể tham khảo thêm về chính sách bảo mật của chúng tôi tại đây (liên kết đến chính sách bảo mật).
+                        Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn và chỉ sử dụng nó cho các mục đích liên quan đến dịch vụ của chúng tôi. 
                     </p>
 
                     <h5>5. Thay đổi điều khoản và điều kiện</h5>

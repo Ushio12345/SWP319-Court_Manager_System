@@ -98,7 +98,7 @@ const Login = () => {
 
         const sendCodeToBackend = async () => {
             try {
-                const response = await fetch("http://167.99.67.127:8080/auth/google/callback", {
+                const response = await fetch("https://forbad.online:8443/auth/google/callback", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -108,6 +108,7 @@ const Login = () => {
 
                 if (!response.ok) {
                     showAlert("error", "Lỗi !", "Kết nối không ổn định. Vui lòng thử lại.", "top-end");
+                    return;
                 }
 
                 const data = await response.json();
@@ -164,10 +165,6 @@ const Login = () => {
                         </div>
                         {passwordError && <p className="text-danger">{passwordError}</p>}
                         <div className="remember-forgot">
-                            <label>
-                                <input type="checkbox" />
-                                Nhớ mật khẩu
-                            </label>
                             <a href="/forgot-password">Quên mật khẩu</a>
                         </div>
                         <div>
