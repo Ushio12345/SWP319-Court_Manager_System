@@ -532,7 +532,7 @@ export default class Order extends Component {
                                 )}
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
+                                <Button variant="secondary" style={{padding: '10px'}} onClick={() => this.setState({ showModal: false })}>
                                     Đóng
                                 </Button>
                             </Modal.Footer>

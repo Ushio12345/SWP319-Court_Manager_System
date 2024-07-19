@@ -3,7 +3,7 @@ import Header from "../../../../components/header";
 import Footer from "../../../../components/footer";
 import "./index.css";
 import axiosInstance from "../../../../config/axiosConfig";
-import { showConfirmAlert, showConfirmPayment } from "../../../../utils/alertUtils";
+import { alert, showConfirmAlert, showConfirmPayment } from "../../../../utils/alertUtils";
 import axios from "axios";
 import { Link } from "react-router-dom";
 const DetailBooking = () => {
@@ -145,8 +145,14 @@ const DetailBooking = () => {
                 cancelUrl: "https://forbad.online/detailBooking",
                 successUrl: "https://forbad.online/detailBooking",
             });
-            setPaymentUrl(response.data);
-            window.location.href = response.data;
+
+            if (response.status === 200) {
+                setPaymentUrl(response.data);
+                window.location.href = response.data;
+            } else {
+                alert('error', 'Thông báp', 'Đặt lịch không thành công !', 'top-end');
+                throw new Error(`Unexpected response status: ${response.data.message}`);
+            }
         } catch (error) {
             console.error("Failed to initiate payment:", error);
             handlePaymentCanceled();

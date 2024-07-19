@@ -214,7 +214,7 @@ export default class PlayingSchedule extends Component {
         this.setState({ endDate: date });
     };
 
-    isWaitingCheckInSlot = (dayKey, slotId) => {
+    isWaitingCheckInSlot = (dayKey, slotName) => {
         const { waitingCheckInSlots } = this.state;
 
         const parsedDate = parse(dayKey.split(" ")[0], "dd/MM/yyyy", new Date());
@@ -224,10 +224,10 @@ export default class PlayingSchedule extends Component {
             return false;
         }
 
-        return waitingCheckInSlots[formattedDayKey].some((checkInDto) => checkInDto.bookingDetails.yardSchedule.slot.slotId === slotId);
+        return waitingCheckInSlots[formattedDayKey].some((checkInDto) => checkInDto.bookingDetails.yardSchedule.slot.slotName === slotName);
     };
 
-    isCompletedSlot = (dayKey, slotId) => {
+    isCompletedSlot = (dayKey, slotName) => {
         const { completedSlots } = this.state;
 
         const parsedDate = parse(dayKey.split(" ")[0], "dd/MM/yyyy", new Date());
@@ -237,7 +237,7 @@ export default class PlayingSchedule extends Component {
             return false;
         }
 
-        return completedSlots[formattedDayKey].some((checkInDto) => checkInDto.bookingDetails.yardSchedule.slot.slotId === slotId);
+        return completedSlots[formattedDayKey].some((checkInDto) => checkInDto.bookingDetails.yardSchedule.slot.slotName === slotName);
     };
 
     isCancelledSlot = (dayKey, slotId) => {
@@ -309,13 +309,13 @@ export default class PlayingSchedule extends Component {
         // Duyệt qua danh sách tương ứng với trạng thái
         switch (status) {
             case "waiting-check-in":
-                matchedplayingScheduleDto = waitingCheckInSlots[formattedDayKey]?.find((playingScheduleDto) => playingScheduleDto.bookingDetails.yardSchedule.slot.slotId === slot.slotId);
+                matchedplayingScheduleDto = waitingCheckInSlots[formattedDayKey]?.find((playingScheduleDto) => playingScheduleDto.bookingDetails.yardSchedule.slot.slotName === slot.slotName);
                 break;
             case "completed":
-                matchedplayingScheduleDto = completedSlots[formattedDayKey]?.find((playingScheduleDto) => playingScheduleDto.bookingDetails.yardSchedule.slot.slotId === slot.slotId);
+                matchedplayingScheduleDto = completedSlots[formattedDayKey]?.find((playingScheduleDto) => playingScheduleDto.bookingDetails.yardSchedule.slot.slotName === slot.slotName);
                 break;
             case "cancel":
-                matchedplayingScheduleDto = cancelledSlots[formattedDayKey]?.find((playingScheduleDto) => playingScheduleDto.bookingDetails.yardSchedule.slot.slotId === slot.slotId);
+                matchedplayingScheduleDto = cancelledSlots[formattedDayKey]?.find((playingScheduleDto) => playingScheduleDto.bookingDetails.yardSchedule.slot.slotName === slot.slotName);
                 break;
             default:
                 console.error('Unknown status:', status);
@@ -569,12 +569,11 @@ export default class PlayingSchedule extends Component {
                                                                 <tr key={slot.slotId}>
                                                                     <td>{slot.slotName}</td>
                                                                     {daysOfWeek.map((day, dayIndex) => {
-                                                                        const isWaitingCheckIn = this.isWaitingCheckInSlot(day, slot.slotId);
-                                                                        const isCompleted = this.isCompletedSlot(day, slot.slotId);
+                                                                        const isWaitingCheckIn = this.isWaitingCheckInSlot(day, slot.slotName);
+                                                                        const isCompleted = this.isCompletedSlot(day, slot.slotName);
 
                                                                         const status = isWaitingCheckIn ? "waiting-check-in" :
                                                                             isCompleted ? "completed" : null;
-
                                                                         return (
                                                                             <td key={dayIndex} className="slot-times-column">
                                                                                 <div
