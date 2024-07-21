@@ -13,7 +13,7 @@ export default class HistoryBooking extends Component {
         this.state = {
             currentTab: "showProcessingOrder",
             bookings: [],
-            searchQuery: "", // Thêm state để lưu trữ giá trị tìm kiếm
+            searchQuery: "",
             isLoggedIn: false,
             user: {
                 username: "",
@@ -23,6 +23,8 @@ export default class HistoryBooking extends Component {
                 balance: 0,
                 roles: [],
             },
+            currPage: 1,
+            itemOrderPerPage: 1,
         };
     }
 
@@ -76,12 +78,11 @@ export default class HistoryBooking extends Component {
     };
 
     setCurrentTab = (tab) => {
-        this.setState({ currentTab: tab });
+        this.setState({ currentTab: tab, currPage: 1 }); // reset currPage when changing tab
     };
 
-    // Hàm để cập nhật giá trị tìm kiếm
     handleSearchQueryChange = (event) => {
-        this.setState({ searchQuery: event.target.value });
+        this.setState({ searchQuery: event.target.value, currPage: 1 }); // reset currPage when searching
     };
 
     filterBookings = (status) => {
@@ -95,8 +96,51 @@ export default class HistoryBooking extends Component {
             });
     };
 
+    handlePageChange = (page) => {
+        this.setState({ currPage: page });
+    };
+
+    renderPagination = (filteredBookings) => {
+        const { currPage, itemOrderPerPage } = this.state;
+        const pageNumber = [];
+
+        for (let i = 1; i <= Math.ceil(filteredBookings.length / itemOrderPerPage); i++) {
+            pageNumber.push(i);
+        }
+
+        return (
+            <nav aria-label="Page navigation example">
+                <ul className="pagination">
+                    <li className="page-item">
+                        <button className="page-link" href="#" aria-label="Previous" onClick={() => this.handlePageChange(Math.max(currPage - 1, 1))}>
+                            <span aria-hidden="true">&laquo;</span>
+                            <span className="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    {pageNumber.map((number) => (
+                        <button key={number} className={`page-item ${currPage === number ? "active" : ""}`}>
+                            <button onClick={() => this.handlePageChange(number)} className="page-link" href="#">
+                                {number}
+                            </button>
+                        </button>
+                    ))}
+                    <li className="page-item">
+                        <button
+                            className="page-link"
+                            href="#"
+                            aria-label="Next"
+                            onClick={() => this.handlePageChange(Math.min(currPage + 1, pageNumber.length))}
+                        >
+                            <span aria-hidden="true">&raquo;</span>
+                            <span className="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        );
+    };
     render() {
-        const { currentTab, isLoggedIn, user, searchQuery } = this.state;
+        const { currentTab, isLoggedIn, user, searchQuery, currPage, itemOrderPerPage } = this.state;
 
         return (
             <div className="historyPage">
@@ -148,6 +192,10 @@ export default class HistoryBooking extends Component {
                                     ? "Đã hoàn thành"
                                     : "Đã hủy"
                             );
+                            const indexOfLastOrder = currPage * itemOrderPerPage;
+                            const indexOfFirstOrder = indexOfLastOrder - itemOrderPerPage;
+                            const currentOrders = filteredBookings.slice(indexOfFirstOrder, indexOfLastOrder);
+
                             return (
                                 <div
                                     key={tab}
@@ -156,8 +204,8 @@ export default class HistoryBooking extends Component {
                                     role="tabpanel"
                                     aria-labelledby={`${tab}-tab`}
                                 >
-                                    {filteredBookings.length > 0 ? (
-                                        filteredBookings
+                                    {currentOrders.length > 0 ? (
+                                        currentOrders
                                             .sort((a, b) => new Date(a.bookingDate) - new Date(b.bookingDate))
                                             .map((booking) => {
                                                 return <OrderItem key={booking.bookingId} booking={booking} onBookingCancel={this.fetchBookings} />;
@@ -168,6 +216,7 @@ export default class HistoryBooking extends Component {
                                             <p>Chưa có đơn hàng</p>
                                         </div>
                                     )}
+                                    {filteredBookings.length > 0 && <div className="mt-4">{this.renderPagination(filteredBookings)}</div>}
                                 </div>
                             );
                         })}

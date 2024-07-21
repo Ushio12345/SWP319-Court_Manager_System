@@ -189,7 +189,7 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                     </div>
                 </div>
                 <div className="orderItem-btn w-50 m-auto">
-                    {booking.statusEnum !== "Đã hủy" && booking.statusEnum !== "Đã hoàn thành"  && booking.statusEnum !== "Đang chờ check-in" && (
+                    {booking.statusEnum !== "Đã hủy" && booking.statusEnum !== "Đã hoàn thành" && booking.statusEnum !== "Đang chờ check-in" && (
                         <button className="btn" onClick={() => handleCancelBooking(booking)}>
                             Hủy đơn
                         </button>

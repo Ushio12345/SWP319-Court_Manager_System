@@ -387,9 +387,9 @@ export default class Order extends Component {
                                                                 <td className="text-start">{index + 1}</td>
                                                                 <td className="text-start">{booking.bookingId}</td>
                                                                 <td className="text-start">
-                                                                    <p>{booking.customer ? (booking.customer.fullName) : 'Khách vãng lai'}</p>
+                                                                    <p>{booking.customer ? booking.customer.fullName : "Khách vãng lai"}</p>
                                                                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                                        {booking.customer ? (booking.customer.email) : 'Không có'}
+                                                                        {booking.customer ? booking.customer.email : "Không có"}
                                                                     </p>
                                                                 </td>
                                                                 <td className="text-start">{booking.bookingType}</td>
@@ -445,10 +445,10 @@ export default class Order extends Component {
                                             <b>Mã đơn hàng:</b> {selectedBooking.bookingId}
                                         </p>
                                         <p>
-                                            <b>Khách hàng:</b> {selectedBooking.customer ? (selectedBooking.customer.fullName) : 'Khách vãng lai'}
+                                            <b>Khách hàng:</b> {selectedBooking.customer ? selectedBooking.customer.fullName : "Khách vãng lai"}
                                         </p>
                                         <p>
-                                            <b>Email:</b> {selectedBooking.customer ? (selectedBooking.customer.email) : 'Không có'}
+                                            <b>Email:</b> {selectedBooking.customer ? selectedBooking.customer.email : "Không có"}
                                         </p>
                                         <p>
                                             <b>Thời gian đặt đơn:</b> {selectedBooking.bookingDate}
