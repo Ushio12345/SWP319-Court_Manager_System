@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axiosInstance from "../../config/axiosConfig";
 import { showAlert, showConfirmAlert } from "../../utils/alertUtils";
 import { handleTokenError } from "../../utils/tokenErrorHandle";
-
+import { Link } from "react-router-dom";
 export default class Staff extends Component {
     state = {
         staffs: [],
@@ -207,8 +207,8 @@ export default class Staff extends Component {
                 currentStaffs.map((staff, index) => (
                     <tr key={staff.userId}>
                         <td className="text-center">{indexOfFirstItem + index + 1}</td>
-                        <td>
-                            <img className="" src={staff.profileAvatar} style={{ width: 50, height: 50 }} alt="Avatar" />
+                        <td className="">
+                            <img className="" src={staff.profileAvatar} style={{ width: "50%", height: 50, margin: "auto" }} alt="Avatar" />
                         </td>
                         <td className="text-center">
                             <p>{staff.userId}</p>
@@ -254,9 +254,9 @@ export default class Staff extends Component {
                 <ul className="pagination">
                     {pageNumbers.map((number) => (
                         <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
-                            <a onClick={() => this.handlePageChange(number)} className="page-link">
+                            <Link to="" onClick={() => this.handlePageChange(number)} className="page-link">
                                 {number}
-                            </a>
+                            </Link>
                         </li>
                     ))}
                 </ul>
