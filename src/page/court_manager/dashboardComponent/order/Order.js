@@ -323,7 +323,7 @@ export default class Order extends Component {
                                     role="tabpanel"
                                     aria-labelledby={`${tab}-tab`}
                                 >
-                                    {currentBookingPage.length > -1 ? (
+                                    {currentBookingPage.length > 0 ? (
                                         <div className="overflow-x-auto">
                                             <table className="table table-hover table-borderless">
                                                 <thead>
@@ -532,7 +532,7 @@ export default class Order extends Component {
                                 )}
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button variant="secondary" style={{padding: '10px'}} onClick={() => this.setState({ showModal: false })}>
+                                <Button variant="secondary" style={{ padding: "10px" }} onClick={() => this.setState({ showModal: false })}>
                                     Đóng
                                 </Button>
                             </Modal.Footer>
