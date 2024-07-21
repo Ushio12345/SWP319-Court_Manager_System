@@ -8,7 +8,8 @@ import "../../../css/style.css";
 import axiosInstance from "../../../config/axiosConfig";
 import { Button, Modal } from "react-bootstrap";
 import "../staff.css";
-import { showAlert } from "../../../utils/alertUtils";
+import { alert, showAlert } from "../../../utils/alertUtils";
+import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 // Register the Vietnamese locale with react-datepicker
 registerLocale("vi", vi);
 
@@ -28,13 +29,15 @@ export default class CheckInPage extends Component {
             selectedSlots: {},
             bookingDetails: [],
             bookingDetailsList: [],
+            bookingDetailsRequestList: [],
             selectedDay: null,
             selectedYard: "",
             errorMessage: "",
             bookingDetailsList: [],
             isLoggedIn: false,
             currentDate: new Date(),
-            showModal: false,
+            showModalSlotDetails: false,
+            showModalBookingForVisitors: false,
             hoursToLoad: 0,
             user: "",
             flexibleBookings: [],
@@ -43,6 +46,11 @@ export default class CheckInPage extends Component {
             selectedSlotInfo: null,
             selectedCustomer: null,
             facilities: [],
+            priceOfSingleSchedule: 0,
+            cash: '',
+            isCashEdited: false,
+            bookDisable: true,
+            loading: false
         };
     }
 
@@ -62,7 +70,14 @@ export default class CheckInPage extends Component {
             this.fetchStatusSlots("PENDING", "pendingSlots");
             this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
             this.fetchStatusSlots("COMPLETED", "completedSlots");
-            this.fetchStatusSlots("CANCELLED", "cancelledSlots");           
+            this.fetchStatusSlots("CANCELLED", "cancelledSlots");
+        }
+
+        const remainingAmount = this.calculateRemainingAmount();
+        if (remainingAmount >= 0 && prevState.bookDisable !== false) {
+            this.handleShowBookNow();
+        } else if (remainingAmount < 0 && prevState.bookDisable !== true) {
+            this.handleDisableBookNow();
         }
     }
 
@@ -73,10 +88,12 @@ export default class CheckInPage extends Component {
                 if (res.status === 200) {
                     const courtOfStaff = res.data;
                     const firstYardId = courtOfStaff?.yards?.[0]?.yardId || "";
+                    const priceOfSingleSchedule = courtOfStaff?.priceList?.singleBookingPrice || 0;
                     this.setState(
                         {
                             courtOfStaff: res.data,
                             selectedYard: firstYardId,
+                            priceOfSingleSchedule: priceOfSingleSchedule
                         },
                         () => {
                             if (firstYardId) {
@@ -176,7 +193,7 @@ export default class CheckInPage extends Component {
     };
 
     handleYardChange = (event) => {
-        this.setState({ selectedYard: event.target.value });
+        this.setState({ selectedYard: event.target.value, bookingDetailsRequestList: [], selectedSlots: {}, selectedDay: null });
     };
 
     isWaitingCheckInSlot = (dayKey, slotId) => {
@@ -298,11 +315,6 @@ export default class CheckInPage extends Component {
         // Get the status from the found bookingDetails
         const status = matchedCheckIn.bookingDetails.status;
 
-        // Do not apply pastTime if the status is pending, waiting-check-in, or completed
-        if (status === "Đang chờ xử lý" || status === "Đã hoàn thành" || status === "Đã hủy") {
-            return false;
-        }
-
         // Otherwise, check if the slotStartTime is in the past relative to currentTime
         return slotStartTime < currentTime;
     }
@@ -331,11 +343,11 @@ export default class CheckInPage extends Component {
                 endTime: selectedSlot.endTime,
                 // Add more fields as needed
             },
-            showModal: true,
+            showModalSlotDetails: true,
         });
     };
 
-    handleShowModal = (slot, day) => {
+    handleShowModalSlotDetails = (slot, day) => {
         const { bookingDetailsList } = this.state;
 
         const parsedDate = parse(day?.split(" ")[0], "dd/MM/yyyy", new Date());
@@ -352,14 +364,22 @@ export default class CheckInPage extends Component {
         if (matchedCheckIn) {
             const customer = matchedCheckIn.customer;
             const bookingDetailsFound = matchedCheckIn.bookingDetails;
-            this.setState({ showModal: true, selectedCustomer: customer, selectedSlotInfo: slot, bookingDetails: bookingDetailsFound });
+            this.setState({ showModalSlotDetails: true, selectedCustomer: customer, selectedSlotInfo: slot, bookingDetails: bookingDetailsFound });
         } else {
             console.error("No matching checkInDto found for the given slot");
         }
     };
 
-    handleCloseModal = () => {
-        this.setState({ showModal: false, selectedCustomer: null });
+    handleShowModalBookingForVisitors = () => {
+        this.setState({ showModalBookingForVisitors: true })
+    }
+
+    handleCloseModalSlotDetails = () => {
+        this.setState({ showModalSlotDetails: false, selectedCustomer: null });
+    };
+
+    handleCloseModalBookingForVisitors = () => {
+        this.setState({ showModalBookingForVisitors: false });
     };
 
     handleCheckIn = async (detailId) => {
@@ -367,7 +387,7 @@ export default class CheckInPage extends Component {
             const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/check-in`);
             if (confirmResponse.data.message === "Check-in thành công") {
                 showAlert("success", "Thông báo", "Check-in thành công !", "top-end");
-                this.handleCloseModal();
+                this.handleCloseModalSlotDetails();
                 this.fetchSlots();
                 this.fetchBookingDetails();
                 this.fetchStatusSlots("PENDING", "pendingSlots");
@@ -387,7 +407,7 @@ export default class CheckInPage extends Component {
             const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/cancel`);
             if (confirmResponse.data.message === "Hủy đơn thành công") {
                 showAlert("success", "Thông báo", "Đã hủy đơn thành công !", "top-end");
-                this.handleCloseModal();
+                this.handleCloseModalSlotDetails();
                 this.fetchSlots();
                 this.fetchBookingDetails();
                 this.fetchStatusSlots("PENDING", "pendingSlots");
@@ -409,16 +429,16 @@ export default class CheckInPage extends Component {
 
         // Lấy ra giá trị tương ứng với ngày hôm nay
         const waitingCheckInSlotsForToday = this.state.waitingCheckInSlots[today] || [];
-    
+
         waitingCheckInSlotsForToday.forEach(checkInDto => {
 
             const slotStartTime = checkInDto?.bookingDetails?.yardSchedule?.slot?.startTime;
-            
+
             if (slotStartTime) {
                 const [slotHour, slotMinute] = slotStartTime.split(':').map(Number);
                 const slotStartDateTime = new Date(currentDate);
                 slotStartDateTime.setHours(slotHour, slotMinute, 0, 0); // Cập nhật giờ và phút cho đối tượng Date
-    
+
                 // So sánh thời gian slot với giờ hiện tại
                 if (slotStartDateTime < currentDate) {
                     this.autoCancelCheckIn(checkInDto?.bookingDetails?.detailId); // Gọi hàm tự động hủy check-in
@@ -443,7 +463,121 @@ export default class CheckInPage extends Component {
         }
     };
 
+    handleSlotForVisitorClick = (slot, dayIndex) => {
+
+        if (!this.isToday(this.state.daysOfWeek[dayIndex])) {
+            showAlert('warning', 'Thông báo', 'Hãy chọn các slot trong ngày hôm nay', 'top')
+            return;
+        }
+
+        const { selectedTab, selectedSlots, selectedDay, bookingDetailsRequestList, slots, selectedYard } = this.state;
+        const dayKey = this.state.daysOfWeek[dayIndex];
+        const newSelectedSlots = { ...selectedSlots };
+        if (!newSelectedSlots[dayKey]) {
+            newSelectedSlots[dayKey] = [];
+        }
+
+        if (selectedDay !== null && selectedDay !== dayIndex && !newSelectedSlots[dayKey].includes(slot)) {
+            showAlert('warning', 'Thông báo', 'Hãy chọn các slot trong cùng ngày', 'top')
+            return;
+        }
+
+        if (newSelectedSlots[dayKey].includes(slot)) {
+            newSelectedSlots[dayKey] = newSelectedSlots[dayKey].filter((s) => s !== slot);
+            if (newSelectedSlots[dayKey].length === 0) {
+                delete newSelectedSlots[dayKey];
+            }
+            const updatedBookingDetailsRequestList = bookingDetailsRequestList.filter(
+                (detail) => !(detail.slotId === slot && detail.date === dayKey.split(" ")[0])
+            );
+            this.setState({ bookingDetailsRequestList: updatedBookingDetailsRequestList });
+        } else {
+            newSelectedSlots[dayKey].push(slot);
+            const slotDetail = slots.find((s) => s.slotId === slot);
+
+            const formattedDate = dayKey.split(" ")[0];
+            const newBookingDetail = {
+                date: formattedDate,
+                yardId: selectedYard,
+                slotId: slotDetail.slotId,
+            };
+            this.setState((prevState) => ({
+                bookingDetailsRequestList: [...prevState.bookingDetailsRequestList, newBookingDetail],
+            }));
+        }
+
+        this.setState(
+            {
+                selectedSlots: newSelectedSlots,
+                selectedDay: Object.keys(newSelectedSlots).length > 0 ? dayIndex : null,
+                errorMessage: "",
+            },
+            () => {
+                console.log(this.state.bookingDetailsRequestList);
+            }
+        );
+
+    };
+
+    handleBooking = async (courtId, bookingDetailsRequestList) => {
+        try {
+            const bookingDetailsList = bookingDetailsRequestList;
+
+            this.setState({ loading: true });
+
+            const bookingResponse = await axiosInstance.post(`/booking/${courtId}/booking-for-vistors`, bookingDetailsList);
+            this.setState({ loading: false });
+            this.setState({ showModalBookingForVisitors: false })
+            if (bookingResponse.data.message === "Đặt lịch thành công") {
+                
+                showAlert("success", "Thông báo", "Đặt lịch cho khách hàng thành công !", "top-end");
+                this.handleCloseModalBookingForVisitors();
+                this.fetchSlots();
+                this.fetchBookingDetails();
+                this.fetchStatusSlots("PENDING", "pendingSlots");
+                this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
+                this.fetchStatusSlots("COMPLETED", "completedSlots");
+                this.fetchStatusSlots("CANCELLED", "cancelledSlots");
+                this.setState({ bookingDetailsRequestList: [], selectedSlots: {}, selectedDay: null })
+            } else {
+                showAlert('error', 'Thông báo', 'Đặt lịch cho khách hàng không thành công', 'top-end');
+            }
+        } catch (error) {
+            console.error("Failed to booking:", error);
+        }
+    }
+
+    handleCashChange = (event) => {
+        const rawValue = event.target.value.replace(/[^0-9]/g, '');
+        this.setState({
+            cash: rawValue,
+            isCashEdited: true
+        });
+    };
+
+    handleShowBookNow = () => {
+        this.setState({ bookDisable: false });
+    }
+
+    handleDisableBookNow = () => {
+        this.setState({ bookDisable: true });
+    }
+
+    formatCurrency = (value) => {
+        return Number(value).toLocaleString("vi-VN");
+    };
+
+    calculateTotalAmount = () => {
+        return this.state.bookingDetailsRequestList.reduce((total, bookingDetail) => total + this.state.priceOfSingleSchedule, 0);
+    };
+
+    calculateRemainingAmount = () => {
+        const totalAmount = this.calculateTotalAmount();
+        return this.state.cash - totalAmount;
+    };
+
     render() {
+        const { showModalBookingForVisitors, bookingDetailsRequestList, priceOfSingleSchedule, cash, isCashEdited } = this.state;
         const { courtOfStaff } = this.state;
         const { daysOfWeek, selectedSlots, slots } = this.state;
         const selectedSlotDetails = Object.entries(selectedSlots).flatMap(([day, slotIds]) =>
@@ -458,18 +592,45 @@ export default class CheckInPage extends Component {
             return <div>Đang tải thông tin của cơ sở</div>;
         }
 
-        const renderStars = (rate) => {
-            const totalStars = 5;
-            const stars = [];
-            for (let i = 1; i <= totalStars; i++) {
-                if (i <= rate) {
-                    stars.push(<span key={i} className="fa fa-star checked" style={{ color: "#ffc107" }}></span>);
-                } else {
-                    stars.push(<span key={i} className="fa fa-star" style={{ color: "#000000" }}></span>);
+        const selectedSlotsList = this.state.bookingDetailsRequestList
+            .reduce((acc, bookingDetail, index) => {
+                const selectedSlot = this.state.slots.find((slot) => slot.slotId === bookingDetail.slotId);
+                if (!selectedSlot) {
+                    return acc;
                 }
-            }
-            return stars;
-        };
+                const existingDate = acc.find((item) => item.date === bookingDetail.date);
+                if (existingDate) {
+                    existingDate.slots.push({
+                        name: selectedSlot.slotName,
+                        time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`
+                    });
+                } else {
+                    acc.push({
+                        date: bookingDetail.date,
+                        slots: [{
+                            name: selectedSlot.slotName,
+                            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`
+                        }],
+                    });
+                }
+                return acc;
+            }, [])
+            .map((item, index) => (
+                <div key={index} className="staff-page-selected-slot">
+                    <FaCalendarAlt className="staff-page-slot-icon" />
+                    <div className="staff-page-slot-info">
+                        <strong>Ngày:</strong> {item.date}
+                        <div className="staff-page-slot-details">
+                            {item.slots.map((slot, idx) => (
+                                <div key={idx}>
+                                    <FaClock className="staff-page-slot-icon" />
+                                    <span><strong>Slot:</strong> {slot.name} ({slot.time})</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ));
 
         return (
             <div className="staffPageManager">
@@ -537,6 +698,9 @@ export default class CheckInPage extends Component {
                                         <div className="btn slot-time" style={{ width: "15%", height: "40px" }}>
                                             <b>Trống</b>
                                         </div>
+                                        <div className="btn slot-time selected" style={{ width: "15%", height: "40px" }}>
+                                            <b>Đang chọn</b>
+                                        </div>
                                     </div>
                                     <select
                                         className="form-select my-3"
@@ -573,21 +737,33 @@ export default class CheckInPage extends Component {
                                                                 {daysOfWeek.map((_, dayIndex) => (
                                                                     <td key={dayIndex} className="slot-times-column">
                                                                         <div
-                                                                            className={`slot-time ${
-                                                                                this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId)
+                                                                            className={`slot-time ${selectedSlots[daysOfWeek[dayIndex]]?.includes(slot.slotId)
+                                                                                ? "selected"
+                                                                                : ""
+                                                                                }
+                                                                                ${this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId)
                                                                                     ? "waiting-check-in"
                                                                                     : ""
-                                                                            }
-                                                                        ${
-                                                                            this.isToday(daysOfWeek[dayIndex]) &&
-                                                                            !this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                            this.isPastTime(daysOfWeek[dayIndex], slot.startTime, slot)
-                                                                                ? "pastTime"
-                                                                                : ""
-                                                                        }
+                                                                                }
+                                                                        ${this.isToday(daysOfWeek[dayIndex]) &&
+                                                                                    !this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) &&
+                                                                                    this.isPastTime(daysOfWeek[dayIndex], slot.startTime, slot)
+                                                                                    ? "pastTime"
+                                                                                    : ""
+                                                                                }
                                                                         ${this.isCompletedSlot(daysOfWeek[dayIndex], slot.slotId) ? "completed" : ""}
                                                                         ${this.isPendingSlot(daysOfWeek[dayIndex], slot.slotId) ? "pending" : ""}`}
-                                                                            onClick={() => this.handleShowModal(slot, daysOfWeek[dayIndex])}
+                                                                            onClick={() => {
+                                                                                if (
+                                                                                    this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) ||
+                                                                                    this.isCompletedSlot(daysOfWeek[dayIndex], slot.slotId) ||
+                                                                                    this.isPendingSlot(daysOfWeek[dayIndex], slot.slotId)
+                                                                                ) {
+                                                                                    this.handleShowModalSlotDetails(slot, daysOfWeek[dayIndex]);
+                                                                                } else {
+                                                                                    this.handleSlotForVisitorClick(slot.slotId, dayIndex);
+                                                                                }
+                                                                            }}
                                                                         >
                                                                             {`${slot.startTime} - ${slot.endTime}`}
                                                                         </div>
@@ -600,17 +776,26 @@ export default class CheckInPage extends Component {
                                             </div>
                                         </div>
                                     </div>
+                                    {selectedSlotsList.length > 0 ? (
+                                        <div className="staff-page-selected-slots">
+                                            <button type="button" onClick={this.handleShowModalBookingForVisitors} className="btn btn-primary staff-page-book-now">
+                                                Đặt lịch cho khách
+                                            </button>
+                                            {selectedSlotsList.length > 0 ? selectedSlotsList : <div>Chưa có slot nào được chọn cho khách</div>}
+                                        </div>
+                                    ) : ""}
                                 </div>
                             </div>
                         </div>
                     </form>
-                    <Modal show={this.state.showModal} onHide={() => this.setState({ showModal: false })} centered>
+                    {/** Modal thông tin chi tiết slot */}
+                    <Modal show={this.state.showModalSlotDetails} onHide={() => this.setState({ showModalSlotDetails: false })} centered>
                         <Modal.Header closeButton>
                             <Modal.Title>Thông tin check-in</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <b>Khách hàng: </b> {this.state.selectedCustomer?.fullName} <br />
-                            <b>Email: </b> {this.state.selectedCustomer?.email} <br />
+                            <b>Khách hàng: </b> {this.state.selectedCustomer?.fullName ? (this.state.selectedCustomer?.fullName) : 'Khách vãng lai'} <br />
+                            <b>Email: </b> {this.state.selectedCustomer?.email ? (this.state.selectedCustomer?.email) : 'Không có'} <br />
                             <b>Ngày check-in: </b> {this.state.bookingDetails?.date} <br />
                             <b>Sân: </b> {this.state.bookingDetails?.yardSchedule?.yard?.yardName} <br />
                             <b>Slot: </b> {this.state.selectedSlotInfo?.slotName}
@@ -640,7 +825,7 @@ export default class CheckInPage extends Component {
                                     this.state.selectedSlotInfo?.startTime,
                                     this.state.selectedSlotInfo
                                 ) && (
-                                    <Button variant="primary" style={ {padding: '10px'} } onClick={() => this.handleCheckIn(this.state.bookingDetails?.detailId)}>
+                                    <Button variant="primary" style={{ padding: '10px' }} onClick={() => this.handleCheckIn(this.state.bookingDetails?.detailId)}>
                                         Check-in
                                     </Button>
                                 )}
@@ -648,7 +833,99 @@ export default class CheckInPage extends Component {
                                 className="p-2"
                                 variant="secondary"
                                 style={{ alignContent: "center" }}
-                                onClick={() => this.setState({ showModal: false })}
+                                onClick={() => this.setState({ showModalSlotDetails: false })}
+                            >
+                                Đóng
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+
+                    {/** Modal thông tin đặt lịch cho khách vãng lai */}
+                    <Modal show={showModalBookingForVisitors} onHide={() => this.setState({ showModalBookingForVisitors: false })} centered size="lg">
+                        <Modal.Header closeButton>
+                            <Modal.Title>Chi tiết đơn</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {bookingDetailsRequestList.length > 0 && (
+                                <div className="booking-modal-content">
+                                    <table className="table booking-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Slot</th>
+                                                <th>Thời gian</th>
+                                                <th>Sân</th>
+                                                <th>Giá (VND)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {bookingDetailsRequestList
+                                                .sort((a, b) => {
+                                                    const slotA = slots.find(slot => slot.slotId === a.slotId);
+                                                    const slotB = slots.find(slot => slot.slotId === b.slotId);
+                                                    return slotA.slotName.localeCompare(slotB.slotName);
+                                                })
+                                                .map((bookingDetail, index) => {
+                                                    const slot = slots?.find(slot => slot.slotId === bookingDetail.slotId);
+                                                    const yard = courtOfStaff?.yards?.find(yard => yard.yardId === bookingDetail.yardId);
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td>{slot.slotName}</td>
+                                                            <td>{slot.startTime} - {slot.endTime}</td>
+                                                            <td>{yard.yardName}</td>
+                                                            <td className="price-cell">{this.formatCurrency(priceOfSingleSchedule)}</td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            <tr>
+                                                <td>
+                                                    <h5><b>Tổng tiền:</b></h5>
+                                                </td>
+                                                <td colSpan="2"></td>
+                                                <td className="total-amount">
+                                                    <h5>{this.formatCurrency(this.calculateTotalAmount())}</h5>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <h5><b>Tiền mặt:</b></h5>
+                                                </td>
+                                                <td colSpan="2"></td>
+                                                <td className="input-cell">
+                                                    <input
+                                                        type="text"
+                                                        value={isCashEdited ? this.formatCurrency(cash) : ''}
+                                                        onChange={this.handleCashChange}
+                                                        placeholder="Nhập số tiền"
+                                                        className="cash-input"
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <h5><b>Số tiền thừa:</b></h5>
+                                                </td>
+                                                <td colSpan="2"></td>
+                                                <td className="remaining-amount">
+                                                    <h5>{this.calculateRemainingAmount() >= 0 ? this.formatCurrency(this.calculateRemainingAmount()) : 'N/A'}</h5>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="primary"
+                                style={{ padding: '10px' }}
+                                disabled={this.state.bookDisable}
+                                onClick={() => this.handleBooking(this.state.courtOfStaff.courtId, this.state.bookingDetailsRequestList)}
+                            >
+                                Xác nhận
+                            </Button>
+                            <Button
+                                className="p-2"
+                                variant="secondary"
+                                onClick={() => this.setState({ showModalBookingForVisitors: false })}
                             >
                                 Đóng
                             </Button>

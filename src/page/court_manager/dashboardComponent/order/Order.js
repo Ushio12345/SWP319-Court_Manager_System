@@ -323,7 +323,7 @@ export default class Order extends Component {
                                     role="tabpanel"
                                     aria-labelledby={`${tab}-tab`}
                                 >
-                                    {currentBookingPage.length > -1 ? (
+                                    {currentBookingPage.length > 0 ? (
                                         <div className="overflow-x-auto">
                                             <table className="table table-hover table-borderless">
                                                 <thead>
@@ -387,9 +387,9 @@ export default class Order extends Component {
                                                                 <td className="text-start">{index + 1}</td>
                                                                 <td className="text-start">{booking.bookingId}</td>
                                                                 <td className="text-start">
-                                                                    <p>{booking.customer.fullName}</p>
+                                                                    <p>{booking.customer ? booking.customer.fullName : "Khách vãng lai"}</p>
                                                                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                                                                        {booking.customer.email}
+                                                                        {booking.customer ? booking.customer.email : "Không có"}
                                                                     </p>
                                                                 </td>
                                                                 <td className="text-start">{booking.bookingType}</td>
@@ -445,10 +445,10 @@ export default class Order extends Component {
                                             <b>Mã đơn hàng:</b> {selectedBooking.bookingId}
                                         </p>
                                         <p>
-                                            <b>Khách hàng:</b> {selectedBooking.customer.fullName}
+                                            <b>Khách hàng:</b> {selectedBooking.customer ? selectedBooking.customer.fullName : "Khách vãng lai"}
                                         </p>
                                         <p>
-                                            <b>Email:</b> {selectedBooking.customer.email}
+                                            <b>Email:</b> {selectedBooking.customer ? selectedBooking.customer.email : "Không có"}
                                         </p>
                                         <p>
                                             <b>Thời gian đặt đơn:</b> {selectedBooking.bookingDate}
@@ -532,7 +532,7 @@ export default class Order extends Component {
                                 )}
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button variant="secondary" style={{padding: '10px'}} onClick={() => this.setState({ showModal: false })}>
+                                <Button variant="secondary" style={{ padding: "10px" }} onClick={() => this.setState({ showModal: false })}>
                                     Đóng
                                 </Button>
                             </Modal.Footer>

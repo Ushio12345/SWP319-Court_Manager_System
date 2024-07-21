@@ -166,7 +166,7 @@ const CourtList = () => {
     return (
         <section className="yard" id="court-list">
             <h1 className="m-4">CÁC SÂN CẦU LÔNG MỚI</h1>
-            <div className="container ">
+            <div className=" ">
                 <Slider {...settings} className="list-yard showNewYard">
                     {latestCourts.slice(0, 10).map((court) => (
                         <CardYard key={court.courtId} court={court} />
@@ -188,7 +188,7 @@ const CourtList = () => {
                     />
                 </div>
             </div>
-            <div className="container w-4/5" style={{ marginBottom: "10px" }}>
+            <div className=" " style={{ marginBottom: "10px" }}>
                 <Slider {...settingForShowAllYard} className="list-yard showAllYard">
                     {filteredCourts.map((court) => (
                         <div className="card-container" key={court.courtId}>
