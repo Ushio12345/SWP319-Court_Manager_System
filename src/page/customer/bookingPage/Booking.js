@@ -38,6 +38,7 @@ export default function Booking() {
     const { court } = location.state || {};
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         const user = JSON.parse(localStorage.getItem("user"));
 
         if (user) {
