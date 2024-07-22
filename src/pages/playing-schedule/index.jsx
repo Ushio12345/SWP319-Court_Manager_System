@@ -527,14 +527,15 @@ export default class PlayingSchedule extends Component {
 
         waitingCheckInSlotsForToday.forEach(checkInDto => {
 
-            const slotStartTime = checkInDto?.bookingDetails?.yardSchedule?.slot?.startTime;
+            const slotEndTime = checkInDto?.bookingDetails?.yardSchedule?.slot?.endTime;
 
-            if (slotStartTime) {
-                const [slotHour, slotMinute] = slotStartTime.split(':').map(Number);
-                const slotStartDateTime = new Date(currentDate);
-                slotStartDateTime.setHours(slotHour, slotMinute, 0, 0); // Cập nhật giờ và phút cho đối tượng Date
+            if (slotEndTime) {
+                const [slotHour, slotMinute] = slotEndTime.split(':').map(Number);
+                const slotEndDateTime = new Date(currentDate);
+                slotEndDateTime.setHours(slotHour, slotMinute, 0, 0); // Cập nhật giờ và phút cho đối tượng Date
+
                 // So sánh thời gian slot với giờ hiện tại
-                if (slotStartDateTime < currentDate) {
+                if (slotEndDateTime < currentDate) {
                     this.autoCancelCheckIn(checkInDto?.bookingDetails?.detailId); // Gọi hàm tự động hủy check-in
                 }
             }

@@ -50,7 +50,8 @@ export default class CheckInPage extends Component {
             cash: '',
             isCashEdited: false,
             bookDisable: true,
-            loading: false
+            loading: false,
+            bookingDetailsMap: new Map(),
         };
     }
 
@@ -62,6 +63,10 @@ export default class CheckInPage extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevState.startDate !== this.state.startDate || prevState.endDate !== this.state.endDate) {
             this.updateDaysOfWeek(this.state.startDate, this.state.endDate);
+        }
+
+        if (prevState.bookingDetailsRequestList !== this.state.bookingDetailsRequestList) {
+            this.updateBookingDetailsMap();
         }
 
         if (prevState.selectedYard !== this.state.selectedYard) {
@@ -432,15 +437,15 @@ export default class CheckInPage extends Component {
 
         waitingCheckInSlotsForToday.forEach(checkInDto => {
 
-            const slotStartTime = checkInDto?.bookingDetails?.yardSchedule?.slot?.startTime;
+            const slotEndTime = checkInDto?.bookingDetails?.yardSchedule?.slot?.endTime;
 
-            if (slotStartTime) {
-                const [slotHour, slotMinute] = slotStartTime.split(':').map(Number);
-                const slotStartDateTime = new Date(currentDate);
-                slotStartDateTime.setHours(slotHour, slotMinute, 0, 0); // Cập nhật giờ và phút cho đối tượng Date
+            if (slotEndTime) {
+                const [slotHour, slotMinute] = slotEndTime.split(':').map(Number);
+                const slotEndDateTime = new Date(currentDate);
+                slotEndDateTime.setHours(slotHour, slotMinute, 0, 0); // Cập nhật giờ và phút cho đối tượng Date
 
                 // So sánh thời gian slot với giờ hiện tại
-                if (slotStartDateTime < currentDate) {
+                if (slotEndDateTime < currentDate) {
                     this.autoCancelCheckIn(checkInDto?.bookingDetails?.detailId); // Gọi hàm tự động hủy check-in
                 }
             }
@@ -519,9 +524,12 @@ export default class CheckInPage extends Component {
 
     };
 
-    handleBooking = async (courtId, bookingDetailsRequestList) => {
+    handleBooking = async (courtId) => {
         try {
-            const bookingDetailsList = bookingDetailsRequestList;
+            const bookingDetailsList = Array.from(this.state.bookingDetailsMap.entries()).map(([bookingDetail, realTimePrice]) => ({
+                ...bookingDetail,
+                realTimePrice,
+            }));
 
             this.setState({ loading: true });
 
@@ -564,20 +572,84 @@ export default class CheckInPage extends Component {
     }
 
     formatCurrency = (value) => {
-        return Number(value).toLocaleString("vi-VN");
+        return Number(value).toLocaleString("vi-VN", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     };
 
     calculateTotalAmount = () => {
-        return this.state.bookingDetailsRequestList.reduce((total, bookingDetail) => total + this.state.priceOfSingleSchedule, 0);
+        const { bookingDetailsRequestList = [], slots = [], priceOfSingleSchedule } = this.state;
+        
+        return bookingDetailsRequestList.reduce((total, bookingDetail) => {
+            const slot = slots.find(slot => slot.slotId === bookingDetail.slotId);
+            if (slot) {
+                const currentTime = this.getCurrentTime();
+                const remainingMinutes = this.calculateRemainingTime(currentTime, slot.startTime, slot.endTime);
+                const realTimePrice = this.calculateRealTimePrice(remainingMinutes, priceOfSingleSchedule, currentTime, slot.startTime, slot.endTime);
+                return total + realTimePrice;
+            }
+            return total;
+        }, 0);
     };
+    
 
     calculateRemainingAmount = () => {
         const totalAmount = this.calculateTotalAmount();
         return this.state.cash - totalAmount;
     };
 
+    calculateRemainingTime(currentTime, startTime, endTime) {
+        const [currentHour, currentMinute] = currentTime.split(':').map(Number);
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const [endHour, endMinute] = endTime.split(':').map(Number);
+
+        const currentTimeInMinutes = currentHour * 60 + currentMinute;
+        const endTimeInMinutes = endHour * 60 + endMinute;
+
+        if (currentHour < startHour || (currentHour === startHour && currentMinute < startMinute)) {
+            return null; // Return null if currentTime is greater than endTime
+        }
+
+        const diffInMinutes = endTimeInMinutes - currentTimeInMinutes;
+
+        return diffInMinutes > 0 ? diffInMinutes : 0; // if time has passed, return 0
+    }
+
+    calculateRealTimePrice(remainingMinutes, pricePerSlot, currentTime, startTime, endTime) {
+        const [currentHour, currentMinute] = currentTime.split(':').map(Number);
+        const [startHour, startMinute] = startTime.split(':').map(Number);
+        const {priceOfSingleSchedule} = this.state;
+
+        if (currentHour < startHour || (currentHour === startHour && currentMinute < startMinute)) {
+            return priceOfSingleSchedule; // Return null if currentTime is greater than endTime
+        }
+
+        return (remainingMinutes / 60) * pricePerSlot;
+    }
+
+    getCurrentTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    updateBookingDetailsMap = () => {
+        const { bookingDetailsRequestList, slots, priceOfSingleSchedule } = this.state;
+        const bookingDetailsMap = new Map();
+
+        bookingDetailsRequestList.forEach(bookingDetail => {
+            const slot = slots.find(slot => slot.slotId === bookingDetail.slotId);
+            const currentTime = this.getCurrentTime();
+            const remainingMinutes = this.calculateRemainingTime(currentTime, slot.startTime, slot.endTime);
+            const realTimePrice = this.calculateRealTimePrice(remainingMinutes, priceOfSingleSchedule, currentTime, slot.startTime, slot.endTime);
+            
+            bookingDetailsMap.set(bookingDetail, this.formatCurrency(realTimePrice));
+        });
+
+        this.setState({ bookingDetailsMap });
+    };
+
     render() {
-        const { showModalBookingForVisitors, bookingDetailsRequestList, priceOfSingleSchedule, cash, isCashEdited } = this.state;
+        const { showModalBookingForVisitors, bookingDetailsRequestList, priceOfSingleSchedule, cash, isCashEdited, bookingDetailsMap } = this.state;
         const { courtOfStaff } = this.state;
         const { daysOfWeek, selectedSlots, slots } = this.state;
         const selectedSlotDetails = Object.entries(selectedSlots).flatMap(([day, slotIds]) =>
@@ -586,6 +658,9 @@ export default class CheckInPage extends Component {
                 return `${slot ? slot.slotName : "Unknown Slot"}`; // Kiểm tra nếu slot tồn tại
             })
         );
+
+        {console.log("Map: ", bookingDetailsMap)}
+
         const { facilities } = this.state;
 
         if (!courtOfStaff) {
@@ -787,7 +862,7 @@ export default class CheckInPage extends Component {
                                                     <div>
                                                         <FaMoneyBill className="staff-page-price-icon" />
                                                         <span><strong>Giá:</strong> {priceOfSingleSchedule.toLocaleString("vi-VN")} VND/Slot</span>
-                                                    </div>                                               
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -861,8 +936,11 @@ export default class CheckInPage extends Component {
                                             <tr>
                                                 <th>Slot</th>
                                                 <th>Thời gian</th>
-                                                <th>Sân</th>
                                                 <th>Giá (VND)</th>
+                                                <th>Thời gian thực</th>
+                                                <th>Số phút</th>
+                                                <th>Giá (VND)</th>
+                                                <th>Sân</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -875,12 +953,25 @@ export default class CheckInPage extends Component {
                                                 .map((bookingDetail, index) => {
                                                     const slot = slots?.find(slot => slot.slotId === bookingDetail.slotId);
                                                     const yard = courtOfStaff?.yards?.find(yard => yard.yardId === bookingDetail.yardId);
+                                                    const currentTime = this.getCurrentTime();
+                                                    const remainingMinutes = this.calculateRemainingTime(currentTime, slot.startTime, slot.endTime);
+                                                    const realTimePrice = this.calculateRealTimePrice(remainingMinutes, priceOfSingleSchedule, currentTime, slot.startTime, slot.endTime);
+
                                                     return (
                                                         <tr key={index}>
                                                             <td>{slot.slotName}</td>
                                                             <td>{slot.startTime} - {slot.endTime}</td>
-                                                            <td>{yard.yardName}</td>
                                                             <td className="price-cell">{this.formatCurrency(priceOfSingleSchedule)}</td>
+                                                            <td>
+                                                                {currentTime > slot.startTime && currentTime < slot.endTime ?
+                                                                    `${currentTime} - ${slot.endTime}` :
+                                                                    'N/A'}
+                                                            </td>
+                                                            <td>
+                                                                {remainingMinutes != null ? `${remainingMinutes} phút` : 'N/A'}
+                                                            </td>
+                                                            <td className="price-cell">{this.formatCurrency(realTimePrice)}</td>
+                                                            <td>{yard.yardName}</td>
                                                         </tr>
                                                     );
                                                 })}
@@ -888,16 +979,17 @@ export default class CheckInPage extends Component {
                                                 <td>
                                                     <h5><b>Tổng tiền:</b></h5>
                                                 </td>
-                                                <td colSpan="2"></td>
+                                                <td colSpan="4"></td>
                                                 <td className="total-amount">
                                                     <h5>{this.formatCurrency(this.calculateTotalAmount())}</h5>
                                                 </td>
+                                                <td></td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <h5><b>Tiền mặt:</b></h5>
                                                 </td>
-                                                <td colSpan="2"></td>
+                                                <td colSpan="4"></td>
                                                 <td className="input-cell">
                                                     <input
                                                         type="text"
@@ -907,15 +999,17 @@ export default class CheckInPage extends Component {
                                                         className="cash-input"
                                                     />
                                                 </td>
+                                                <td></td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <h5><b>Số tiền thừa:</b></h5>
                                                 </td>
-                                                <td colSpan="2"></td>
+                                                <td colSpan="4"></td>
                                                 <td className="remaining-amount">
                                                     <h5>{this.calculateRemainingAmount() >= 0 ? this.formatCurrency(this.calculateRemainingAmount()) : 'N/A'}</h5>
                                                 </td>
+                                                <td></td>
                                             </tr>
                                         </tbody>
                                     </table>
