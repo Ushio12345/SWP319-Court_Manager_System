@@ -3,6 +3,8 @@ import axiosInstance from "../../config/axiosConfig";
 import { showAlert, showConfirmAlert } from "../../utils/alertUtils";
 import { handleTokenError } from "../../utils/tokenErrorHandle";
 import { Link } from "react-router-dom";
+import { remove } from 'diacritics';
+
 export default class Staff extends Component {
     state = {
         staffs: [],
@@ -200,7 +202,11 @@ export default class Staff extends Component {
     renderStaff = () => {
         const { staffs, currentPage, itemsPerPage, searchInput, selectedCourtId } = this.state;
 
-        const filteredStaffs = staffs.filter((staff) => staff.fullName && staff.fullName.toLowerCase().includes(searchInput.toLowerCase()));
+        const filteredStaffs = staffs.filter((staff) => {
+            const searchInputNormalized = remove(searchInput.toLowerCase());
+            const staffNameNormalized = remove(staff.fullName.toLowerCase());
+            return staffNameNormalized.includes(searchInputNormalized) || staff.userId.includes(searchInputNormalized);
+          });
 
         const indexOfLastItem = currentPage * itemsPerPage;
         const indexOfFirstItem = indexOfLastItem - itemsPerPage;

@@ -5,6 +5,7 @@ import "../court-list/index.css";
 import "../../App.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import {remove} from 'diacritics';
 
 import axiosInstance from "../../config/axiosConfig";
 
@@ -56,13 +57,18 @@ const CourtList = () => {
 
     const filteredCourts = courts.filter((court) => {
         let matches = true;
+        const courtNameNormalized = remove(court.courtName.toLowerCase());
+        //const courtAddressNormalized = remove(court.address.toLowerCase());
+        const searchKeywordNormalized = remove(searchKeyword.toLowerCase());
+        
         if (starFilter !== null && court.star !== starFilter) {
             matches = false;
         }
         if (openingHoursFilter !== null && court.openingHours !== openingHoursFilter) {
             matches = false;
         }
-        return matches && court.courtName.toLowerCase().includes(searchKeyword.toLowerCase());
+        return matches && courtNameNormalized.includes(searchKeywordNormalized.toLowerCase())
+        //     || matches && courtAddressNormalized.includes(searchKeywordNormalized.toLowerCase());
     });
 
     const settings = {
