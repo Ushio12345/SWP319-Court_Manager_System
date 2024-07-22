@@ -23,7 +23,7 @@ export default class Order extends Component {
             bookingTypeFilter: "",
             currentPage: 1,
             itemsPerPage: 5,
-            sortOrder: "asc",
+            sortOrder: "",
             priceOrder: "asc",
             selectedBooking: null,
         };
@@ -32,6 +32,13 @@ export default class Order extends Component {
     componentDidMount() {
         this.fetchCourts();
         this.fetchBookingsOfCourts();
+    }
+
+    parseDate = (dateString) => {
+        const [datePart, timePart] = dateString.split(' ');
+        const [day, month, year] = datePart.split('/').map(Number);
+        const [hour, minute] = timePart.split(':').map(Number);
+        return new Date(year, month - 1, day, hour, minute);
     }
 
     fetchCourts = () => {
@@ -347,7 +354,7 @@ export default class Order extends Component {
                                                             <select
                                                                 className="form-control"
                                                                 value={this.state.priceOrder}
-                                                                onChange={(e) => this.setState({ priceOrder: e.target.value })}
+                                                                onChange={(e) => this.setState({ priceOrder: e.target.value, sortOrder:""})}
                                                             >
                                                                 <option value="asc">Giá tăng dần (VND)</option>
                                                                 <option value="desc">Giá giảm dần (VND)</option>
@@ -359,6 +366,7 @@ export default class Order extends Component {
                                                                 value={this.state.sortOrder}
                                                                 onChange={(e) => this.setState({ sortOrder: e.target.value })}
                                                             >
+                                                                <option value="">Tất cả</option>
                                                                 <option value="asc">Ngày đặt tăng dần</option>
                                                                 <option value="desc">Ngày đặt giảm dần</option>
                                                             </select>
@@ -369,17 +377,22 @@ export default class Order extends Component {
                                                 <tbody>
                                                     {currentBookingPage
                                                         .sort((a, b) => {
-                                                            if (sortOrder === "asc") {
-                                                                return new Date(a.bookingDate) - new Date(b.bookingDate);
-                                                            } else {
-                                                                return new Date(b.bookingDate) - new Date(a.bookingDate);
-                                                            }
-                                                        })
-                                                        .sort((a, b) => {
                                                             if (priceOrder === "asc") {
                                                                 return a.totalPrice - b.totalPrice;
                                                             } else {
                                                                 return b.totalPrice - a.totalPrice;
+                                                            }
+                                                        })
+                                                        .sort((a, b) => {
+                                                            const dateA = this.parseDate(a.bookingDate);
+                                                            const dateB = this.parseDate(b.bookingDate);
+                                                            if (sortOrder === "asc") {
+                                                                return  dateA -  dateB;
+                                                            } else if(sortOrder==="desc") {
+                                                                return  dateB -  dateA;
+                                                            }
+                                                            else{
+                                                                return;
                                                             }
                                                         })
                                                         .map((booking, index) => (
