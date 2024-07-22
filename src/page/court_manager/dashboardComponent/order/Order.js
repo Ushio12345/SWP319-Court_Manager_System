@@ -23,7 +23,7 @@ export default class Order extends Component {
             bookingTypeFilter: "",
             currentPage: 1,
             itemsPerPage: 5,
-            sortOrder: "asc",
+            sortOrder: "",
             priceOrder: "asc",
             selectedBooking: null,
         };
@@ -232,7 +232,7 @@ export default class Order extends Component {
     renderPagination = () => {
         const { bookingsOfSelectedCourt, currentPage, itemsPerPage } = this.state;
         const pageNumbers = [];
-        for (let i = 1; i <= Math.ceil(bookingsOfSelectedCourt.length / itemsPerPage); i++) {
+        for (let i = 1; i < Math.ceil(bookingsOfSelectedCourt.length / itemsPerPage); i++) {
             pageNumbers.push(i);
         }
 
@@ -249,6 +249,12 @@ export default class Order extends Component {
                 </ul>
             </nav>
         );
+    };
+    parseDate = (dateString) => {
+        const [datePart, timePart] = dateString.split(" ");
+        const [day, month, year] = datePart.split("/").map(Number);
+        const [hour, minute] = timePart.split(":").map(Number);
+        return new Date(year, month - 1, day, hour, minute);
     };
 
     render() {
@@ -323,63 +329,69 @@ export default class Order extends Component {
                                     role="tabpanel"
                                     aria-labelledby={`${tab}-tab`}
                                 >
-                                    {currentBookingPage.length > 0 ? (
-                                        <div className="overflow-x-auto">
-                                            <table className="table table-hover table-borderless">
-                                                <thead>
-                                                    <tr>
-                                                        <th className="text-start">STT</th>
-                                                        <th className="text-start">Mã đơn hàng</th>
-                                                        <th className="text-start">Khách hàng</th>
-                                                        <th className="text-start">
-                                                            <select
-                                                                className="form-control"
-                                                                value={this.state.bookingTypeFilter}
-                                                                onChange={(e) => this.setState({ bookingTypeFilter: e.target.value })}
-                                                            >
-                                                                <option value="">Tất cả lịch</option>
-                                                                <option value="Lịch đơn">Lịch đơn</option>
-                                                                <option value="Lịch cố định">Lịch cố định</option>
-                                                                <option value="Lịch linh hoạt">Lịch linh hoạt</option>
-                                                            </select>
-                                                        </th>
-                                                        <th className="text-start">
-                                                            <select
-                                                                className="form-control"
-                                                                value={this.state.priceOrder}
-                                                                onChange={(e) => this.setState({ priceOrder: e.target.value })}
-                                                            >
-                                                                <option value="asc">Giá tăng dần (VND)</option>
-                                                                <option value="desc">Giá giảm dần (VND)</option>
-                                                            </select>
-                                                        </th>
-                                                        <th className="text-start">
-                                                            <select
-                                                                className="form-control"
-                                                                value={this.state.sortOrder}
-                                                                onChange={(e) => this.setState({ sortOrder: e.target.value })}
-                                                            >
-                                                                <option value="asc">Ngày đặt tăng dần</option>
-                                                                <option value="desc">Ngày đặt giảm dần</option>
-                                                            </select>
-                                                        </th>
-                                                        <th className="text-center">Thao tác</th>
-                                                    </tr>
-                                                </thead>
+                                    <div className="overflow-x-auto">
+                                        <table className="table table-hover table-borderless">
+                                            <thead>
+                                                <tr>
+                                                    <th className="text-start">STT</th>
+                                                    <th className="text-start">Mã đơn hàng</th>
+                                                    <th className="text-start">Khách hàng</th>
+                                                    <th className="text-start">
+                                                        <select
+                                                            className="form-control"
+                                                            value={this.state.bookingTypeFilter}
+                                                            onChange={(e) => this.setState({ bookingTypeFilter: e.target.value })}
+                                                        >
+                                                            <option value="">Tất cả lịch</option>
+                                                            <option value="Lịch đơn">Lịch đơn</option>
+                                                            <option value="Lịch cố định">Lịch cố định</option>
+                                                            <option value="Lịch linh hoạt">Lịch linh hoạt</option>
+                                                        </select>
+                                                    </th>
+                                                    <th className="text-start">
+                                                        <select
+                                                            className="form-control"
+                                                            value={this.state.priceOrder}
+                                                            onChange={(e) => this.setState({ priceOrder: e.target.value, sortOrder: "" })}
+                                                        >
+                                                            <option value="asc">Giá tăng dần (VND)</option>
+                                                            <option value="desc">Giá giảm dần (VND)</option>
+                                                        </select>
+                                                    </th>
+                                                    <th className="text-start">
+                                                        <select
+                                                            className="form-control"
+                                                            value={this.state.sortOrder}
+                                                            onChange={(e) => this.setState({ sortOrder: e.target.value })}
+                                                        >
+                                                            <option value="">Tất cả</option>
+                                                            <option value="asc">Ngày đặt tăng dần</option>
+                                                            <option value="desc">Ngày đặt giảm dần</option>
+                                                        </select>
+                                                    </th>
+                                                    <th className="text-center">Thao tác</th>
+                                                </tr>
+                                            </thead>
+                                            {currentBookingPage.length > 0 ? (
                                                 <tbody>
                                                     {currentBookingPage
-                                                        .sort((a, b) => {
-                                                            if (sortOrder === "asc") {
-                                                                return new Date(a.bookingDate) - new Date(b.bookingDate);
-                                                            } else {
-                                                                return new Date(b.bookingDate) - new Date(a.bookingDate);
-                                                            }
-                                                        })
+
                                                         .sort((a, b) => {
                                                             if (priceOrder === "asc") {
                                                                 return a.totalPrice - b.totalPrice;
                                                             } else {
                                                                 return b.totalPrice - a.totalPrice;
+                                                            }
+                                                        })
+                                                        .sort((a, b) => {
+                                                            const dateA = this.parseDate(a.bookingDate);
+                                                            const dateB = this.parseDate(b.bookingDate);
+                                                            if (sortOrder === "asc") {
+                                                                return dateA - dateB;
+                                                            } else if (sortOrder === "desc") {
+                                                                return dateB - dateA;
+                                                            } else {
+                                                                return;
                                                             }
                                                         })
                                                         .map((booking, index) => (
@@ -422,15 +434,17 @@ export default class Order extends Component {
                                                             </tr>
                                                         ))}
                                                 </tbody>
-                                            </table>
-                                            {this.renderPagination()}
-                                        </div>
-                                    ) : (
-                                        <div className="no-bookings text-center">
-                                            <FontAwesomeIcon icon={faInbox} size="3x" />
-                                            <p>Chưa có đơn hàng</p>
-                                        </div>
-                                    )}
+                                            ) : (
+                                                <tr className="">
+                                                    <td colSpan={7} className="no-bookings text-center">
+                                                        <FontAwesomeIcon icon={faInbox} size="3x" />
+                                                        <p>Chưa có đơn hàng</p>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </table>
+                                        {currentBookingPage.length > 0 && this.renderPagination()}
+                                    </div>
                                 </div>
                             );
                         })}
