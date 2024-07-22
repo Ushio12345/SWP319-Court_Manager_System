@@ -34,6 +34,13 @@ export default class Order extends Component {
         this.fetchBookingsOfCourts();
     }
 
+    parseDate = (dateString) => {
+        const [datePart, timePart] = dateString.split(" ");
+        const [day, month, year] = datePart.split("/").map(Number);
+        const [hour, minute] = timePart.split(":").map(Number);
+        return new Date(year, month - 1, day, hour, minute);
+    };
+
     fetchCourts = () => {
         axiosInstance
             .get("/court/courts-of-owner")

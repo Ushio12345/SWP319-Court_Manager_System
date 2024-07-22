@@ -132,16 +132,20 @@ export default class Staff extends Component {
         showConfirmAlert("Xác nhận xóa", "Bạn có chắc chắn muốn xóa nhân viên này không?", "Xóa", "center").then((result) => {
             if (result.isConfirmed) {
                 const { selectedCourtId } = this.state;
-                const deleteUrl = selectedCourtId ? `/court/${selectedCourtId}/deleteStaffFromCourt/${staffId}` : `/member/delete?userId=${staffId}`;
+
+                if (!selectedCourtId) {
+                    showAlert("error", "Lỗi !", "Chưa chọn sân để xóa nhân viên", "top-end");
+                    return;
+                }
+
+                const deleteUrl = `court/${selectedCourtId}/deleteStaffFromCourt/${staffId}`;
 
                 axiosInstance
                     .delete(deleteUrl)
                     .then((res) => {
                         if (res.status === 200) {
                             showAlert("success", "", "Đã xóa nhân viên thành công", "top-end");
-
-                            selectedCourtId ? this.fetchStaffWithCourt(selectedCourtId) : this.fetchAllStaff();
-                            this.fetchStaffWithCourt();
+                            this.fetchStaffWithCourt(selectedCourtId);
                         } else {
                             showAlert("error", "Lỗi !", "Xóa nhân viên không thành công", "top-end");
                             console.error("Response không thành công:", res.status);
@@ -149,7 +153,7 @@ export default class Staff extends Component {
                     })
                     .catch((error) => {
                         handleTokenError(error);
-                        showAlert("error", "", "Không thể xóa được sân", "top-end");
+                        showAlert("error", "", "Không thể xóa được nhân viên này", "top-end");
                     });
             }
         });
