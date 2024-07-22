@@ -23,7 +23,7 @@ export default class Order extends Component {
             bookingTypeFilter: "",
             currentPage: 1,
             itemsPerPage: 5,
-            sortOrder: "asc",
+            sortOrder: "",
             priceOrder: "asc",
             selectedBooking: null,
         };
@@ -33,6 +33,13 @@ export default class Order extends Component {
         this.fetchCourts();
         this.fetchBookingsOfCourts();
     }
+
+    parseDate = (dateString) => {
+        const [datePart, timePart] = dateString.split(" ");
+        const [day, month, year] = datePart.split("/").map(Number);
+        const [hour, minute] = timePart.split(":").map(Number);
+        return new Date(year, month - 1, day, hour, minute);
+    };
 
     fetchCourts = () => {
         axiosInstance
@@ -249,6 +256,12 @@ export default class Order extends Component {
             </nav>
         );
     };
+    parseDate = (dateString) => {
+        const [datePart, timePart] = dateString.split(" ");
+        const [day, month, year] = datePart.split("/").map(Number);
+        const [hour, minute] = timePart.split(":").map(Number);
+        return new Date(year, month - 1, day, hour, minute);
+    };
 
     getStatusTextColor(status) {
         switch (status) {
@@ -364,7 +377,7 @@ export default class Order extends Component {
                                                         <select
                                                             className="form-control"
                                                             value={this.state.priceOrder}
-                                                            onChange={(e) => this.setState({ priceOrder: e.target.value })}
+                                                            onChange={(e) => this.setState({ priceOrder: e.target.value, sortOrder: "" })}
                                                         >
                                                             <option value="asc">Giá tăng dần (VND)</option>
                                                             <option value="desc">Giá giảm dần (VND)</option>
@@ -376,6 +389,7 @@ export default class Order extends Component {
                                                             value={this.state.sortOrder}
                                                             onChange={(e) => this.setState({ sortOrder: e.target.value })}
                                                         >
+                                                            <option value="">Tất cả</option>
                                                             <option value="asc">Ngày đặt tăng dần</option>
                                                             <option value="desc">Ngày đặt giảm dần</option>
                                                         </select>
@@ -386,13 +400,7 @@ export default class Order extends Component {
                                             {currentBookingPage.length > 0 ? (
                                                 <tbody>
                                                     {currentBookingPage
-                                                        .sort((a, b) => {
-                                                            if (sortOrder === "asc") {
-                                                                return new Date(a.bookingDate) - new Date(b.bookingDate);
-                                                            } else {
-                                                                return new Date(b.bookingDate) - new Date(a.bookingDate);
-                                                            }
-                                                        })
+
                                                         .sort((a, b) => {
                                                             if (priceOrder === "asc") {
                                                                 return a.totalPrice - b.totalPrice;
@@ -400,12 +408,23 @@ export default class Order extends Component {
                                                                 return b.totalPrice - a.totalPrice;
                                                             }
                                                         })
+                                                        .sort((a, b) => {
+                                                            const dateA = this.parseDate(a.bookingDate);
+                                                            const dateB = this.parseDate(b.bookingDate);
+                                                            if (sortOrder === "asc") {
+                                                                return dateA - dateB;
+                                                            } else if (sortOrder === "desc") {
+                                                                return dateB - dateA;
+                                                            } else {
+                                                                return;
+                                                            }
+                                                        })
                                                         .map((booking, index) => (
                                                             <tr key={booking.bookingId}>
                                                                 <td className="text-start">{index + 1}</td>
                                                                 <td className="text-start">{booking.bookingId}</td>
                                                                 <td className="text-start">
-                                                                    <p>{booking.customer ? booking.customer.fullName : "Khách vãng lai"}</p>
+                                                                                                                                        <p>{booking.customer ? booking.customer.fullName : "Khách vãng lai"}</p>
                                                                     <p className="text-xs text-gray-600 dark:text-gray-400">
                                                                         {booking.customer ? booking.customer.email : "Không có"}
                                                                     </p>

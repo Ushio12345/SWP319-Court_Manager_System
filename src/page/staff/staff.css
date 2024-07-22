@@ -115,7 +115,6 @@ body {
     font-size: 20px;
 }
 
-
 .modal-footer {
     display: flex;
     justify-content: center;
@@ -131,7 +130,7 @@ body {
     transition: background 0.3s ease, transform 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     min-width: 150px; /* Set a minimum width for each slot */
-    flex-shrink: 0; /* Prevent slots from shrinking */  
+    flex-shrink: 0; /* Prevent slots from shrinking */
 }
 
 .staff-page-book-now {
@@ -176,7 +175,7 @@ body {
 .staff-page-slot-icon {
     margin-right: 15px;
     font-size: 30px;
-    color: #007BFF;
+    color: #007bff;
     animation: bounce 1s infinite;
 }
 
@@ -188,8 +187,13 @@ body {
 }
 
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .staff-page-slot-info {
