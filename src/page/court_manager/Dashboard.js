@@ -37,15 +37,6 @@ export default function Dashboard() {
             <div className="dash-num grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-2 gap-4">
                 <div className="dash-num-item">
                     <div className="dash-num-item-left">
-                        <h4>50</h4>
-                        <p>Lượt truy cập mỗi ngày</p>
-                    </div>
-                    <div className="dash-num-item-icon">
-                        <i className="fa-regular fa-eye" />
-                    </div>
-                </div>
-                <div className="dash-num-item">
-                    <div className="dash-num-item-left">
                         <h4>{courtCount}</h4>
                         <p>Số cơ sở</p>
                     </div>

@@ -430,7 +430,7 @@ export default class PlayingSchedule extends Component {
 
                         if (refundResponse.data.message === "Refund successful") {
                             console.log("Refund successful.");
-                            confirmResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/cancel`);
+                            confirmResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/cancel?refund=true`);
                             this.setState({ loading: false });
                             if (confirmResponse && confirmResponse.data.message === 'Hủy đơn thành công') {
                                 alert(
@@ -461,7 +461,7 @@ export default class PlayingSchedule extends Component {
                         const refundResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/refund-hours`);
 
                         if (refundResponse.data.message === "Refund flexible hours successful") {
-                            confirmResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/cancel`);
+                            confirmResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/cancel?refund=true`);
                             this.setState({ loading: false });
                             if (confirmResponse && confirmResponse.data.message === 'Hủy đơn thành công') {
                                 alert(
@@ -489,7 +489,7 @@ export default class PlayingSchedule extends Component {
                 const result = await showConfirmPayment("Lưu ý", `Bạn chỉ cách thời gian check in ${hoursDifference} tiếng (nhỏ hơn 24 tiếng)! Bạn sẽ không được hoàn lại tiền (hoặc giờ linh hoạt) nếu hủy giờ chơi này.`, "warning", "Đồng ý", "Trở lại", "center");
                 if (result.isConfirmed) {
                     this.setState({ loading: true });
-                    confirmResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/cancel`);
+                    confirmResponse = await axiosInstance.post(`/booking-details/${bookingDetails.detailId}/cancel?refund=false`);
                     this.setState({ loading: false });
                     if (confirmResponse && confirmResponse.data.message === 'Hủy đơn thành công') {
                         alert(
@@ -543,7 +543,7 @@ export default class PlayingSchedule extends Component {
 
     autoCancelCheckIn = async (detailId) => {
         try {
-            const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/cancel`);
+            const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/cancel?refund=false`);
             if (confirmResponse.data.message === "Hủy đơn thành công") {
                 this.fetchStatusSlots("WAITING_FOR_CHECK_IN", "waitingCheckInSlots");
                 this.fetchStatusSlots("COMPLETED", "completedSlots");

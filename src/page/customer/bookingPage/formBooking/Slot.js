@@ -61,6 +61,7 @@ export default class Slot extends Component {
 
         this.checkUserLoginStatus();
         this.fetchPriceList();
+        this.fetchPendingAndWaitingBookingDetails();
     }
 
     checkUserLoginStatus() {
@@ -83,6 +84,7 @@ export default class Slot extends Component {
             }, () => {
                 window.scrollTo(0, 0); // Scroll to the top of the page
             });
+            this.fetchPendingAndWaitingBookingDetails();
         }
 
         if (prevState.selectedYard !== this.state.selectedYard) {
@@ -304,8 +306,6 @@ export default class Slot extends Component {
             return;
         }
 
-        this.fetchPendingAndWaitingBookingDetails();
-
         if (this.state.bookingDetailsList.length === 0) {
             this.setState({ errorMessage: "Hãy chọn slot bạn muốn chơi" });
             return;
@@ -317,21 +317,26 @@ export default class Slot extends Component {
         const courtId = this.props.court.courtId;
 
         let isPendingOrWaiting = false;
-        bookingDetailsList.forEach(bookingDetail => {
+        let duplicatedSlot = '';
+        for (let i = 0; i < bookingDetailsList.length; i++) {
+            const bookingDetail = bookingDetailsList[i];
             const date = bookingDetail.date;
             const slotId = bookingDetail.slotId;
             const slot = this.state.slots.find((s) => s.slotId === slotId);
-
+    
             // Gọi hàm isPendingAndWaitingBookingDetails với ngày và slotId từ bookingDetail
             isPendingOrWaiting = this.isPendingAndWaitingBookingDetails(date, slotId);
-
-            if (isPendingOrWaiting) {
-                alert('warning', 'Thông báo', `Đã có lịch đặt với khung giờ ${slot.startTime} - ${slot.endTime}. Hãy kiểm tra lại lịch chơi và đặt lại !`, 'center');
-                return;
+    
+            if (isPendingOrWaiting) { 
+                duplicatedSlot = slot;
+                break; // Exit the loop early
             }
-        });
+        }
 
-        if (isPendingOrWaiting) return;
+        if (isPendingOrWaiting) {
+            alert('warning', 'Thông báo', `Đã có lịch đặt với khung giờ ${duplicatedSlot.startTime} - ${duplicatedSlot.endTime}. Hãy kiểm tra lại lịch chơi và đặt lại !`, 'center');
+            return;
+        }
 
         const totalRequiredHours = bookingDetailsList.reduce((total, bookingDetailsRequest) => {
             const slot = this.state.slots.find((s) => s.slotId === bookingDetailsRequest.slotId);
@@ -960,11 +965,11 @@ export default class Slot extends Component {
                                 {selectedSlotsList.length > 0 ? (
                                     <>
                                         <div className="selected-slots">
-                                            
-                                                <button onClick={this.handleButtonClick} className="btn btn-primary book-now">
-                                                    Đặt lịch ngay
-                                                </button>
-                                            
+
+                                            <button onClick={this.handleButtonClick} className="btn btn-primary book-now">
+                                                Đặt lịch ngay
+                                            </button>
+
                                             {selectedSlotsList.length > 0 ? selectedSlotsList : <div>Chưa có slot nào được chọn cho khách</div>}
                                         </div>
                                     </>

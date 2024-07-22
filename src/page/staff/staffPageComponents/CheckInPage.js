@@ -9,7 +9,7 @@ import axiosInstance from "../../../config/axiosConfig";
 import { Button, Modal } from "react-bootstrap";
 import "../staff.css";
 import { alert, showAlert } from "../../../utils/alertUtils";
-import { FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaMoneyBill } from 'react-icons/fa';
 // Register the Vietnamese locale with react-datepicker
 registerLocale("vi", vi);
 
@@ -286,11 +286,11 @@ export default class CheckInPage extends Component {
         }
     };
 
-    isPastTime(day, startTime, slot) {
+    isPastTime(day, endTime, slot) {
         const currentTime = new Date();
-        const [startHour, startMinute] = startTime.split(":").map(Number);
-        const slotStartTime = new Date(currentTime);
-        slotStartTime.setHours(startHour, startMinute, 0, 0);
+        const [endHour, endMinute] = endTime.split(":").map(Number);
+        const slotEndTime = new Date(currentTime);
+        slotEndTime.setHours(endHour, endMinute, 0, 0);
 
         const { bookingDetailsList } = this.state;
 
@@ -300,7 +300,7 @@ export default class CheckInPage extends Component {
 
         // Check if there are any bookings for the formatted day
         if (!bookingDetailsList[formattedDayKey] || bookingDetailsList[formattedDayKey].length === 0) {
-            return slotStartTime < currentTime;
+            return slotEndTime < currentTime;
         }
 
         // Find the matching bookingDetails based on slotId
@@ -309,14 +309,14 @@ export default class CheckInPage extends Component {
         );
         if (!matchedCheckIn) {
             console.error("No matching checkInDto found for the given slot");
-            return slotStartTime < currentTime;
+            return slotEndTime < currentTime;
         }
 
         // Get the status from the found bookingDetails
         const status = matchedCheckIn.bookingDetails.status;
 
         // Otherwise, check if the slotStartTime is in the past relative to currentTime
-        return slotStartTime < currentTime;
+        return slotEndTime < currentTime;
     }
 
     isToday(day) {
@@ -449,7 +449,7 @@ export default class CheckInPage extends Component {
 
     autoCancelCheckIn = async (detailId) => {
         try {
-            const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/cancel`);
+            const confirmResponse = await axiosInstance.post(`/booking-details/${detailId}/cancel?refund=false`);
             if (confirmResponse.data.message === "Hủy đơn thành công") {
                 this.fetchSlots();
                 this.fetchBookingDetails();
@@ -529,7 +529,7 @@ export default class CheckInPage extends Component {
             this.setState({ loading: false });
             this.setState({ showModalBookingForVisitors: false })
             if (bookingResponse.data.message === "Đặt lịch thành công") {
-                
+
                 showAlert("success", "Thông báo", "Đặt lịch cho khách hàng thành công !", "top-end");
                 this.handleCloseModalBookingForVisitors();
                 this.fetchSlots();
@@ -747,7 +747,7 @@ export default class CheckInPage extends Component {
                                                                                 }
                                                                         ${this.isToday(daysOfWeek[dayIndex]) &&
                                                                                     !this.isWaitingCheckInSlot(daysOfWeek[dayIndex], slot.slotId) &&
-                                                                                    this.isPastTime(daysOfWeek[dayIndex], slot.startTime, slot)
+                                                                                    this.isPastTime(daysOfWeek[dayIndex], slot.endTime, slot)
                                                                                     ? "pastTime"
                                                                                     : ""
                                                                                 }
@@ -782,6 +782,14 @@ export default class CheckInPage extends Component {
                                                 Đặt lịch cho khách
                                             </button>
                                             {selectedSlotsList.length > 0 ? selectedSlotsList : <div>Chưa có slot nào được chọn cho khách</div>}
+                                            <div className="staff-page-slot-info">
+                                                <div className="staff-page-slot-details">
+                                                    <div>
+                                                        <FaMoneyBill className="staff-page-price-icon" />
+                                                        <span><strong>Giá:</strong> {priceOfSingleSchedule.toLocaleString("vi-VN")} VND/Slot</span>
+                                                    </div>                                               
+                                                </div>
+                                            </div>
                                         </div>
                                     ) : ""}
                                 </div>
@@ -925,7 +933,7 @@ export default class CheckInPage extends Component {
                             <Button
                                 className="p-2"
                                 variant="secondary"
-                                onClick={() => this.setState({ showModalBookingForVisitors: false })}
+                                onClick={() => this.setState({ showModalBookingForVisitors: false, cash: 0 })}
                             >
                                 Đóng
                             </Button>

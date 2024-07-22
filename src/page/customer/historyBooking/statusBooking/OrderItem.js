@@ -115,6 +115,10 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                 return "#008000"; // Màu xanh lá cây
             case "Đã hủy":
                 return "#FF0000"; // Màu đỏ
+            case "Đã thanh toán":
+                return "#008000";
+            case "Đã hoàn tiền":
+                return "#FFA500";
             default:
                 return "#000"; // Màu mặc định
         }
@@ -215,6 +219,7 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                                         <th>Sân</th>
                                         <th>{booking.totalPrice === 0 ? "Giờ" : "Giá (VND)"}</th>
                                         <th>Trạng thái</th>
+                                        <th>Trạng thái thanh toán</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -225,8 +230,9 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                                                 <td>{bookingDetail.yardSchedule.slot.slotName}</td>
                                                 <td>{bookingDetail.date}</td>
                                                 <td>{bookingDetail.yardSchedule.yard.yardName}</td>
-                                                <td>{booking.totalPrice === 0 ? `1 giờ` : bookingDetail.price.toLocaleString("vi-VN")}</td>
-                                                <td style={{ color: getStatusTextColor(booking.statusEnum) }}>{bookingDetail.status}</td>
+                                                <td>{booking.totalPrice === 0 ? bookingDetail.flexibleHours : bookingDetail.price.toLocaleString("vi-VN")}</td>
+                                                <td style={{ color: getStatusTextColor(bookingDetail.status) }}>{bookingDetail.status}</td>
+                                                <td><td style={{ color: getStatusTextColor(bookingDetail.paymentStatus) }}>{bookingDetail.paymentStatus}</td></td>
                                             </tr>
                                         ))}
                                     {booking.totalPrice === 0 ? (
@@ -236,7 +242,7 @@ const OrderItem = ({ booking, onBookingCancel }) => {
                                             </td>
                                             <td colSpan="2"></td>
                                             <td style={{ color: "green", fontWeight: "bold" }}>
-                                                {booking.totalPrice === 0 ? `${booking.bookingDetails.length} giờ` : `0 giờ`}
+                                                {booking.totalPrice === 0 ? `${booking.totalHours} giờ` : `0 giờ`}
                                             </td>
                                         </tr>
                                     ) : (

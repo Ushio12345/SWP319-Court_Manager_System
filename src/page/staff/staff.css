@@ -140,10 +140,9 @@ body {
 
 .staff-page-selected-slots {
     position: fixed; /* Make the container fixed on the screen */
-    max-width: 1000px;
-    top: 60px; /* Position it at the bottom */
-    left: 600px; /* Position it on the left */
-    right: 20px; /* Stretch it to the right */
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
     background: rgba(255, 255, 255, 0.9); /* Slightly transparent background */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -178,6 +177,13 @@ body {
     margin-right: 15px;
     font-size: 30px;
     color: #007BFF;
+    animation: bounce 1s infinite;
+}
+
+.staff-page-price-icon {
+    margin-right: 15px;
+    font-size: 30px;
+    color: green;
     animation: bounce 1s infinite;
 }
 
